@@ -24,7 +24,6 @@ add_action( 'storefront_sidebar',        'storefront_get_sidebar',          10 )
  */
 add_action( 'storefront_header', 'storefront_skip_links',                       0 );
 add_action( 'storefront_header', 'storefront_site_branding',                    20 );
-add_action( 'storefront_header', 'storefront_site_contactEmail',                21 );
 add_action( 'storefront_header', 'storefront_secondary_navigation',             30 );
 add_action( 'storefront_header', 'storefront_primary_navigation_wrapper',       42 );
 add_action( 'storefront_header', 'storefront_primary_navigation',               50 );
@@ -37,9 +36,7 @@ add_action( 'storefront_header', 'storefront_primary_navigation_wrapper_close', 
  * @see  storefront_credit()
  */
 add_action( 'storefront_footer', 'storefront_footer_widgets', 10 );
-/**
 add_action( 'storefront_footer', 'storefront_credit',         20 );
- */
 
 /**
  * Homepage
@@ -66,7 +63,6 @@ add_action( 'homepage', 'storefront_best_selling_products', 70 );
  * @see  storefront_post_header()
  * @see  storefront_post_meta()
  * @see  storefront_post_content()
- * @see  storefront_init_structured_data()
  * @see  storefront_paging_nav()
  * @see  storefront_single_post_header()
  * @see  storefront_post_nav()
@@ -75,12 +71,10 @@ add_action( 'homepage', 'storefront_best_selling_products', 70 );
 add_action( 'storefront_loop_post',           'storefront_post_header',          10 );
 add_action( 'storefront_loop_post',           'storefront_post_meta',            20 );
 add_action( 'storefront_loop_post',           'storefront_post_content',         30 );
-add_action( 'storefront_loop_post',           'storefront_init_structured_data', 40 );
 add_action( 'storefront_loop_after',          'storefront_paging_nav',           10 );
 add_action( 'storefront_single_post',         'storefront_post_header',          10 );
 add_action( 'storefront_single_post',         'storefront_post_meta',            20 );
 add_action( 'storefront_single_post',         'storefront_post_content',         30 );
-add_action( 'storefront_single_post',         'storefront_init_structured_data', 40 );
 add_action( 'storefront_single_post_bottom',  'storefront_post_nav',             10 );
 add_action( 'storefront_single_post_bottom',  'storefront_display_comments',     20 );
 add_action( 'storefront_post_content_before', 'storefront_post_thumbnail',       10 );
@@ -90,10 +84,11 @@ add_action( 'storefront_post_content_before', 'storefront_post_thumbnail',      
  *
  * @see  storefront_page_header()
  * @see  storefront_page_content()
- * @see  storefront_init_structured_data()
  * @see  storefront_display_comments()
  */
 add_action( 'storefront_page',       'storefront_page_header',          10 );
 add_action( 'storefront_page',       'storefront_page_content',         20 );
-add_action( 'storefront_page',       'storefront_init_structured_data', 30 );
 add_action( 'storefront_page_after', 'storefront_display_comments',     10 );
+
+add_action( 'storefront_homepage',       'storefront_homepage_header',      10 );
+add_action( 'storefront_homepage',       'storefront_page_content',         20 );
