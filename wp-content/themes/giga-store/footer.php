@@ -12,7 +12,7 @@
 		<div class="row">
 					<div id="footerLink">
 						<p>
-							<a href="http://www.plastic-crate.com" target="_blank" >plastic crate manufacturer</a> <b>|</b>
+							<a href="https://www.plastic-crate.co.uk" target="_blank" >euro crate</a> <b>|</b>
 							<a href="http://www.joinplastic.com" target="_blank" >folding plastic crate</a> <b>|</b>
 							<a href="http://www.moving-dolly.com" target="_blank" >moving dolly</a>
 							<b>|</b>
