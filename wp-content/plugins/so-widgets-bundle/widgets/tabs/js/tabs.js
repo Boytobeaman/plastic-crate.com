@@ -20,10 +20,6 @@ jQuery( function ( $ ) {
 			var $tabPanels = $tabPanelsContainer.find( '> .sow-tabs-panel' );
 			$tabPanels.not( ':eq(' + selectedIndex + ')' ).hide();
 			
-			setTimeout( function () {
-				$tabPanelsContainer.height( $tabPanels.eq( selectedIndex ).outerHeight() );
-			}, 100 );
-			
 			var selectTab = function ( tab, preventHashChange ) {
 				var $tab = $( tab );
 				if ( $tab.is( '.sow-tabs-tab-selected' ) ) {
@@ -37,17 +33,15 @@ jQuery( function ( $ ) {
 					$tabPanels.eq( prevTabIndex ).fadeOut( 'fast',
 						function () {
 							$( this ).trigger( 'hide' );
+							$tabPanels.eq( selectedIndex ).fadeIn( 'fast',
+								function () {
+									$( this ).trigger( 'show' );
+								}
+							);
 						}
 					);
 					$tab.addClass( 'sow-tabs-tab-selected' );
-					$tabPanels.eq( selectedIndex ).fadeIn( 'fast',
-						function () {
-							$( this ).trigger( 'show' );
-						}
-					);
-					setTimeout( function () {
-						$tabPanelsContainer.height( $tabPanels.eq( selectedIndex ).outerHeight() );
-					}, 100 );
+					
 					if ( useAnchorTags && !preventHashChange ) {
 						window.location.hash = $tab.data( 'anchor' );
 					}
@@ -61,10 +55,13 @@ jQuery( function ( $ ) {
 			if ( useAnchorTags ) {
 				var updateSelectedTab = function () {
 					if ( window.location.hash ) {
-						var tab = $tabs.filter( '[data-anchor="' + window.location.hash.replace( '#', '' ) + '"]' );
-						if ( tab ) {
-							selectTab( tab, true );
-						}
+						var anchors = window.location.hash.replace( '#', '' ).split( ',' );
+						anchors.forEach( function ( anchor ) {
+							var tab = $tabs.filter( '[data-anchor="' + anchor + '"]' );
+							if ( tab ) {
+								selectTab( tab, true );
+							}
+						} );
 					}
 				};
 				$( window ).on( 'hashchange', updateSelectedTab );
