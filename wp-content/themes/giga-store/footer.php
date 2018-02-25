@@ -14,7 +14,7 @@
 						<p>
 							<a href="https://www.plastic-crate.co.uk" target="_blank" >euro crate</a> <b>|</b>
 							<a href="http://www.joinplastic.com" target="_blank" >folding plastic crate</a> <b>|</b>
-							<a href="http://www.moving-dolly.com" target="_blank" >moving dolly</a>
+							<a href="https://www.moving-dolly.com" target="_blank" >moving dolly</a>
 							<b>|</b>
 							<a href="http://www.qushengbox.com" target="_blank" >上海渠晟塑料有限公司</a>
 							<b>|</b>
