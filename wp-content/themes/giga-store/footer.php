@@ -20,6 +20,7 @@
 							<b>|</b>
 							<a href="http://www.jiajiubox.com" target="_blank" >上海周转箱</a>
 							<b>|</b>
+							<a href="https://www.palletboxsale.com/" target="_blank" >Collapsible plastic pallet box</a>
 						</p>
 					</div>
 				</div>
