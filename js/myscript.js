@@ -16,7 +16,11 @@ jQuery(function($){
         var url = window.document.location.pathname;
         var postUrl = url + "#wpcf7-f244-o2";
         $('#contactForm').attr("action",postUrl);
-        $('#productURL').val(window.document.location.href);
-    });
+		$('#productURL').val(window.document.location.href);
+		grecaptcha.render("reCAPTCHA", { sitekey: "6LcSazQUAAAAAKn11L_46DnCQdxp0zlYf-KxdVzc", theme: "light" });
+	});
+	$('#contactUs').on('hide.bs.modal', function () {
+		$("#reCAPTCHA").empty();
+	});
 
 })
