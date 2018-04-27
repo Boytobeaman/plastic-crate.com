@@ -12,7 +12,15 @@ a:focus {
     color: #fff;
     background-color: #d9534f;
 }
-
+.theme-color{
+    color: #b94040;
+}
+.mb-0{
+    margin-bottom: 0!important;
+}
+.mt-0{
+    margin-top: 0!important;
+}
 .woocommerce div.product div.summary .product_title {
     font-size: 24px;
     color: #852321;
