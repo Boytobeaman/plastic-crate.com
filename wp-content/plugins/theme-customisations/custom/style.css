@@ -21,6 +21,9 @@ a:focus {
 .mt-0{
     margin-top: 0!important;
 }
+.mb-20p{
+    margin-bottom: 20px;
+}
 .woocommerce div.product div.summary .product_title {
     font-size: 24px;
     color: #852321;
