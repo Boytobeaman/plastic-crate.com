@@ -387,7 +387,14 @@
     "cdn.cf2.key": "AKIAJA2FHZKQ5QW6O4LQ",
     "cdn.cf2.secret": "cOccWbxuDV8LwZyfiS\/bIIp12QwiZKtdfwp\/nCKQ",
     "cdn.cf2.id": "df4u1px5ohnfu",
-    "cdn.cf2.cname": [],
+    "cdn.cf2.cname": [
+        "cdn.plastic-crate.com",
+        "cdn1.plastic-crate.com",
+        "cdn2.plastic-crate.com",
+        "cdn3.plastic-crate.com",
+        "cdn4.plastic-crate.com",
+        "cdn5.plastic-crate.com"
+    ],
     "cdn.cf2.ssl": "auto",
     "cdn.rscf.user": "",
     "cdn.rscf.key": "",
