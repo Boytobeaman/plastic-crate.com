@@ -1,0 +1,12 @@
+2019-01-05T08:04:57+00:00 CRITICAL Uncaught Error: Call to undefined method WP_Screen::is_block_editor() in /data/wwwroot/www.plastic-crate.com/wp-admin/admin-header.php:178
+Stack trace:
+#0 /data/wwwroot/www.plastic-crate.com/wp-admin/index.php(100): include()
+#1 {main}
+  thrown in /data/wwwroot/www.plastic-crate.com/wp-admin/admin-header.php on line 178
+
+2019-01-05T08:05:04+00:00 CRITICAL Uncaught Error: Call to undefined method WP_Screen::is_block_editor() in /data/wwwroot/www.plastic-crate.com/wp-admin/admin-header.php:178
+Stack trace:
+#0 /data/wwwroot/www.plastic-crate.com/wp-admin/index.php(100): include()
+#1 {main}
+  thrown in /data/wwwroot/www.plastic-crate.com/wp-admin/admin-header.php on line 178
+
