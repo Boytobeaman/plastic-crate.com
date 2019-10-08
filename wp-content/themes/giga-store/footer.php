@@ -9,21 +9,9 @@
 <?php } ?>
 <footer id="colophon" class="rsrc-footer" role="contentinfo">
 	<div class="container">  
-		<div class="row">
-					<div id="footerLink">
-						<p>
-							<a href="https://www.plastic-crate.co.uk" target="_blank" >euro crate</a> <b>|</b>
-							<a href="http://www.joinplastic.com" target="_blank" >folding plastic crate</a> <b>|</b>
-							<a href="https://www.moving-dolly.com" target="_blank" >moving dolly</a>
-							<b>|</b>
-							<a href="http://www.qushengbox.com" target="_blank" >上海渠晟塑料有限公司</a>
-							<b>|</b>
-							<a href="http://www.jiajiubox.com" target="_blank" >上海周转箱</a>
-							<b>|</b>
-							<a href="https://www.palletboxsale.com/" target="_blank" >Collapsible plastic pallet box</a>
-						</p>
-					</div>
-				</div>
+		<div class="row rsrc-author-credits">
+			
+		</div>
 	</div>       
 </footer> 
 <p id="back-top">

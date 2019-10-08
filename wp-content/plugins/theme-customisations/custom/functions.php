@@ -169,6 +169,9 @@ if ( ! function_exists( 'woocommerce_template_loop_product_attr' ) ) {
 							</div>
 						</div>
 						<div class="product-attributes">
+							<div class="col-xs-6 img-thrumbnail-xs visible-xs">'
+							.woocommerce_get_product_thumbnail().
+							'</div>
 							<div class="col-sm-3 col-xs-6 br-2-white external-dimension">
 								<div class="table-head bb-2-white">External Dimensions</div>
 								<div class="product-val-mm"><span class="value">' .$productlenght .'X'. $productwidth  .'X'. $productheight . '</span> <span class="pull-right">mm</span></div>
@@ -184,7 +187,7 @@ if ( ! function_exists( 'woocommerce_template_loop_product_attr' ) ) {
 								<div class="product-val-mm"><span class="value">'. $productweight . '</span> <span class="pull-right">kg</span></div>
 								<div class="product-val-inch"><span class="value">'. round($productweight*$kgtolbs,2) .'</span> <span class="pull-right">lbs</span></div>
 							</div>
-							<div class="col-sm-3 col-xs-6 volumn">
+							<div class="col-sm-3 col-xs-6 volumn hidden-xs">
 								<div class="table-head bb-2-white">Volume</div>
 								<div class="product-val-mm"><span class="value">'. $productvolumn . '</span> <span class="pull-right">Liters</span></div>
 								<div class="product-val-inch"><span class="value">'. round($productvolumn*$ltogal,2) .'</span> <span class="pull-right">Us gallon</span></div>

@@ -6,16 +6,6 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
 		<?php wp_head(); ?>
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-76091789-3"></script>
-		<script>
-		  window.dataLayer = window.dataLayer || [];
-		  function gtag(){dataLayer.push(arguments);}
-		  gtag('js', new Date());
-
-		  gtag('config', 'UA-76091789-3');
-		</script>
-
 	</head>
 	<body id="blog" <?php body_class(); ?>>
 

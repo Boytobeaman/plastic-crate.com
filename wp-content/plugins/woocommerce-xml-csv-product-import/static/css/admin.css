@@ -5,6 +5,15 @@
 	width: 580px;
 	height:200px;
 }
+
+.wpallimport-plugin #woocommerce-coupon-data ul.wc-tabs li a::before,
+.wpallimport-plugin #woocommerce-product-data ul.wc-tabs li a::before,
+.wpallimport-plugin .woocommerce ul.wc-tabs li a::before {
+	top: 2px;
+    right: 4px;
+    position: relative;
+}
+
 .pmxi_checkbox{
 	position: relative;
 	top: -2px;
@@ -40,10 +49,13 @@
 	padding-top: 0 !important;
 	margin-top: 0 !important;
 }
-.wpallimport-plugin #woocommerce-product-data{
+.wpallimport-plugin #woocommerce-product-data,
+.wpallimport-plugin .woocommerce-order-data{
 	overflow: hidden;	
+	box-shadow:none;
 }
-.wpallimport-plugin #woocommerce-product-data .hndle{
+.wpallimport-plugin #woocommerce-product-data .hndle,
+.wpallimport-plugin .woocommerce-order-data .hndle{
 	margin-bottom: 0px;
 	cursor: default;
 	padding: 10px;
@@ -94,10 +106,9 @@
 	float: left;
 }
 .wpallimport-plugin #woocommerce_attributes{
-	/*padding-left: 2%;*/
 	float: right !important;
 	padding-top: 10px;
-	width:75% !important;
+	width: 75% !important;
 }
 .wpallimport-plugin .variations_tree{
 	font-family: sans-serif;
@@ -291,10 +302,12 @@
 .wpallimport-plugin #add_on_options .form-field label{
 	width: 350px;
 }
-.wpallimport-plugin #woocommerce-product-data .wc-tabs-back{
+.wpallimport-plugin #woocommerce-product-data .wc-tabs-back,
+.wpallimport-plugin .woocommerce-order-data .wc-tabs-back{
 	height: 2200px;
 }
-.wpallimport-plugin #woocommerce-product-data .form-field{
+.wpallimport-plugin #woocommerce-product-data .form-field,
+.wpallimport-plugin .woocommerce-order-data .form-field{
 	padding-left: 20px;
 }
 .wpallimport-plugin .pmwi_percentage_prices_note,
@@ -307,28 +320,6 @@
 .wpallimport-plugin .pmwi_trigger_adjust_prices{
 	cursor: pointer;
 	width: 330px;
-}
-.wpallimport-plugin .woo-add-on-free-edition-notice{
-	display: none;
-	margin: 10px;
-	padding: 20px;
-	background-color: #FFB8B8;
-	border: 1px solid #FF8383;
-	text-align:center;
-}
-.wpallimport-plugin .form-table td .woo-add-on-free-edition-notice p{
-	color: #000 !important;
-	font-size: 1.3em !important;
-}
-.wpallimport-plugin .upgrade_woo_link{
-	color: #000 !important;
-	font-size: 1.3em;
-	text-decoration: underline !important;
-}
-.wpallimport-plugin .animate_upgrade{
-	position: relative;
-	z-index: 9999999;
-	display: block;
 }
 .wpallimport-plugin .advanced_attributes{
 	display: inline-block;
@@ -374,7 +365,10 @@
 .wpallimport-plugin .advanced_attribute_settings>div.input:nth-child(4){
 	margin-top: 15px;
 }
+
 .wpallimport-plugin .advanced_attribute_settings div.input label{
+	/*width: 100%;*/
+	/*float: right;*/
 	top: -7px !important;
 }
 .wpallimport-plugin .advanced_attribute_settings input[type="text"]{
@@ -383,6 +377,177 @@
 	/*float: right;*/
 	/*width: 120px;*/
 }
+
 .wpallimport-plugin .advanced_attribute_settings input[type="radio"]{
 	float: left;
+}
+/*.wpallimport-plugin .shop_order_tabs li a::before{
+	content: "" !important;
+}*/
+.wpallimport-plugin .wpallimport-order-billing-fields{
+	width: 98%;
+}
+.wpallimport-plugin .wpallimport-order-billing-fields input[type="text"]{
+	width: 100% !important;
+}
+.wpallimport-plugin a.add-new-line{
+	position: relative;
+	top:-10px;
+	background: rgba(0, 0, 0, 0) url("../img/add.png") no-repeat scroll 0 3px;
+	padding-left: 15px;
+}
+/*.wpallimport-plugin .woocommerce-order-data a.add-new-line::before{
+	content: "+ ";
+	color: grey;
+}*/
+.wpallimport-plugin .woocommerce-order-data hr{
+	margin: 20px 0;
+}
+.wpallimport-plugin .woocommerce-order-data input[type="text"], 
+.wpallimport-plugin .woocommerce-order-data select{
+	height: 40px !important;
+}
+/* WooCommerce Orders icons */
+.wpallimport-plugin .woocommerce-order-billing-data a::before{
+	content:"\e02d" !important;
+	font-family: WooCommerce !important;
+}
+.wpallimport-plugin .woocommerce-order-shipping-data a::before{
+	content:"\e019" !important;
+	font-family: WooCommerce !important;
+}
+.wpallimport-plugin .woocommerce-order-payment-data a::before{
+	content:"\e01e" !important;
+	font-family: WooCommerce !important;
+}
+.wpallimport-plugin .woocommerce-order-products-data a::before{
+	content:"\e01d" !important;
+	font-family: WooCommerce !important;
+}
+.wpallimport-plugin .woocommerce-order-fees-data a::before{
+	content:"\e01f" !important;
+	font-family: WooCommerce !important;
+}
+.wpallimport-plugin .woocommerce-order-coupons-data a::before{
+	content:"\e600" !important;
+	font-family: WooCommerce !important;
+}
+.wpallimport-plugin .woocommerce-order-shipping-data a::before{
+	content:"\e019" !important;
+	font-family: WooCommerce !important;
+}
+.wpallimport-plugin .woocommerce-order-taxes-data a::before{
+	content:"\e00e" !important;
+	font-family: WooCommerce !important;
+}
+.wpallimport-plugin .woocommerce-order-refunds-data a::before{
+	content:"\e014" !important;
+	font-family: WooCommerce !important;
+}
+.wpallimport-plugin .woocommerce-order-total-data a::before{
+	content:"\e017" !important;
+	font-family: WooCommerce !important;
+}
+
+/* Repeater Styles */
+
+.order-separator-label {
+	width: auto!important;
+}
+
+.order-separator-input {
+	margin-left: 15px!important;
+}
+
+div.wpallimport-collapsed.wpallimport-section.order-imports {
+	margin-top: -1px;
+}
+
+div.wpallimport-content-section.rad4.order-imports {
+	border-left-style: none;
+	border-right-style: none;
+	border-radius: 0;
+	border-color: #eee;
+}
+
+div.wpallimport-collapsed.wpallimport-section.order-imports label.foreach-do {
+	width: auto;
+}
+
+div#order_products.panel.woocommerce_options_panel,
+div#order_fees.panel.woocommerce_options_panel,
+div#order_products.panel.woocommerce_options_panel,
+div#order_coupons.panel.woocommerce_options_panel,
+div#order_shipping.panel.woocommerce_options_panel,
+div#order_taxes.panel.woocommerce_options_panel {
+	padding-bottom: 0;
+}
+.wpallimport-plugin .is_guest_matching_notice,
+.wpallimport-plugin .wpallimport-select-switcher-target{
+	display: none;
+}
+.wpallimport-plugin .wpallimport-billing-user-try-match-selector label{
+	line-height: 40px !important;
+	padding-left: 20px;
+	padding-right: 10px;
+	width: auto;
+}
+.wpallimport-plugin .wpallimport-billing-user-try-match-selector select{
+	width: 130px;
+	font-size: 14px !important;
+}
+#attributes_table .drag-attribute,
+#variation_attributes_table .drag-attribute{
+	overflow: hidden;
+	background: url("../img/drag.png") top right no-repeat;
+	cursor: pointer;
+	padding-left: 25px;
+	background-position: 0 10px;
+}
+#attributes_table .ui-sortable-placeholder,
+#variation_attributes_table .ui-sortable-placeholder {
+	border: 1px dashed #ccc;
+	visibility: visible !important;
+	height: 100px;
+}
+
+/****************/
+/* Free Edition */
+/****************/
+
+.wpallimport-plugin .woo-add-on-free-edition-notice{
+	display: none;
+	margin: 10px;
+	padding: 20px;
+	background-color: #FFB8B8;
+	border: 1px solid #FF8383;
+	text-align:center;
+}
+.wpallimport-plugin .form-table td .woo-add-on-free-edition-notice p{
+	color: #000 !important;
+	font-size: 1.3em !important;
+}
+.wpallimport-plugin .upgrade_woo_link{
+	color: #000 !important;
+	font-size: 1.3em;
+	text-decoration: underline !important;
+}
+.wpallimport-plugin .animate_upgrade{
+	position: relative;
+	z-index: 9999999;
+	display: block;
+}
+
+.wpallimport-plugin .woocommerce-group-label {
+	font-weight: bold;
+	margin-bottom: 10px;
+}
+.wpallimport-plugin .subscription-billing-settings .subscription-billing-interval,
+.wpallimport-plugin .subscription-billing-settings .subscription-billing-period {
+	float: left;
+	width: 45%;
+	margin-bottom: 10px;
+}
+.wpallimport-plugin .subscription-expiration {
+	margin-bottom: 10px;
 }

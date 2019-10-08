@@ -41,6 +41,11 @@ Get theme instruction at http://demo.themes4wp.com/documentation/category/giga-s
 
 == Changelog ==
 
+1.1.2
+----------------------
+* Updated theme functions
+* Fixed PHP 7.2 function error
+
 1.1.1
 ----------------------
 * Fixed WooCommerce 3.0 titles

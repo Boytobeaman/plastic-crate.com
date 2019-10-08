@@ -16,6 +16,22 @@
 		
 		var $container = $field.find( '.siteorigin-widget-tinymce-container' );
 		var settings = $container.data( 'editorSettings' );
+		if (tinyMCEPreInit.mceInit && tinyMCEPreInit.mceInit.hasOwnProperty('content')) {
+			var mainContentSettings = tinyMCEPreInit.mceInit['content'];
+			if (mainContentSettings.hasOwnProperty('content_css') && mainContentSettings.content_css ) {
+				var mainContentCss = mainContentSettings.content_css.split(',');
+				if (settings.tinymce.hasOwnProperty('content_css') && settings.tinymce.content_css) {
+					for (var i = 0; i < mainContentCss.length; i++) {
+						var cssUrl = mainContentCss[i];
+						if (settings.tinymce.content_css.indexOf(cssUrl) === -1) {
+							settings.tinymce.content_css += ',' + cssUrl;
+						}
+					}
+				} else {
+					settings.tinymce.content_css = mainContentCss;
+				}
+			}
+		}
 		var $wpautopToggleField;
 		if ( settings.wpautopToggleField ) {
 			var $widgetForm = $container.closest( '.siteorigin-widget-form' );
@@ -54,7 +70,8 @@
 			}
 		} );
 		$( document ).on( 'tinymce-editor-setup', function () {
-			if ( ! $field.find( '.wp-editor-wrap' ).hasClass( settings.selectedEditor + '-active' ) ) {
+			var $wpEditorWrap = $field.find( '.wp-editor-wrap' );
+			if ( $wpEditorWrap.length > 0 && ! $wpEditorWrap.hasClass( settings.selectedEditor + '-active' ) ) {
 				setTimeout( function () {
 					window.switchEditors.go( id );
 				}, 10 );
@@ -62,7 +79,9 @@
 		} );
 
 		wpEditor.remove( id );
-		window.tinymce.EditorManager.overrideDefaults( { base_url: settings.baseURL, suffix: settings.suffix } );
+		if ( window.tinymce ) {
+			window.tinymce.EditorManager.overrideDefaults( { base_url: settings.baseURL, suffix: settings.suffix } );
+		}
 		// Wait for textarea to be visible before initialization.
 		if ( $textarea.is( ':visible' ) ) {
 			wpEditor.initialize( id, settings );

@@ -322,8 +322,14 @@ if ( class_exists( 'WooCommerce' ) ) {
 		}
 
 	}
-	
-	add_filter( 'loop_shop_per_page', create_function( '$cols', 'return ' . absint( get_theme_mod( 'archive_number_products', 24 ) ) . ';' ), 20 );
+	add_filter( 'loop_shop_per_page', 'giga_store_new_loop_shop_per_page', 20 );
+
+	function giga_store_new_loop_shop_per_page( $cols ) {
+	  // $cols contains the current number of products per page based on the value stored on Options -> Reading
+	  // Return the number of products you wanna show per page.
+	  $cols = absint( get_theme_mod( 'archive_number_products', 24 ) );
+	  return $cols;
+	}
 	
 	// WooCommerce Breadcrumbs Styling.
 	add_filter( 'woocommerce_breadcrumb_defaults', 'giga_store_custom_breadcrumb' );

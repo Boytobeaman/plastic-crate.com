@@ -4,6 +4,7 @@ Widget Name: Features
 Description: Displays a block of features with icons.
 Author: SiteOrigin
 Author URI: https://siteorigin.com
+Documentation: https://siteorigin.com/widgets-bundle/features-widget-documentation/
 */
 
 class SiteOrigin_Widget_Features_Widget extends SiteOrigin_Widget {
@@ -252,6 +253,10 @@ class SiteOrigin_Widget_Features_Widget extends SiteOrigin_Widget {
 
 	function get_less_variables( $instance ) {
 		$less_vars = array();
+
+		if ( empty( $instance ) ) {
+			return $less_vars;
+		}
 
 		$fonts = $instance['fonts'];
 		$styleable_text_fields = array( 'title', 'text', 'more_text' );

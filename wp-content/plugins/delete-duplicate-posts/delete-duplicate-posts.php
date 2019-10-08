@@ -4,15 +4,28 @@ Plugin Name: Delete Duplicate Posts
 Plugin Script: delete-duplicate-posts.php
 Plugin URI: https://cleverplugins.com
 Description: Remove duplicate blogposts on your blog! Searches and removes duplicate posts and their post meta tags. You can delete posts, pages and other Custom Post Types enabled on your website.
-Version: 4.1.9.4
+Version: 4.2.1
 Author: cleverplugins.com
 Author URI: https://cleverplugins.com
-Min WP Version: 4.3
-Max WP Version: 4.9.6
+Min WP Version: 4.7
+Max WP Version: 5.1
 Text Domain: delete-duplicate-posts
 Domain Path: /languages
 
+
+
 == Changelog ==
+
+= 4.2.1 = 
+* Direct link to support forum
+* Fixed missing file in 3rd party SDK.
+
+= 4.2 =
+* Fix - the limitation on how many posts were deleted per batch did not always work, it does not.
+* PHP notices removed from the log thank you @brianbrown
+
+= 4.1.9.5 =
+* Security fix
 
 = 4.1.9.4 =
 * Two more intervals added to list for automatic cleaning- every 5 minutes and every minute.
@@ -106,7 +119,6 @@ function ddp_fs() {
 			'has_paid_plans'      => false,
 			'menu'                => array(
 				'slug'           => 'delete-duplicate-posts.php',
-				'support'        => false,
 				'parent'         => array(
 					'slug' => 'tools.php',
 				),
@@ -121,6 +133,54 @@ function ddp_fs() {
 ddp_fs();
 // Signal that SDK was initiated.
 do_action( 'ddp_fs_loaded' );
+
+
+require  dirname(__FILE__) . '/vendor/persist-admin-notices-dismissal/persist-admin-notices-dismissal.php';
+
+function ddp_action_admin_notices() {
+	if ( ! PAnD::is_admin_notice_active( 'ddp-leavereview-14' ) ) {
+		return;
+	}
+	$screen = get_current_screen();
+
+	if ($screen->id<>'tools_page_delete-duplicate-posts') {
+		return;
+	}
+
+	$pretotal = get_option('ddp_deleted_duplicates');
+
+	if  (( $pretotal !== false ) && ($pretotal>0)) {
+
+		?>
+		<div data-dismissible="ddp-leavereview-14" class="updated notice notice-success is-dismissible">
+			<?php
+			echo '<h3>'.$pretotal.' duplicates deleted</h3>'; 
+			?>
+			<p><?php 
+			printf( __( "Hey, I noticed this plugin has deleted %s duplicate posts for you - that's awesome! Could you please do me a BIG favor and give it a 5-star rating on WordPress? Just to help us spread the word and boost our motivation.", 'delete-duplicate-posts'), $pretotal )
+			?></p>
+			<ul>
+				<li>
+					<a href="https://wordpress.org/support/plugin/delete-duplicate-posts/reviews/?rate=5#new-post" target="_blank"><?php _e('Leave a review', 'delete-duplicate-posts'); ?></a>
+				</li>
+<?php
+/*
+				<li>
+					<a href="#" class="dismiss-notice"><?php _e('Maybe later', 'delete-duplicate-posts'); ?></a>
+				</li>
+*/
+	?>
+			</ul>
+		</div>
+		<?php
+	}// over 0
+
+	?>
+
+	<?php
+}
+add_action( 'admin_init', array( 'PAnD', 'init' ) );
+add_action( 'admin_notices', 'ddp_action_admin_notices' );
 
 
 function ddp_fs_custom_connect_message_on_update(
@@ -191,8 +251,8 @@ if (!class_exists('delete_duplicate_posts')) {
 			global $wpdb;
 			$table_name = $wpdb->prefix . "posts";
 			$limit=$this->options['ddp_limit'];
-				if (!$limit<>'') $limit=10; //defaults to 10!
-				if ($manualrun=='1') $limit=9999;
+				if (!$limit<>'') $limit=50; //defaults to 10!
+				//if ($manualrun=='1') $limit=9999;
 				$order=$this->options['ddp_keep'];
 				if (($order<>'oldest') AND ($order<>'latest')) { // verify default value has been set.
 					$this->options['ddp_keep']='oldest';
@@ -213,8 +273,7 @@ if (!class_exists('delete_duplicate_posts')) {
 				}
 				$ddp_pts = rtrim($ddp_pts,',' );
 
-				if ($ddp_pts<>'') {
-
+				if ( $ddp_pts <> '' ) {
 					$query="select bad_rows.ID, bad_rows.post_title, post_type
 					from $table_name as bad_rows
 					inner join (
@@ -231,9 +290,8 @@ if (!class_exists('delete_duplicate_posts')) {
 					and good_rows.save_this_post_id <> bad_rows.id
 					and (bad_rows.post_status='publish' OR bad_rows.post_status='draft')
 					order by post_title,id
-					;
-					";
-
+					limit $limit
+					;";
 				}
 
 				$dupes = $wpdb->get_results($query);
@@ -253,10 +311,19 @@ if (!class_exists('delete_duplicate_posts')) {
 							$result = wp_delete_post($postid, true); // LARS ADD "TRUE" Param ssss
 							$timespent = $this->timerstop('deletepost_'.$postid);
 							if (!$result) {
-								$this->log(sprintf( __( "Error, problem deleting %s '%d' %s (%s sec.)", 'delete-duplicate-posts'), $dupe->post_type, $postid, $perma, $timespent));
+								$this->log(sprintf( __( "Error, problem deleting %s '%d'", 'delete-duplicate-posts'), $dupe->post_type, $postid));
 							}
 							else {
 								$dispcount++;
+								$pretotal = get_option('ddp_deleted_duplicates');
+								if ( $pretotal !== false ) {
+									$pretotal++;
+									update_option('ddp_deleted_duplicates',$pretotal);
+								}
+								else {
+									update_option('ddp_deleted_duplicates',1);
+								}
+
 								$this->log(sprintf( __( "Deleted %s '%s' (id: %s) in %s sec.", 'delete-duplicate-posts'), $dupe->post_type, $title, $postid, $timespent ));
 							}
 						}
@@ -267,9 +334,21 @@ if (!class_exists('delete_duplicate_posts')) {
 				if ($dispcount>0) {
 					$totaltimespent = $this->timerstop('ddp_totaltime',0);
 					$this->log(sprintf( __( "A total of %s duplicate posts were deleted in %s sec.", 'delete-duplicate-posts'), $dispcount, $totaltimespent));
+
+					if ($manualrun>0) {
+						?>
+						<div class="notice notice-success"> 
+							<p><?php
+							printf( __( "A total of %s duplicate posts were deleted.", 'delete-duplicate-posts'), $dispcount)
+							?></p>
+						</div>
+						<?php
+					} // manualrun
+
 				}
 
-					// Mail logic...
+
+				// Mail logic...
 				if (($dispcount>0) &&($manualrun=='1') && ($this->options['ddp_statusmail'])) {
 
 					$adminemail = get_option('admin_email'); // get admins email
@@ -391,19 +470,19 @@ if (!class_exists('delete_duplicate_posts')) {
 
 			if ($screen->id == 'tools_page_delete-duplicate-posts') {
 				$screen->add_help_tab(array( 'id'      => 'ddp_help',
-						'title'   => __('Usage and FAQ','delete-duplicate-posts'),
-						'content' => "
-						<h4>".__('What does this plugin do?','delete-duplicate-posts')."</h4>
-						<p>".__('Helps you clean duplicate posts from your blog. The plugin checks for blogposts on your blog with the same title.','delete-duplicate-posts')."</p>
-						<p>".__("It can run automatically via WordPress's own internal CRON-system, or you can run it automatically.",'delete-duplicate-posts')."</p>
-						<p>".__('It also has a nice feature that can send you an e-mail when Delete Duplicate Posts finds and deletes something (if you have turned on the CRON feature).','delete-duplicate-posts')."</p>
-						<h4>".__('Help! Something was deleted that was not supposed to be deleted!','delete-duplicate-posts')."</h4>
-						<p>".__('I am sorry for that, I can only recommend you restore the database you took just before you ran this plugin.','delete-duplicate-posts')."</p>
-						<p>".__('If you run this plugin, manually or automatically, it is at your OWN risk!','delete-duplicate-posts')."</p>
-						<p>".__('I have done my best to avoid deleting something that should not be deleted, but if it happens, there is nothing I can do to help you.','delete-duplicate-posts')."</p>
-						<p><a href='https://cleverplugins.com' target='_blank'>cleverplugins.com</a>.</p>"
-					)
-				);
+					'title'   => __('Usage and FAQ','delete-duplicate-posts'),
+					'content' => "
+					<h4>".__('What does this plugin do?','delete-duplicate-posts')."</h4>
+					<p>".__('Helps you clean duplicate posts from your blog. The plugin checks for blogposts on your blog with the same title.','delete-duplicate-posts')."</p>
+					<p>".__("It can run automatically via WordPress's own internal CRON-system, or you can run it automatically.",'delete-duplicate-posts')."</p>
+					<p>".__('It also has a nice feature that can send you an e-mail when Delete Duplicate Posts finds and deletes something (if you have turned on the CRON feature).','delete-duplicate-posts')."</p>
+					<h4>".__('Help! Something was deleted that was not supposed to be deleted!','delete-duplicate-posts')."</h4>
+					<p>".__('I am sorry for that, I can only recommend you restore the database you took just before you ran this plugin.','delete-duplicate-posts')."</p>
+					<p>".__('If you run this plugin, manually or automatically, it is at your OWN risk!','delete-duplicate-posts')."</p>
+					<p>".__('I have done my best to avoid deleting something that should not be deleted, but if it happens, there is nothing I can do to help you.','delete-duplicate-posts')."</p>
+					<p><a href='https://cleverplugins.com' target='_blank'>cleverplugins.com</a>.</p>"
+				)
+			);
 			}
 		}
 
@@ -477,19 +556,22 @@ if (!class_exists('delete_duplicate_posts')) {
 		$name=$pluginfo['Name'];
 		?>
 		<div class="wrap">
-		
+			<h2>Delete Duplicate Posts</h2>
+			<div class="notice notice-info">
 
-		<div class="notice notice-info">
-
-					<a href="https://cleverplugins.com" target="_blank" style="float: right;"><img src='<?php echo plugin_dir_url(__FILE__); ?>cleverpluginslogo.png' height="54" width="300" alt="<?php _e('Visit cleverplugins.com','delete-duplicate-posts'); ?>"></a>
+				<a href="https://cleverplugins.com" target="_blank" style="float: right;"><img src='<?php echo plugin_dir_url(__FILE__); ?>cleverpluginslogo.png' height="54" width="300" alt="<?php _e('Visit cleverplugins.com','delete-duplicate-posts'); ?>"></a>
 				<p>Have you checked out our free SEO Booster plugin? <a href="https://wordpress.org/plugins/seo-booster/" target="_blank">wordpress.org/plugins/seo-booster/</a><br/>
 					<p>Read more on <a href="https://cleverplugins.com/">cleverplugins.com</a> or <a href="<?php echo admin_url('plugin-install.php?s=seo+booster+cleverplugins.com&tab=search&type=term'); ?>" target="_blank">click here to install now</a></p>
-			</div>
-					<h2>Delete Duplicate Posts v <?php echo $version; ?></h2>
-					<div id="dashboard">
-						<?php
-						if ($this->options['ddp_enabled'] ) {
-							$nextscheduled = wp_next_scheduled('ddp_cron');
+				</div>
+
+
+				<div id="dashboard">
+
+					<?php
+
+
+					if ($this->options['ddp_enabled'] ) {
+						$nextscheduled = wp_next_scheduled('ddp_cron');
 						if (!$nextscheduled<>'') { // plugin active, but the cron needs to be activated also..
 							wp_clear_scheduled_hook('ddp_cron');
 							$interval = $this->options['ddp_schedule'];
@@ -544,14 +626,19 @@ if (!class_exists('delete_duplicate_posts')) {
 					) as good_rows on good_rows.post_title = bad_rows.post_title
 					and good_rows.save_this_post_id <> bad_rows.id
 					and (bad_rows.post_status='publish' OR bad_rows.post_status='draft')
-					order by post_title,id
-					;
-					";
+					order by post_title,id;";
 				}
 
 
+//var_dump($query);
+
 				$dupes = $wpdb->get_results($query);
 				$dupescount = count($dupes);
+
+
+				$pretotal = get_option('ddp_deleted_duplicates');
+
+
 
 				if ($dupescount) {
 
@@ -588,16 +675,21 @@ if (!class_exists('delete_duplicate_posts')) {
 						<p class="warning"><?php _e('We recommend you always make a backup before running this tool. Changes are permanent!','delete-duplicate-posts');?></p>
 						<form method="post" id="ddp_runcleannow">
 							<?php wp_nonce_field('ddp-clean-now'); ?>
-							<p align="center"><input type="submit" name="deleteduplicateposts_delete" class="button-primary" value="<?php _e('Delete all duplicates','delete-duplicate-posts'); ?>" /></p>
-						</form>
-					</div>
-					<hr>
-					<?php
+							<p align="center"><input type="submit" name="deleteduplicateposts_delete" class="button-primary" value="<?php _e('Delete duplicates','delete-duplicate-posts'); ?>" /></p>
+							<?php
+							$limit=$this->options['ddp_limit'];
+							echo '<p class="center">'.sprintf( __( "Deletes %s per click.", 'delete-duplicate-posts'), $limit).'</p>';
+							?>
+							<p>
+							</form>
+						</div>
+						<hr>
+						<?php
 					} // if ($dupescount)
 				else { // no dupes found!
 					?>
 					<div class="statusdiv">
-						<h3><?php _e('You have no duplicate posts.','delete-duplicate-posts');?></h3>
+						<h3><?php _e('You have no duplicate posts right now.','delete-duplicate-posts');?></h3>
 						<p>
 							<?php
 							$nextscheduled = wp_next_scheduled('ddp_cron');
@@ -729,6 +821,7 @@ if (!class_exists('delete_duplicate_posts')) {
 
 		</form>
 	</div>
+
 
 
 	<div id="log">

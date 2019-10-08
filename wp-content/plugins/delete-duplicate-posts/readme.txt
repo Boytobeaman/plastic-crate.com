@@ -2,11 +2,10 @@
 Contributors: cleverplugins, lkoudal, freemius
 Tags: delete duplicate posts, delete duplicate,
 Donate link: https://cleverplugins.com
-Requires at least: 4.5
-Tested up to: 4.9.6
-Stable tag: 4.1.9.4
+Requires at least: 4.7
+Tested up to: 5.1
+Stable tag: 4.2.1
 Requires PHP: 5.6
-
 
 Get rid of duplicate blogposts on your blog!
 
@@ -17,7 +16,7 @@ You can delete posts, pages and other Custom Post Types enabled on your website.
 
 The plugin deletes not only the post, but post meta and other references to the post, cleaning up space in your WordPress website.
 
-Read more on the [plugin page](https://cleverplugins.com/delete-duplicate-posts/).
+Read more on the [plugin page on cleverplugins.com](https://cleverplugins.com/delete-duplicate-posts/).
 
 == Installation ==
 1. Upload the delete-duplicate-posts folder to the /wp-content/plugins/ directory
@@ -37,6 +36,17 @@ You should restore the backup you took of your website before you ran this tool.
 2. Details in the log
 
 == Changelog ==
+
+= 4.2.1 = 
+* Direct link to support forum
+* Fixed missing file in 3rd party SDK.
+
+= 4.2 =
+* Fix - the limitation on how many posts were deleted per batch did not always work, it does not.
+* PHP notices removed from the log thank you @brianbrown
+
+= 4.1.9.5 =
+* Security fix
 
 = 4.1.9.4 =
 * Added two more intervals, every minute and every 5 minutes.
@@ -162,4 +172,4 @@ You should restore the backup you took of your website before you ran this tool.
 * First release
 
 == Upgrade Notice ==
-4.1.9.3 Fixes major bug introduced with WordPress 4.9 - Update now!
+4.2  Contains security fixes, please update now.

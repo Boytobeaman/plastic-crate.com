@@ -19,7 +19,7 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 	 *
 	 * link to udrpc_action main function in class UpdraftPlus_UpdraftCentral_Listener
 	 */
-	public function _pre_action($command, $data, $extra_info) {
+	public function _pre_action($command, $data, $extra_info) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		// Here we assign the current blog_id to a variable $blog_id
 		$blog_id = get_current_blog_id();
 		if (!empty($data['site_id'])) $blog_id = $data['site_id'];
@@ -38,7 +38,7 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 	 *
 	 * link to udrpc_action main function in class UpdraftPlus_UpdraftCentral_Listener
 	 */
-	public function _post_action($command, $data, $extra_info) {
+	public function _post_action($command, $data, $extra_info) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		// Here, we're restoring to the current (default) blog before we switched
 		if ($this->switched) restore_current_blog();
 	}
@@ -48,6 +48,16 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 	 */
 	public function __construct() {
 		$this->_admin_include('theme.php', 'file.php', 'template.php', 'class-wp-upgrader.php', 'theme-install.php', 'update.php');
+	}
+
+	/**
+	 * Installs and activates a theme through upload
+	 *
+	 * @param array $params Parameter array containing information pertaining the currently uploaded theme
+	 * @return array Contains the result of the current process
+	 */
+	public function upload_theme($params) {
+		return $this->process_chunk_upload($params, 'theme');
 	}
 
 	/**
@@ -163,6 +173,7 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 					$info = $this->_get_theme_info($query['theme']);
 					$installed = $info['installed'];
 
+					$error_code = $error_message = '';
 					if (!$installed) {
 						// WP < 3.7
 						if (!class_exists('Automatic_Upgrader_Skin')) include_once(UPDRAFTPLUS_DIR.'/central/classes/class-automatic-upgrader-skin.php');
@@ -172,10 +183,26 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 
 						$download_link = $api->download_link;
 						$installed = $upgrader->install($download_link);
+
+						if (is_wp_error($skin->result)) {
+							$error_code = $skin->result->get_error_code();
+							$error_message = $skin->result->get_error_message();
+
+							$error_data = $skin->result->get_error_data($error_code);
+							if (!empty($error_data)) {
+								if (is_array($error_data)) $error_data = json_encode($error_data);
+
+								$error_message .= ' '.$error_data;
+							}
+						}
 					}
 
 					if (!$installed) {
-						$result = $this->_generic_error_response('theme_install_failed', array($query['theme']));
+						$result = $this->_generic_error_response('theme_install_failed', array(
+							'theme' => $query['theme'],
+							'error_code' => $error_code,
+							'error_message' => $error_message
+						));
 					} else {
 						$result = array('installed' => true);
 					}
@@ -438,18 +465,24 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 
 		// Clear theme cache so that newly installed/downloaded themes
 		// gets reflected when calling "get_themes"
-		wp_clean_themes_cache();
+		if (function_exists('wp_clean_themes_cache')) {
+			wp_clean_themes_cache();
+		}
 		
 		// Gets all themes available.
 		$themes = wp_get_themes();
+		$current_theme_slug = basename(get_stylesheet_directory());
 
 		// Loops around each theme available.
-		foreach ($themes as $key => $value) {
+		foreach ($themes as $slug => $value) {
+			$name = $value->get('Name');
+			$theme_name = !empty($name) ? $name : $slug;
+
 			// If the theme name matches that of the specified name, it will gather details.
-			if ($value->Name === $theme) {
+			if ($theme_name === $theme) {
 				$info['installed'] = true;
-				$info['active'] = (wp_get_theme()->get('Name') === $value->Name) ? true : false;
-				$info['slug'] = $value->get_stylesheet();
+				$info['active'] = ($slug === $current_theme_slug) ? true : false;
+				$info['slug'] = $slug;
 				$info['data'] = $value;
 				break;
 			}
@@ -483,21 +516,30 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 
 		// Get all themes
 		$themes = wp_get_themes();
+		$current_theme_slug = basename(get_stylesheet_directory());
 
 		foreach ($themes as $slug => $value) {
+			$name = $value->get('Name');
+			$theme_name = !empty($name) ? $name : $slug;
+
 			$theme = new stdClass();
-			$theme->name = $value->Name;
-			$theme->description = $value->Description;
+			$theme->name = $theme_name;
+			$theme->description = $value->get('Description');
 			$theme->slug = $slug;
-			$theme->version = $value->Version;
-			$theme->author = $value->Author;
-			$theme->status = (wp_get_theme()->get('Name') === $value->Name) ? 'active' : 'inactive';
-			$theme->child_theme = ($slug !== $value->Template) ? true : false;
+			$theme->version = $value->get('Version');
+			$theme->author = $value->get('Author');
+			$theme->status = ($slug === $current_theme_slug) ? 'active' : 'inactive';
+
+			$template = $value->get('Template');
+			$theme->child_theme = !empty($template) ? true : false;
 			$theme->website = $website;
 			$theme->multisite = is_multisite();
 
 			if ($theme->child_theme) {
-				$theme->parent = wp_get_theme($value->Template)->get('Name');
+				$parent_theme = wp_get_theme($template);
+				$parent_name = $parent_theme->get('Name');
+
+				$theme->parent = !empty($parent_name) ? $parent_name : $parent_theme->get_stylesheet();
 			}
 
 			if (!empty($theme_updates[$slug])) {

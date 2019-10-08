@@ -1,8 +1,8 @@
 === Import Products from any XML or CSV to WooCommerce ===
 Contributors: soflyy, wpallimport 
 Requires at least: 4.1
-Tested up to: 4.9.6
-Stable tag: 1.3.9
+Tested up to: 5.2.3
+Stable tag: 1.4.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: woocommerce xml import, woocommerce csv import, woocommerce, import, xml, csv, wp all import, csv import, import csv, xml import, import xml, woocommerce csv importer, woocommerce xml importer, csv importer, csv import suite
@@ -34,7 +34,7 @@ Here's why you should use the WooCommerce add-on for WP All Import:
 
 The Pro edition of *WP All Import + the WooCommerce add-on* is a paid upgrade that includes premium support and adds the following features:
 
-* [In-depth support for Variable products](http://www.wpallimport.com/documentation/woocommerce/variable-products/?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=woocommerce) - example CSV files, ability to import variations from properly formatted XML, and much more.
+* [In-depth support for Variable products](http://www.wpallimport.com/documentation/woocommerce/variable-products/?utm_source=import-wooco-products-addon-free&utm_medium=readme&utm_campaign=import-variable-wooco-products) - example CSV files, ability to import variations from properly formatted XML, and much more.
 
 * Import External/Affiliate products
 
@@ -48,7 +48,7 @@ The Pro edition of *WP All Import + the WooCommerce add-on* is a paid upgrade th
 
 * Get access to our customer portal with documentation and tutorials, and e-mail technical support.
 
-[Upgrade to the Pro edition of WP All Import + the WooCommerce add-on now.](http://www.wpallimport.com/woocommerce-product-import?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=woocommerce "WooCommerce XML & CSV Import")
+[Upgrade to the Pro edition of WP All Import + the WooCommerce add-on now.](http://www.wpallimport.com/woocommerce-product-import/?utm_source=import-wooco-products-addon-free&utm_medium=wp-plugins-page&utm_campaign=upgrade-to-pro "WooCommerce XML & CSV Import")
 
 You need the WooCommerce add-on if you need to:
 
@@ -83,18 +83,34 @@ The WooCommerce add-on will appear in the Step 4 of WP All Import.
 
 == Changelog ==
 
+= 1.4.3 =
+* bug fix: lookup table not updating after import
+* bug fix: attributes not re-counting after import
+
+= 1.4.2 =
+* bug fix: grant incorrect downloadable product permissions
+* bug fix: update attributes with non utf-8 characters
+
+= 1.4.1 =
+* bug fix: re-import options not rendering correctly
+
+= 1.4.0 =
+* improvement: notice on plugin activation when WooCommerce Add-On Pro installed
+* improvement: match cross-sell products by title
+* bug fix: shipping class not imported properly in some cases
+
 = 1.3.9 =
-bug fix: do not execute product import code when importing other post types
+* bug fix: do not execute product import code when importing other post types
 
 = 1.3.8 =
-bug fix: stock status not importing properly when _backorders custom field is not set
-bug fix: product dimensions won't import if 'Virtual' field is not set
-bug fix: compatibility fix WooCommerce 2.6.x
-bug fix: remove deprecated function calls for PHP 7.2 compatibility
-bug fix: unable to import 0 as a value for attributes
-bug fix: mirror new WooCommerce core behavior that forces all uncategorized products to be assigned to the Uncategorized category
-bug fix: import attributes with special characters 
-bug fix: recount product terms when updating post status 
+* bug fix: stock status not importing properly when _backorders custom field is not set
+* bug fix: product dimensions won't import if 'Virtual' field is not set
+* bug fix: compatibility fix WooCommerce 2.6.x
+* bug fix: remove deprecated function calls for PHP 7.2 compatibility
+* bug fix: unable to import 0 as a value for attributes
+* bug fix: mirror new WooCommerce core behavior that forces all uncategorized products to be assigned to the Uncategorized category
+* bug fix: import attributes with special characters
+* bug fix: recount product terms when updating post status
 
 = 1.3.7 =
 * improvement: added new filter wp_all_import_recount_terms_after_import 
@@ -218,10 +234,6 @@ bug fix: recount product terms when updating post status
 
 == Support ==
 
-We do not handle support in the WordPress.org community forums.
+Support for the free version of WP All Import is handled through the WordPress.org community forums.
 
-We do try to handle support for our free version users at the following e-mail address:
-
-E-mail: support@wpallimport.com
-
-Support for free version customers is not guaranteed and based on ability. For premium support, [purchase WP All Import and the WooCommerce add-on.](http://www.wpallimport.com/upgrade-to-pro?utm_source=free-plugin&utm_medium=dot-org&utm_campaign=woocommerce)
+Support is not guaranteed and is based on ability. For premium support over email, [purchase WP All Import and the WooCommerce add-on.](https://www.wpallimport.com/checkout/?edd_action=purchase_collection&taxonomy=download_category&terms=14&utm_source=import-wooco-products-addon-free&utm_medium=readme&utm_campaign=premium-support)
