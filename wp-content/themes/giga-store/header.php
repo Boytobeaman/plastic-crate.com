@@ -15,6 +15,7 @@
 
 		  gtag('config', 'UA-76091789-3');
 		</script>
+                <script data-ad-client="ca-pub-2556371792604486" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 	</head>
 	<body id="blog" <?php body_class(); ?>>
 
