@@ -12,6 +12,12 @@
 		<div class="row rsrc-author-credits">
 			
 		</div>
+		<div class="row friend-links">
+			<a href="https://www.storage-totes.com/product-category/collapsible-storage-bins/" target="_blank">collapsible storage bins</a>
+			<a href="https://www.plastic-crate.co.uk/product-category/stackable-storage-bins/" target="_blank">euro containers</a>
+			<a href="https://www.movingboxsale.com/moving-bins/" target="_blank">moving bins</a>
+			<a href="https://www.ausplastic.com/product-category/collapsible-storage-box/" target="_blank">collapsible storage box</a>
+		</div>
 	</div>       
 </footer> 
 <p id="back-top">
