@@ -1,18 +1,19 @@
 === SiteOrigin Widgets Bundle ===
 Tags: bundle, widget, button, slider, image, carousel, price table, google maps, tinymce, social links
 Requires at least: 4.2
-Tested up to: 5.2.2
-Stable tag: 1.15.8
-Build time: 2019-08-19T15:01:23+02:00
+Tested up to: 5.5
+Requires PHP: 5.6.20
+Stable tag: 1.17.7
+Build time: 2020-09-10T19:47:59+02:00
 License: GPLv3 or later
 Contributors: gpriday, braam-genis
 Donate link: https://siteorigin.com/downloads/premium/
 
-The SiteOrigin widget bundle gives you a collection of widgets that you can use and customize. All the widgets are built on our powerful framework, giving you advanced forms, unlimited colours and 1500+ icons.
+The SiteOrigin Widgets Bundle gives you a collection of widgets that you can use and customize. All the widgets are built on our powerful framework, giving you advanced forms, unlimited colours and 1500+ icons.
 
 == Description ==
 
-The SiteOrigin widget bundle gives you a collection of widgets that you can use and customize. All the widgets are built on our powerful framework, giving you advanced forms, unlimited colours and 1500+ icons.
+The SiteOrigin Widgets Bundle gives you a collection of widgets that you can use and customize. All the widgets are built on our powerful framework, giving you advanced forms, unlimited colours and 1500+ icons.
 
 Widgets are great. No matter where you’re using them. In a [Page Builder](http://siteorigin.com/page-builder/) page or on your widgetized areas. It's even compatible with other popular page building plugins.
 
@@ -30,7 +31,7 @@ The collection is growing, but here’s what we have so far.
 * Features Widget that lets you display a set of site or service features.
 * Video Widget to get your videos out there.
 * Headline Widget to get you noticed.
-* Social Links Widget to show you're active.
+* Social Media Buttons which link to all your social media profiles.
 * Accordion Widget to compress your content.
 * Contact Form Widget to let people know you care.
 * Editor Widget let's you richly edit text anywhere.
@@ -40,7 +41,7 @@ The collection is growing, but here’s what we have so far.
 * Layout Slider Widget lets you build layouts on slides using SiteOrigin Page Builder.
 * Masonry Widget to add images in a masonry layout.
 * Tabs Widget that'll let you group content into tabbed sections.
-* Taxonomy Widget to display a post's taxonomies.
+* Taxonomy Widget to display the selected taxonomy for the current post.
 * Testimonials Widget to show people what your users/customers think of you.
 
 Once you enable a widget, you'll be able to use it anywhere standard widgets are used. You can manage your widgets by going to Plugins > SiteOrigin Widgets in your WordPress admin.
@@ -64,6 +65,141 @@ The SiteOrigin Widgets Bundle is the perfect platform to build widgets for your 
 3. An example of the button widget.
 
 == Changelog ==
+
+== 1.17.7 - 10 September 2020 ==
+* Hero and Layout Sliders: Disable image preload for images added to frames.
+* Resolved a preview issue with widgets that attempt to render sub widgets but don't output them.
+* Contact Form: Added a field max-width setting.
+* Resolved a jQuery Migrate notice on the global widget settings page at `Plugins > SiteOrigin Widgets`.
+* Media field: Enhancements to improve usability.
+* Disabled Settings buttons while saving global widget settings at `Plugins > SiteOrigin Widgets`.
+* State Emitters: Added an animation to conditional settings.
+* Posts Carousel: Prevented blank slides loading after all posts are loaded.
+* Posts Carousel: Added a new Design settings section and settings.
+* Posts Carousel: Ensured the correct navigation buttons are hidden when multiple carousels are in use.
+* IE 11: Prevented images from exceeding the widget container.
+* Removed wpColorPickerL10n if WP >= 5.5.
+
+== 1.17.6 - 17 August 2020 ==
+* Hero and Layout Sliders: Disabled lazy loading for images added to the slide content area.
+* Slider: Disabled lazy loading in the Block Editor.
+
+== 1.17.5 - 12 August 2020 ==
+* Slider: Disable WordPress 5.5 Lazy Loading.
+
+== 1.17.4 - 06 August 2020 ==
+* Post Carousel: Improved support for multiple carousel widgets on the same page.
+* Post Carousel: Improved mobile support.
+* Sliders: Added `Autoplay` and `Autoplay Pause on Hover` settings to the Slider, Layout Slider and Hero widgets.
+* Features: Allowed shortcodes to be used in the Text field.
+* Contact Form: Fix to ensure the correct fields are passed to Akismet.
+
+== 1.17.3 - 23 July 2020 ==
+* Reverted: Features: Prevented icon overlapping text in edge cases.
+* Social Media Buttons: Added TikTok.
+* Button: Removed `:visited` color targeting.
+* Button: Set hover background color defaults.
+* Carousel: Improved multi-carousel support.
+* Carousel: Triggered click on swipe for mobile devices.
+* Carousel: Contextualized variables as needed.
+* Carousel: Find the `ItemWidth` as needed rather than predefining it.
+
+== 1.17.2 - 21 July 2020 ==
+* Resolved button Less CSS bug.
+
+== 1.17.1 - 20 July 2020 ==
+* Post Carousel: Prevented all posts from outputting. `10` will be output at a time if `Posts per page` isn't set.
+* Post Carousel: Inlined navigation buttons if a title is set.
+* Updated the Google Fonts array.
+* Editor: Added `wp_filter_content_tags` function.
+* Updated [Packery](https://packery.metafizzy.co/) to latest version.
+* Simple Masonry: Added a `Layout origin` setting.
+* Testimonials: Set testimonial text width to `100%`.
+* Updated Font Awesome to latest version.
+* Image: Added `siteorigin_widgets_image_args` filter allowing adjust all of the widget arguments and attributes.
+* Simple Masonry: Added external image support.
+* Code Form Field: Removed HTML sanitization.
+* Tabs: Added smooth scroll to tab when linked to.
+* Added `font-display: block` to all font icons.
+* Widget Block: Added `Additional CSS Classes` output.
+* Button: Added Button hover style settings.
+* Features: Prevented icon overlapping text in edge cases.
+* Post Carousel: Resolved IE 11 JavaScript error.
+* Post Carousel: Vertically align navigation icons and title when title present.
+* Editor: Added `noreferrer` to any target links preventing Layout block failing validation when `target=_blank` link added.
+* Hero: Prevented buttons from loading when buttons shortcode isn't added.
+* Post Carousel: Added a `Link target` setting.
+* Post Carousel: Disable button navigation if number of visible posts is more than total posts.
+* Mobile: Improved admin form field responsive behavior.
+* Updated Font Awesome from `5.13.0` to `5.14.0`.
+
+== 1.17.0 - 22 May 2020 ==
+* Simple Masonry: Added a preloader and related settings.
+* Post Carousel: Migrated to Slick Carousel.
+* Post Carousel: Added RTL support.
+* Icon: Added Title field.
+* Minor admin interface styling fixes.
+* Price Table: Added title for the feature hover text.
+* Testimonials: Added `Equalize testimonial height` setting.
+* Testimonials: Fixed user image alignment.
+* Switched to Wikimedia's fork of less.php.
+* Added error suppression for external Less library.
+
+== 1.16.1 - 20 April 2020 ==
+* Accordion: When hiding panels, only search the current accordion and not nested accordions.
+* Slider Widgets: Removed slide navigation numbers from excerpt output.
+* Added support for custom icon styles.
+* Tabs: Fixed top/bottom tab alignment when tab position is set to right/left.
+* Post Carousel: Prevent themes from adjusting the thumbnail top margin.
+* Improved the reliability of widget description translations. Updated various widget descriptions.
+* Editor: Resolved the notice appearing when post meta wasn't available.
+* Simple Masonry: Item labels - If the item title field isn't populated use the image title field.
+* Hero: Added a setting to vertically align the slide contents.
+* Updated jQuery TouchSwipe.
+* Sliders: Fixed pagination spacing when HTML optimization is in use.
+* Layout Slider: Set frame labels based on the content inserted.
+* Slider: Set frame labels based on the content inserted.
+* Contact Form: Added placeholder support to the dropdown select field. Used if the field label position is set to Inside.
+* Contact Form: Added Required support for the dropdown select field.
+* FontAwesome: Moved Brands to the last position in dropdown list.
+* Layout Slider: Added a setting to vertically align the slide contents.
+
+= 1.16.0 - 11 February 2020 =
+* Block Editor: Fixed widget select field width and alignment.
+* Removed unused template files.
+* Contact Form: Improved checking for SiteOrigin development email addresses.
+* Minor styling improvements to the Classic and Block Editor admin interfaces.
+* Features: Added a new setting to select the H tag to be used for the title field.
+* Hero: If a height value is assigned, added prefilling to avoid a page jump.
+* Hero: Added `font-display: swap` for Google font imports.
+* Layout Slider: If a height value is assigned, added prefilling to avoid a page jump.
+* Image Grid: Added a class of `sow-image-grid-image_html` to each image. Can be used to exclude images from Lazy Loading plugins.
+* Simple Masonry: Added a class of `sow-masonry-grid-image` to each image. Can be used to exclude images from Lazy Loading plugins.
+* Features: Added fallback support for the Icon image field.
+* Testimonials: Add fallback support for the Image field.
+* Post Carousel: Prevented looping until all posts are loaded.
+* Post Carousel: Added a new setting to disable looping.
+* Post Carousel: Prevented scrolling past loading items and loop as soon as last item is completely visible.
+* Contact Form: Added disabled cursor to submit button when disabled.
+* Block Editor: Resolved Features widget default settings.
+* Tabs and Accordion: Account for accented characters.
+* Social Media Buttons: Allowed for multiple instances of the same network without duplicating colors.
+* Social Media Buttons: Ensured all icons are correctly centered.
+* Contact Form: Added lightweight validation for phone numbers.
+* Block Editor: Display author for third party widgets.
+* Block Editor: Added processing for the more quicktag in the Editor widget.
+* Tabs and Accordion: Added icon spacing.
+* Testimonials: Improved image sizing behavior for square images.
+
+= 1.15.9 - 11 November 2019 =
+* Contact Form: Improved default email address handling.
+* Contact Form: Improved subject field labeling.
+* Post Carousel: Loop the carousel when reaching the end.
+* Social Media Buttons: Fixed issue with responsive breakpoint unit of measurement.
+* Google Maps: Ensured settings modal window opens when directed to insert API key.
+* Google Maps: Fixed map center field when used in the Customizer.
+* Fixed compatibility with WordPress 5.3.
+* Minor code style and widget label improvements.
 
 = 1.15.8 - 20 August 2019 =
 * Run FitText setup on window resize events.

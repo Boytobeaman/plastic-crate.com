@@ -41,17 +41,36 @@ class WP_404_Auto_Redirect_Search {
 
             $sql = "SELECT p.ID, ";
             
-            if(is_array($args['keywords'])){
+            if(!is_array($args['keywords']))
+                $args['keywords'] = array($args['keywords']);
+
+            foreach($args['keywords'] as $k){
                 
-                foreach($args['keywords'] as $k){
+                $strlen = strlen($k);
+                
+                if($strlen > 1){
+                    
+                    // Left
                     $sql .= "
-                    if(INSTR(LCASE(p.post_name), '" . $k . "'), 1, 0) + ";
+                    IF(LEFT(LCASE(p.post_name), " . ($strlen + 1) . ") = '" . $k . "-', 2, 0) + ";
+                    
+                    // Right
+                    $sql .= "
+                    IF(RIGHT(LCASE(p.post_name), " . ($strlen + 1) . ") = '-" . $k . "', 2, 0) + ";
+                    
+                    // Inside
+                    $sql .= "
+                    if(INSTR(LCASE(p.post_name), '-" . $k . "-'), 2, 0) + ";
+                    
+                    // Direct
+                    $sql .= "
+                    if(LCASE(p.post_name) = '" . $k . "', 2, 0) + ";
+                    
                 }
                 
-            }else{
-                
+                // Wildcard
                 $sql .= "
-                if(INSTR(LCASE(p.post_name), '" . $args['keywords'] . "'), 1, 0) + ";
+                if(INSTR(LCASE(p.post_name), '" . $k . "'), 1, 0) + ";
                 
             }
 
@@ -127,17 +146,36 @@ class WP_404_Auto_Redirect_Search {
             
             $sql = "SELECT t.term_id, ";
             
-            if(is_array($args['keywords'])){
+            if(!is_array($args['keywords']))
+                $args['keywords'] = array($args['keywords']);
+
+            foreach($args['keywords'] as $k){
                 
-                foreach($args['keywords'] as $k){
+                $strlen = strlen($k);
+                
+                if($strlen > 1){
+                    
+                    // Left
                     $sql .= "
-                    if(INSTR(LCASE(t.slug), '" . $k . "'), 1, 0) + ";
+                    IF(LEFT(LCASE(t.slug), " . ($strlen + 1) . ") = '" . $k . "-', 2, 0) + ";
+                    
+                    // Right
+                    $sql .= "
+                    IF(RIGHT(LCASE(t.slug), " . ($strlen + 1) . ") = '-" . $k . "', 2, 0) + ";
+                    
+                    // Inside
+                    $sql .= "
+                    if(INSTR(LCASE(t.slug), '-" . $k . "-'), 2, 0) + ";
+                    
+                    // Direct
+                    $sql .= "
+                    if(LCASE(t.slug) = '" . $k . "', 2, 0) + ";
+                    
                 }
                 
-            }else{
-                
+                // Wildcard
                 $sql .= "
-                if(INSTR(LCASE(t.slug), '" . $args['keywords'] . "'), 1, 0) + ";
+                if(INSTR(LCASE(t.slug), '" . $k . "'), 1, 0) + ";
                 
             }
 

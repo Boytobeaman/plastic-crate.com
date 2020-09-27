@@ -1,0 +1,17 @@
+2020-09-27T15:56:15+00:00 CRITICAL Uncaught Error: Call to undefined function wp_is_recovery_mode() in /data/wwwroot/www.plastic-crate.com/wp-admin/includes/update.php:985
+Stack trace:
+#0 /data/wwwroot/www.plastic-crate.com/wp-includes/class-wp-hook.php(286): wp_recovery_mode_nag('')
+#1 /data/wwwroot/www.plastic-crate.com/wp-includes/class-wp-hook.php(310): WP_Hook->apply_filters('', Array)
+#2 /data/wwwroot/www.plastic-crate.com/wp-includes/plugin.php(453): WP_Hook->do_action(Array)
+#3 /data/wwwroot/www.plastic-crate.com/wp-admin/admin-header.php(264): do_action('admin_notices')
+#4 /data/wwwroot/www.plastic-crate.com/wp-admin/about.php(17): require_once('/data/wwwroot/w...')
+#5 {main}
+  thrown in /data/wwwroot/www.plastic-crate.com/wp-admin/includes/update.php on line 985
+
+2020-09-27T15:56:27+00:00 CRITICAL Uncaught Error: Call to undefined function wp_using_themes() in /data/wwwroot/www.plastic-crate.com/wp-includes/template-loader.php:7
+Stack trace:
+#0 /data/wwwroot/www.plastic-crate.com/wp-blog-header.php(19): require_once()
+#1 /data/wwwroot/www.plastic-crate.com/index.php(17): require('/data/wwwroot/w...')
+#2 {main}
+  thrown in /data/wwwroot/www.plastic-crate.com/wp-includes/template-loader.php on line 7
+

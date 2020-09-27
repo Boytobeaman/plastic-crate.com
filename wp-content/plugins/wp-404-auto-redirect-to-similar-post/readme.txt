@@ -3,9 +3,9 @@ Contributors: hwk-fr
 Donate link: https://hwk.fr/
 Tags: SEO, 404, Redirect, 301, Similar, Related, Search, Broken Link, Webmaster Tools, Google
 Requires at least: 4.0
-Tested up to: 5.2
-Requires PHP: 5.4
-Stable tag: 1.0.2
+Tested up to: 5.4
+Requires PHP: 5.6
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -375,6 +375,9 @@ function my_404_after_redirect($query){
 5. Front: Debug Console
 
 == Changelog ==
+
+= 1.0.3 =
+* Improvement: Enhanced search algorithm & matching
 
 = 1.0.2 =
 * Fix: Request sanitization compatibility for nginx servers

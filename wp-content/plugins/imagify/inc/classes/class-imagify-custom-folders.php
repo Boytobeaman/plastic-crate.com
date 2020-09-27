@@ -89,6 +89,49 @@ class Imagify_Custom_Folders {
 		return preg_replace( '@^' . preg_quote( $site_root, '@' ) . '@', $backup_dir, $file_path );
 	}
 
+	/**
+	 * Add index.php files recursively to a given directory and all its subdirectories.
+	 *
+	 * @since 1.9.11
+	 *
+	 * @param string $backup_dir (optional) Path to the directory where we will start adding indexes.
+	 *                           Defaults to custom-folders backup dir.
+	 *
+	 * @return void
+	 */
+	public static function add_indexes( $backup_dir = '' ) {
+		$filesystem = Imagify_Filesystem::get_instance();
+
+		if ( empty( $backup_dir ) ) {
+			$backup_dir = self::get_backup_dir_path();
+		}
+
+		if ( ! $filesystem->is_writable( $backup_dir ) ) {
+			return;
+		}
+
+		try {
+			$directory = new RecursiveDirectoryIterator( $backup_dir );
+			$iterator  = new RecursiveIteratorIterator( $directory );
+
+			foreach ( $iterator as $fileinfo ) {
+
+				if ( '.' !== $fileinfo->getFilename() ) {
+					continue;
+				}
+
+				$path = trailingslashit( $fileinfo->getRealPath() );
+
+				if ( ! $filesystem->is_file( $path . 'index.html' )
+					&& ! $filesystem->is_file( $path . 'index.php' )
+				) {
+					$filesystem->touch( $path . 'index.php' );
+				}
+			}
+		} catch ( Exception $e ) {
+			return;
+		}
+	}
 
 	/** ----------------------------------------------------------------------------------------- */
 	/** SINGLE FILE ============================================================================= */
@@ -194,7 +237,7 @@ class Imagify_Custom_Folders {
 		}
 
 		if ( ! $args['file_path'] && $args['file_id'] ) {
-			$args['file_path'] = $process->get_media()->get_original_path();
+			$args['file_path'] = $process->get_media()->get_fullsize_path();
 		}
 
 		if ( ! $args['backup_path'] && $args['file_path'] ) {
@@ -254,7 +297,7 @@ class Imagify_Custom_Folders {
 
 		$filesystem = imagify_get_filesystem();
 		$media      = $process->get_media();
-		$file_path  = $media->get_original_path();
+		$file_path  = $media->get_fullsize_path();
 		$mime_type  = $filesystem->get_mime_type( $file_path );
 		$is_image   = $mime_type && strpos( $mime_type, 'image/' ) === 0;
 		$webp_path  = $is_image ? imagify_path_to_webp( $file_path ) : false;

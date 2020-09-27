@@ -43,6 +43,12 @@ return array(
 		'icon_color' => '#FFFFFF',
 		'button_color' => '#FFFC00'
 	),
+	'skype'    => array(
+		'label'    => __( 'Skype', 'so-widgets-bundle' ),
+		'base_url' => 'https://skype.com/',
+		'icon_color' => '#0078d7',
+		'button_color' => '#FFFFFF'
+	),
 	'linkedin'    => array(
 		'label'    => __( 'LinkedIn', 'so-widgets-bundle' ),
 		'base_url' => 'https://www.linkedin.com/',
@@ -261,6 +267,12 @@ return array(
 		'base_url' => 'https://t.me/',
 		'icon_color' => '#FFFFFF',
 		'button_color' => '#27a7e5'
+	),
+	'tiktok'      => array(
+		'label'    => __( 'TikTok', 'so-widgets-bundle' ),
+		'base_url' => 'https://www.tiktok.com/',
+		'icon_color' => '#FFFFFF',
+		'button_color' => '#000',
 	),
 	'trello'   => array(
 		'label'    => __( 'Trello', 'so-widgets-bundle' ),

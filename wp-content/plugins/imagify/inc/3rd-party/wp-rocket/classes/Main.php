@@ -20,8 +20,8 @@ class Main {
 	 * @author Grégory Viguier
 	 */
 	public function init() {
-		add_action( 'imagify_assets_enqueued', [ $this, 'dequeue_sweetalert' ] );
-		add_filter( 'imagify_cdn_source',      [ $this, 'set_cdn_source' ] );
+		add_action( 'admin_init',         [ $this, 'dequeue_sweetalert' ] );
+		add_filter( 'imagify_cdn_source', [ $this, 'set_cdn_source' ] );
 	}
 
 
@@ -30,14 +30,18 @@ class Main {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Don't load Imagify CSS & JS files on WP Rocket options screen to avoid conflict with older version of SweetAlert.
+	 * Remove all Imagify admin notices + CSS & JS files on WP Rocket (< 3.0) options screen to avoid conflict with older version of SweetAlert.
 	 *
 	 * @since  1.9.3
 	 * @access public
 	 * @author Grégory Viguier
 	 */
 	public function dequeue_sweetalert() {
-		if ( ! defined( 'WP_ROCKET_PLUGIN_SLUG' ) ) {
+		if ( ! defined( 'WP_ROCKET_VERSION' ) || ! defined( 'WP_ROCKET_PLUGIN_SLUG' ) ) {
+			return;
+		}
+
+		if ( version_compare( WP_ROCKET_VERSION, '3.0' ) >= 0 ) {
 			return;
 		}
 
@@ -45,7 +49,8 @@ class Main {
 			return;
 		}
 
-		\Imagify_Assets::get_instance()->dequeue_script( array( 'sweetalert-core', 'sweetalert', 'notices' ) );
+		remove_action( 'all_admin_notices',     [ \Imagify_Notices::get_instance(), 'render_notices' ] );
+		remove_action( 'admin_enqueue_scripts', [ \Imagify_Assets::get_instance(), 'enqueue_styles_and_scripts' ], IMAGIFY_INT_MAX );
 	}
 
 	/**
@@ -63,7 +68,7 @@ class Main {
 	 * @return array
 	 */
 	public function set_cdn_source( $source ) {
-		if ( ! function_exists( 'get_rocket_cdn_cnames' ) || ! function_exists( 'get_rocket_option' ) ) {
+		if ( ! function_exists( 'get_rocket_option' ) ) {
 			return $source;
 		}
 
@@ -71,9 +76,21 @@ class Main {
 			return $source;
 		}
 
-		$url = get_rocket_cdn_cnames( [ 'all', 'images' ] );
+		$container = apply_filters( 'rocket_container', null );
 
-		if ( ! $url ) {
+		if ( is_object( $container ) && method_exists( $container, 'get' ) ) {
+			$cdn = $container->get( 'cdn' );
+
+			if ( $cdn && method_exists( $cdn, 'get_cdn_urls' ) ) {
+				$url = $cdn->get_cdn_urls( [ 'all', 'images' ] );
+			}
+		}
+
+		if ( ! isset( $url ) && function_exists( 'get_rocket_cdn_cnames' ) ) {
+			$url = get_rocket_cdn_cnames( [ 'all', 'images' ] );
+		}
+
+		if ( empty( $url ) ) {
 			return $source;
 		}
 

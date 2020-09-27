@@ -38,7 +38,7 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 	 *
 	 * link to udrpc_action main function in class UpdraftPlus_UpdraftCentral_Listener
 	 */
-	public function _post_action($command, $data, $extra_info) {// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
+	public function _post_action($command, $data, $extra_info) {// phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
 		// Here, we're restoring to the current (default) blog before we switched
 		if ($this->switched) restore_current_blog();
 	}
@@ -184,20 +184,42 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 						$download_link = $api->download_link;
 						$installed = $upgrader->install($download_link);
 
-						if (is_wp_error($skin->result)) {
+						if (is_wp_error($installed)) {
+							$error_code = $installed->get_error_code();
+							$error_message = $installed->get_error_message();
+						} elseif (is_wp_error($skin->result)) {
 							$error_code = $skin->result->get_error_code();
 							$error_message = $skin->result->get_error_message();
 
 							$error_data = $skin->result->get_error_data($error_code);
 							if (!empty($error_data)) {
 								if (is_array($error_data)) $error_data = json_encode($error_data);
-
 								$error_message .= ' '.$error_data;
+							}
+						} elseif (is_null($installed) || !$installed) {
+							global $wp_filesystem;
+							$upgrade_messages = $skin->get_upgrade_messages();
+
+							if (!class_exists('WP_Filesystem_Base')) include_once(ABSPATH.'/wp-admin/includes/class-wp-filesystem-base.php');
+
+							// Pass through the error from WP_Filesystem if one was raised.
+							if ($wp_filesystem instanceof WP_Filesystem_Base && is_wp_error($wp_filesystem->errors) && $wp_filesystem->errors->get_error_code()) {
+								$error_code = $wp_filesystem->errors->get_error_code();
+								$error_message = $wp_filesystem->errors->get_error_message();
+							} elseif (!empty($upgrade_messages)) {
+								// We're only after for the last feedback that we received from the install process. Mostly,
+								// that is where the last error has been inserted.
+								$messages = $skin->get_upgrade_messages();
+								$error_code = 'install_failed';
+								$error_message = end($messages);
+							} else {
+								$error_code = 'unable_to_connect_to_filesystem';
+								$error_message = __('Unable to connect to the filesystem. Please confirm your credentials.');
 							}
 						}
 					}
 
-					if (!$installed) {
+					if (!$installed || is_wp_error($installed)) {
 						$result = $this->_generic_error_response('theme_install_failed', array(
 							'theme' => $query['theme'],
 							'error_code' => $error_code,
@@ -534,6 +556,7 @@ class UpdraftCentral_Theme_Commands extends UpdraftCentral_Commands {
 			$theme->child_theme = !empty($template) ? true : false;
 			$theme->website = $website;
 			$theme->multisite = is_multisite();
+			$theme->site_url = trailingslashit(get_bloginfo('url'));
 
 			if ($theme->child_theme) {
 				$parent_theme = wp_get_theme($template);

@@ -59,8 +59,12 @@ class Cache_Memcached extends Cache_Base {
 		if ( defined( '\Memcached::OPT_REMOVE_FAILED_SERVERS' ) ) {
 			$this->_memcache->setOption( \Memcached::OPT_REMOVE_FAILED_SERVERS, true );
 		}
-		if ( defined( '\Memcached::OPT_BINARY_PROTOCOL' ) && defined( '\Memcached::OPT_TCP_NODELAY' ) ) {
+
+		if ( isset( $config['binary_protocol'] ) && !empty( $config['binary_protocol'] ) && defined( '\Memcached::OPT_BINARY_PROTOCOL' ) ) {
 			$this->_memcache->setOption( \Memcached::OPT_BINARY_PROTOCOL, true );
+		}
+
+		if ( defined( '\Memcached::OPT_TCP_NODELAY' ) ) {
 			$this->_memcache->setOption( \Memcached::OPT_TCP_NODELAY, true );
 		}
 
@@ -72,12 +76,8 @@ class Cache_Memcached extends Cache_Base {
 				\Memcached::DYNAMIC_CLIENT_MODE );
 
 		foreach ( (array)$config['servers'] as $server ) {
-			if ( substr( $server, 0, 5 ) == 'unix:' || strpos( $server, ':' ) === false ) {
-				$this->_memcache->addServer( trim( $server ), 0 );
-			} else {
-				list( $ip, $port ) = explode( ':', $server );
-				$this->_memcache->addServer( trim( $ip ), (integer) trim( $port ) );
-			}
+			list( $ip, $port ) = Util_Content::endpoint_to_host_port( $server );
+			$this->_memcache->addServer( $ip, $port );
 		}
 
 		if ( isset( $config['username'] ) && !empty( $config['username'] ) &&
@@ -222,9 +222,7 @@ class Cache_Memcached extends Cache_Base {
 	 * @return boolean
 	 */
 	function flush( $group = '' ) {
-		$this->_get_key_version( $group );   // initialize $this->_key_version
-		$this->_key_version[$group]++;
-		$this->_set_key_version( $this->_key_version[$group], $group );
+		$this->_increment_key_version( $group );
 
 		// for persistent connections - apply new config to the object
 		// otherwise it will keep old servers list
@@ -287,6 +285,20 @@ class Cache_Memcached extends Cache_Base {
 		@$this->_memcache->set( $this->_get_key_version_key( $group ), $v, 0 );
 	}
 
+	/**
+	 * Increments key version.
+	 *
+	 * @since 0.14.5
+	 *
+	 * @param string $group Used to differentiate between groups of cache values.
+	 */
+	private function _increment_key_version( $group = '' ) {
+		$r = @$this->_memcache->increment( $this->_get_key_version_key( $group ), 1 );
+		if ( ! $r ) {
+			// it doesn't initialize the key if it doesn't exist.
+			$this->_set_key_version( 0, $group );
+		}
+	}
 
 	/**
 	 * Returns size used by cache

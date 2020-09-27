@@ -89,8 +89,16 @@ final class XmlImportWooCommerceService {
         if (empty($importID)) {
             $importID = $input->get('import_id');
         }
-        if (empty($importID)) {
+        if (empty($importID) && !empty(\PMXI_Plugin::$session)) {
             $importID = \PMXI_Plugin::$session->import_id;
+        }
+        if (empty($importID) && php_sapi_name() === 'cli') {
+            global $argv;
+            foreach ($argv as $key => $arg) {
+                if ($arg === 'run' && !empty($argv[$key + 1])) {
+                    $importID = $argv[$key + 1];
+                }
+            }
         }
         if ($importID && ($this->import->isEmpty() || $this->import->id != $importID)) {
             $this->import->getById($importID);
@@ -162,44 +170,96 @@ final class XmlImportWooCommerceService {
         $parentAttributes = get_post_meta($product->get_id(), '_product_attributes', TRUE);
         // Sync attribute terms with parent product.
         if (!empty($parentAttributes)) {
+            $variation_attributes = [];
+            foreach ($variations as $variation) {
+                $attributes = $variation->get_attributes();
+                if (!empty($attributes)) {
+                    foreach ($attributes as $attribute_name => $attribute_value) {
+                        if (!isset($variation_attributes[$attribute_name])) {
+                            $variation_attributes[$attribute_name] = [];
+                        }
+                        if (!in_array($attribute_value, $variation_attributes[$attribute_name])) {
+                            $variation_attributes[$attribute_name][] = $attribute_value;
+                        }
+                    }
+                }
+            }
+//            $variation_attributes = $product->get_variation_attributes();
             foreach ($parentAttributes as $name => $parentAttribute) {
                 // Only in case if attribute marked to import as taxonomy terms.
                 if ($parentAttribute['is_taxonomy']) {
-                    $terms = explode("|", $parentAttribute['value']);
-                    $terms = array_filter($terms);
+                    $taxonomy_name = strpos($name, "%") !== FALSE ? urldecode($name) : $name;
+                    $terms = [];
+                    if (!empty($variation_attributes[$name])) {
+                        foreach ($variation_attributes[$name] as $attribute_term_slug) {
+                            $term = get_term_by('slug', $attribute_term_slug, $taxonomy_name);
+                            if ($term && !is_wp_error($term)) {
+                                $terms[] = $term->term_taxonomy_id;
+                            }
+                        }
+                    } else {
+                        $terms = explode("|", $parentAttribute['value']);
+                        $terms = array_filter($terms);
+                    }
                     if (!empty($terms)) {
-                        $this->getTaxonomiesService()->associateTerms($parentID, $terms, $name);
+                        $this->getTaxonomiesService()->associateTerms($parentID, $terms, $taxonomy_name);
                     }
                 }
             }
         }
         $isNewProduct = get_post_meta($product->get_id(), self::FLAG_IS_NEW_PRODUCT, true);
+        // Make product simple it has less than minimum number of variations.
+        $minimumVariations = apply_filters('wp_all_import_minimum_number_of_variations', 2, $product->get_id(), $this->getImport()->id);
         // Sync parent product with variation if at least one variation exist.
         if (!empty($variations)) {
             /** @var WC_Product_Variable_Data_Store_CPT $data_store */
-            if (!$this->getImport()->options['link_all_variations'] && (count($variationIDs) > 1 || !$this->getImport()->options['make_simple_product'])) {
+            if (!$this->getImport()->options['link_all_variations'] && (count($variationIDs) >= $minimumVariations || !$this->getImport()->options['make_simple_product'])) {
                 $data_store = WC_Data_Store::load( 'product-' . $product->get_type() );
                 $data_store->sync_price( $product );
                 $data_store->sync_stock_status( $product );
             }
             // Set product default attributes.
-            if ($this->isUpdateDataAllowed('is_update_attributes', $isNewProduct) && $this->getImport()->options['is_default_attributes']) {
-                $defaultVariation = FALSE;
-                // Set first variation as the default selection.
-                if ($this->getImport()->options['default_attributes_type'] == 'first') {
-                    $defaultVariation = array_shift($variations);
-                }
-                // Set first in stock variation as the default selection.
-                if ($this->getImport()->options['default_attributes_type'] == 'instock') {
-                    /** @var \WC_Product_Variation $variation */
-                    foreach ($variations as $variation) {
-                        if ($variation->is_in_stock()) {
-                            $defaultVariation = $variation;
-                            break;
+            if ($isNewProduct || $this->isUpdateCustomField('_default_attributes')) {
+                $defaultAttributes = [];
+                if ($this->getImport()->options['is_default_attributes']) {
+                    $defaultVariation = FALSE;
+                    // Set first variation as the default selection.
+                    if ($this->getImport()->options['default_attributes_type'] == 'first') {
+                        $defaultVariation = array_shift($variations);
+                    }
+                    // Set first in stock variation as the default selection.
+                    if ($this->getImport()->options['default_attributes_type'] == 'instock') {
+                        /** @var \WC_Product_Variation $variation */
+                        foreach ($variations as $variation) {
+                            if ($variation->is_in_stock()) {
+                                $defaultVariation = $variation;
+                                break;
+                            }
+                        }
+                    }
+                    if ($defaultVariation) {
+                        foreach ($defaultVariation->get_attributes() as $key => $value) {
+                            if (!empty($value)) {
+                                $defaultAttributes[$key] = $value;
+                            } else {
+                                // Variation can be applied to any value of this attribute.
+                                if (isset($parentAttributes[$key])) {
+                                    // Get first value from parent product.
+                                    if ($parentAttributes[$key]['is_taxonomy']) {
+                                        $terms = explode("|", $parentAttributes[$key]['value']);
+                                        $terms = array_filter($terms);
+                                        if (!empty($terms)) {
+                                            $term = WP_Term::get_instance($terms[0]);
+                                            if ($term) {
+                                                $defaultAttributes[$key] = $term->slug;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-                $defaultAttributes = $defaultVariation ? $defaultVariation->get_attributes() : array();
                 $product->set_default_attributes($defaultAttributes);
             }
             $product->save();
@@ -208,9 +268,11 @@ final class XmlImportWooCommerceService {
         $firstVariationID = get_post_meta($product->get_id(), self::FIRST_VARIATION, TRUE);
         if ($firstVariationID) {
             $parentMeta = get_post_meta($product->get_id(), '');
-            foreach ($this->getImport()->options['custom_name'] as $customFieldName) {
-                if ($this->isUpdateCustomField($customFieldName)) {
-                    update_post_meta($firstVariationID, $customFieldName, $parentMeta[$customFieldName][0]);
+            if ("manual" !== $this->getImport()->options['duplicate_matching']) {
+                foreach ($this->getImport()->options['custom_name'] as $customFieldName) {
+                    if ($this->isUpdateCustomField($customFieldName)) {
+                        update_post_meta($firstVariationID, $customFieldName, maybe_unserialize($parentMeta[$customFieldName][0]));
+                    }
                 }
             }
             // Sync all ACF fields.
@@ -228,8 +290,7 @@ final class XmlImportWooCommerceService {
         }
 
         update_post_meta($product->get_id(), '_product_attributes', $parentAttributes);
-        // Make product simple it has less than minimum number of variations.
-        $minimumVariations = apply_filters('wp_all_import_minimum_number_of_variations', 2, $product->get_id(), $this->getImport()->id);
+
         if (count($variationIDs) < $minimumVariations) {
             $this->maybeMakeProductSimple($product, $variationIDs);
         }
@@ -267,7 +328,7 @@ final class XmlImportWooCommerceService {
             $price = get_post_meta($firstVariationID, '_price', TRUE);
         }
         if (!empty($parsedData)) {
-            if (empty($variationIDs)) {
+            if (empty($variationIDs) && $this->getImport()->options['make_simple_product']) {
                 // Sync product data in case variations weren't created for this product.
                 $simpleProduct = new \WC_Product_Simple($product->get_id());
                 $simpleProduct->set_stock_status($parsedData['stock_status']);
@@ -299,6 +360,19 @@ final class XmlImportWooCommerceService {
             }
             catch(\Exception $e) {
                 self::getLogger() && call_user_func(self::getLogger(), '<b>ERROR:</b> ' . $e->getMessage());
+            }
+            // Delete all variations.
+            $children = get_posts(array(
+                'post_parent' => $product->get_id(),
+                'posts_per_page' => -1,
+                'post_type' => 'product_variation',
+                'fields' => 'ids',
+                'post_status' => 'any'
+            ));
+            if (!empty($children)) {
+                foreach ($children as $child) {
+                    wp_delete_post($child, TRUE);
+                }
             }
             do_action('wp_all_import_make_product_simple', $product->get_id(), $this->getImport()->id);
         }
@@ -334,14 +408,16 @@ final class XmlImportWooCommerceService {
         $attributes = $product->get_attributes();
         /** @var \WC_Product_Attribute $attribute */
         foreach ($attributes as $attributeName => $attribute) {
-            if ($attribute->is_taxonomy()) {
-                $attribute_values = $attribute->get_terms();
-                if (!empty($attribute_values)) {
-                  $terms = [];
-                  foreach ($attribute_values as $key => $object) {
-                    $terms[] = $object->term_id;
-                  }
-                  wp_update_term_count_now($terms, $attributeName);
+            if ( ! empty( $attribute ) ) {
+                if ($attribute->is_taxonomy()) {
+                    $attribute_values = $attribute->get_terms();
+                    if (!empty($attribute_values)) {
+                    $terms = [];
+                    foreach ($attribute_values as $key => $object) {
+                        $terms[] = $object->term_id;
+                    }
+                    wp_update_term_count_now($terms, $attributeName);
+                    }
                 }
             }
         }
@@ -429,9 +505,9 @@ final class XmlImportWooCommerceService {
      * @param $meta_key
      * @return bool
      */
-    public function isUpdateCustomField($meta_key) {        
+    public function isUpdateCustomField($meta_key) {
 
-        $options = $this->getImport()->options;         
+        $options = $this->getImport()->options;
 
         if ($options['update_all_data'] == 'yes') {
             return TRUE;

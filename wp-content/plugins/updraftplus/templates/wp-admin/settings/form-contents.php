@@ -22,7 +22,7 @@ foreach ($default_options as $k => $v) {
 		<th><?php _e('Files backup schedule', 'updraftplus'); ?>:</th>
 		<td class="js-file-backup-schedule">
 			<div>
-				<select class="updraft_interval" name="updraft_interval">
+				<select title="<?php echo __('Files backup interval', 'updraftplus'); ?>" class="updraft_interval" name="updraft_interval">
 				<?php
 				$intervals = $updraftplus_admin->get_intervals('files');
 				$selected_interval = UpdraftPlus_Options::get_updraft_option('updraft_interval', 'manual');
@@ -39,7 +39,7 @@ foreach ($default_options as $k => $v) {
 
 					$updraft_retain = max((int) UpdraftPlus_Options::get_updraft_option('updraft_retain', 2), 1);
 
-					$retain_files_config = __('and retain this many scheduled backups', 'updraftplus').': <input type="number" min="1" step="1" name="updraft_retain" value="'.$updraft_retain.'" class="retain-files" />';
+					$retain_files_config = __('and retain this many scheduled backups', 'updraftplus').': <input type="number" min="1" step="1" title="'.__('Retain this many scheduled file backups', 'updraftplus').'" name="updraft_retain" value="'.$updraft_retain.'" class="retain-files" />';
 
 					echo $retain_files_config;
 
@@ -59,7 +59,7 @@ foreach ($default_options as $k => $v) {
 		</th>
 		<td class="js-database-backup-schedule">
 		<div>
-			<select class="updraft_interval_database" name="updraft_interval_database">
+			<select class="updraft_interval_database" title="<?php echo __('Database backup interval', 'updraftplus'); ?>" name="updraft_interval_database">
 			<?php
 			$intervals = $updraftplus_admin->get_intervals('db');
 			$selected_interval_db = UpdraftPlus_Options::get_updraft_option('updraft_interval_database', UpdraftPlus_Options::get_updraft_option('updraft_interval'));
@@ -73,7 +73,7 @@ foreach ($default_options as $k => $v) {
 
 			<?php
 				$updraft_retain_db = max((int) UpdraftPlus_Options::get_updraft_option('updraft_retain_db', $updraft_retain), 1);
-				$retain_dbs_config = __('and retain this many scheduled backups', 'updraftplus').': <input type="number" min="1" step="1" name="updraft_retain_db" value="'.$updraft_retain_db.'" class="retain-files" />';
+				$retain_dbs_config = __('and retain this many scheduled backups', 'updraftplus').': <input type="number" min="1" step="1" title="'.__('Retain this many scheduled database backups', 'updraftplus').'" name="updraft_retain_db" value="'.$updraft_retain_db.'" class="retain-files" />';
 
 				echo $retain_dbs_config;
 			?>
@@ -252,13 +252,31 @@ foreach ($default_options as $k => $v) {
 	} else {
 	?>
 
-	<tr>
+	<tr id="updraft_report_row_no_addon">
 		<th><?php _e('Email', 'updraftplus'); ?>:</th>
 		<td>
 			<?php
 				$updraft_email = UpdraftPlus_Options::get_updraft_option('updraft_email');
+				// in case that premium users doesn't have the reporting addon, then the same email report setting's functionality will be applied to the premium version
+				// since the free version allows only one service at a time, $active_service contains just a string name of particular service, in this case 'email'
+				// so we need to make the checking a bit more universal by transforming it into an array of services in which we can check whether email is the only service (free onestorage) or one of the services (premium multistorage)
+				$temp_services = $active_service;
+				if (is_string($temp_services)) $temp_services = (array) $temp_services;
+				$is_email_storage = !empty($temp_services) && in_array('email', $temp_services);
 			?>
-			<label for="updraft_email" class="updraft_checkbox"><input type="checkbox" id="updraft_email" name="updraft_email" value="<?php esc_attr_e(get_bloginfo('admin_email')); ?>"<?php if (!empty($updraft_email)) echo ' checked="checked"';?> > <?php echo __("Check this box to have a basic report sent to", 'updraftplus').' <a href="'.admin_url('options-general.php').'">'.__("your site's admin address", 'updraftplus').'</a> ('.htmlspecialchars(get_bloginfo('admin_email')).")."; ?></label>
+			<label for="updraft_email" class="updraft_checkbox email_report">
+				<input type="checkbox" id="updraft_email" name="updraft_email" value="<?php esc_attr_e(get_bloginfo('admin_email')); ?>"<?php if ($is_email_storage || !empty($updraft_email)) echo ' checked="checked"';?> <?php if ($is_email_storage) echo 'disabled onclick="return false"'; ?>> 
+				<?php
+					// have to add this hidden input so that when the form is submited and if the udpraft_email checkbox is disabled, this hidden input will be passed to the server along with other active elements
+					if ($is_email_storage) echo '<input type="hidden" name="updraft_email" value="'.esc_attr(get_bloginfo('admin_email')).'">';
+				?>
+				<div id="cb_not_email_storage_label" <?php echo ($is_email_storage) ? 'style="display: none"' : 'style="display: inline"'; ?>>
+					<?php echo __("Check this box to have a basic report sent to", 'updraftplus').' <a href="'.admin_url('options-general.php').'">'.__("your site's admin address", 'updraftplus').'</a> ('.htmlspecialchars(get_bloginfo('admin_email')).")."; ?>
+				</div>
+				<div id="cb_email_storage_label" <?php echo (!$is_email_storage) ? 'style="display: none"' : 'style="display: inline"'; ?>>
+					<?php echo __("Your email backup and a report will be sent to", 'updraftplus').' <a href="'.admin_url('options-general.php').'">'.__("your site's admin address", 'updraftplus').'</a> ('.htmlspecialchars(get_bloginfo('admin_email')).').'; ?>
+				</div>
+			</label>
 			<?php
 				if (!class_exists('UpdraftPlus_Addon_Reporting')) echo '<a href="'.apply_filters('updraftplus_com_link', "https://updraftplus.com/shop/reporting/").'" target="_blank">'.__('For more reporting features, use the Reporting add-on.', 'updraftplus').'</a>';
 			?>
@@ -291,7 +309,7 @@ foreach ($default_options as $k => $v) {
 
 	<tr>
 		<th><?php _e('Expert settings', 'updraftplus');?>:</th>
-		<td><a class="enableexpertmode" href="<?php echo UpdraftPlus::get_current_clean_url();?>#enableexpertmode"><?php _e('Show expert settings', 'updraftplus');?></a> - <?php _e("click this to show some further options; don't bother with this unless you have a problem or are curious.", 'updraftplus');?> <?php do_action('updraftplus_expertsettingsdescription'); ?></td>
+		<td><a class="enableexpertmode" href="<?php echo UpdraftPlus::get_current_clean_url();?>#enableexpertmode"><?php _e('Show expert settings', 'updraftplus');?></a> - <?php _e("open this to show some further options; don't bother with this unless you have a problem or are curious.", 'updraftplus');?> <?php do_action('updraftplus_expertsettingsdescription'); ?></td>
 	</tr>
 	<?php
 	$delete_local = UpdraftPlus_Options::get_updraft_option('updraft_delete_local', 1);

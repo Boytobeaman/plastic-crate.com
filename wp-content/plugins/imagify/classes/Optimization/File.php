@@ -1,6 +1,8 @@
 <?php
 namespace Imagify\Optimization;
 
+use Imagify_Requirements;
+
 defined( 'ABSPATH' ) || die( 'Cheatin’ uh?' );
 
 /**
@@ -173,7 +175,7 @@ class File {
 	/** ----------------------------------------------------------------------------------------- */
 
 	/**
-	 * Resize an image if it is bigger than the maximum width defined in the settings.
+	 * Resize (and rotate) an image if it is bigger than the maximum width provided.
 	 *
 	 * @since  1.9
 	 * @access public
@@ -186,7 +188,7 @@ class File {
 	 *     @type int $width  The image width.
 	 *     @type int $height The image height.
 	 * }
-	 * @param  int   $max_width Maximum width defined in the settings.
+	 * @param  int   $max_width Maximum width to resize to.
 	 * @return string|WP_Error  Path the the resized image. A WP_Error object on failure.
 	 */
 	public function resize( $dimensions = [], $max_width = 0 ) {
@@ -194,6 +196,13 @@ class File {
 
 		if ( is_wp_error( $can_be_processed ) ) {
 			return $can_be_processed;
+		}
+
+		if ( ! $max_width ) {
+			return new \WP_Error(
+				'no_resizing_threshold',
+				__( 'No threshold provided for resizing.', 'imagify' )
+			);
 		}
 
 		if ( ! $this->is_image() ) {
@@ -219,23 +228,48 @@ class File {
 			$orientation = isset( $exif['Orientation'] ) ? (int) $exif['Orientation'] : 1;
 
 			switch ( $orientation ) {
+				case 2:
+					// Flip horizontally.
+					$editor->flip( true, false );
+					break;
 				case 3:
-					$editor->rotate( 180 );
+					// Rotate 180 degrees or flip horizontally and vertically.
+					// Flipping seems faster/uses less resources.
+					$editor->flip( true, true );
+					break;
+				case 4:
+					// Flip vertically.
+					$editor->flip( false, true );
+					break;
+				case 5:
+					// Rotate 90 degrees counter-clockwise and flip vertically.
+					$result = $editor->rotate( 90 );
+
+					if ( ! is_wp_error( $result ) ) {
+						$editor->flip( false, true );
+					}
 					break;
 				case 6:
-					$editor->rotate( -90 );
+					// Rotate 90 degrees clockwise (270 counter-clockwise).
+					$editor->rotate( 270 );
+					break;
+				case 7:
+					// Rotate 90 degrees counter-clockwise and flip horizontally.
+					$result = $editor->rotate( 90 );
+
+					if ( ! is_wp_error( $result ) ) {
+						$editor->flip( true, false );
+					}
 					break;
 				case 8:
+					// Rotate 90 degrees counter-clockwise.
 					$editor->rotate( 90 );
+					break;
 			}
 		}
 
 		if ( ! $dimensions ) {
 			$dimensions = $this->get_dimensions();
-		}
-
-		if ( ! $max_width ) {
-			$max_width = $this->get_option( 'resize_larger_w' );
 		}
 
 		// Prevent removal of the exif data when resizing (only works with Imagick).
@@ -351,21 +385,19 @@ class File {
 	 * Backup a file.
 	 *
 	 * @since  1.9
+	 * @since  1.9.8 Added $backup_source argument.
 	 * @access public
 	 * @author Grégory Viguier
 	 *
-	 * @param  string $backup_path The backup path.
-	 * @return bool|WP_Error       True on success. False if the backup option is disabled. A WP_Error object on failure.
+	 * @param  string $backup_path   The backup path.
+	 * @param  string $backup_source Path to the file to backup. This is useful in WP 5.3+ when we want to optimize the full size: in that case we need to backup the original file.
+	 * @return bool|WP_Error         True on success. False if the backup option is disabled. A WP_Error object on failure.
 	 */
-	public function backup( $backup_path = null ) {
+	public function backup( $backup_path = null, $backup_source = null ) {
 		$can_be_processed = $this->can_be_processed();
 
 		if ( is_wp_error( $can_be_processed ) ) {
 			return $can_be_processed;
-		}
-
-		if ( ! isset( $backup_path ) ) {
-			$backup_path = get_imagify_attachment_backup_path( $this->path );
 		}
 
 		// Make sure the backups directory has no errors.
@@ -380,6 +412,8 @@ class File {
 			return new \WP_Error( 'backup_dir_not_writable', __( 'The backup directory is not writable.', 'imagify' ) );
 		}
 
+		$path = $backup_source && $this->filesystem->exists( $backup_source ) ? $backup_source : $this->path;
+
 		/**
 		 * Allow to overwrite the backup file if it already exists.
 		 *
@@ -390,15 +424,15 @@ class File {
 		 * @param string $path        The file path.
 		 * @param string $backup_path The backup path.
 		 */
-		$overwrite = apply_filters( 'imagify_backup_overwrite_backup', false, $this->path, $backup_path );
+		$overwrite = apply_filters( 'imagify_backup_overwrite_backup', false, $path, $backup_path );
 
 		// Copy the file.
-		$this->filesystem->copy( $this->path, $backup_path, $overwrite, FS_CHMOD_FILE );
+		$this->filesystem->copy( $path, $backup_path, $overwrite, FS_CHMOD_FILE );
 
 		// Make sure the backup copy exists.
 		if ( ! $this->filesystem->exists( $backup_path ) ) {
 			return new \WP_Error( 'backup_doesnt_exist', __( 'The file could not be saved.', 'imagify' ), array(
-				'file_path'   => $this->filesystem->make_path_relative( $this->path ),
+				'file_path'   => $this->filesystem->make_path_relative( $path ),
 				'backup_path' => $this->filesystem->make_path_relative( $backup_path ),
 			) );
 		}
@@ -430,6 +464,7 @@ class File {
 		$args = array_merge( [
 			'backup'             => true,
 			'backup_path'        => null,
+			'backup_source'      => null,
 			'optimization_level' => 0,
 			'keep_exif'          => true,
 			'convert'            => '',
@@ -444,7 +479,7 @@ class File {
 		}
 
 		// Check if external HTTP requests are blocked.
-		if ( \Imagify_Requirements::is_imagify_blocked() ) {
+		if ( Imagify_Requirements::is_imagify_blocked() ) {
 			return new \WP_Error( 'http_block_external', __( 'External HTTP requests are blocked.', 'imagify' ) );
 		}
 
@@ -471,7 +506,7 @@ class File {
 		do_action_deprecated( 'before_do_imagify', [ $this->path, $args['backup'] ], '1.9', 'imagify_before_optimize_file' );
 
 		if ( $args['backup'] ) {
-			$backup_result = $this->backup( $args['backup_path'] );
+			$backup_result = $this->backup( $args['backup_path'], $args['backup_source'] );
 
 			if ( is_wp_error( $backup_result ) ) {
 				// Stop the process if we can't backup the file.

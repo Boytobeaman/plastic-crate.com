@@ -2,7 +2,7 @@
 /**
  * WooCommerce advanced settings
  *
- * @package  WooCommerce/Admin
+ * @package  WooCommerce\Admin
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -42,6 +42,7 @@ class WC_Settings_Advanced extends WC_Settings_Page {
 			'webhooks'        => __( 'Webhooks', 'woocommerce' ),
 			'legacy_api'      => __( 'Legacy API', 'woocommerce' ),
 			'woocommerce_com' => __( 'WooCommerce.com', 'woocommerce' ),
+			'features'        => __( 'Features', 'woocommerce' ),
 		);
 
 		return apply_filters( 'woocommerce_get_sections_' . $this->id, $sections );
@@ -153,7 +154,7 @@ class WC_Settings_Advanced extends WC_Settings_Page {
 						'id'    => 'checkout_process_options',
 					),
 
-					'force_ssl_checkout' => array(
+					'force_ssl_checkout'   => array(
 						'title'           => __( 'Secure checkout', 'woocommerce' ),
 						'desc'            => __( 'Force secure checkout', 'woocommerce' ),
 						'id'              => 'woocommerce_force_ssl_checkout',
@@ -183,7 +184,7 @@ class WC_Settings_Advanced extends WC_Settings_Page {
 						'title' => __( 'Checkout endpoints', 'woocommerce' ),
 						'type'  => 'title',
 						'desc'  => __( 'Endpoints are appended to your page URLs to handle specific actions during the checkout process. They should be unique.', 'woocommerce' ),
-						'id'    => 'account_endpoint_options',
+						'id'    => 'checkout_endpoint_options',
 					),
 
 					array(
@@ -394,6 +395,28 @@ class WC_Settings_Advanced extends WC_Settings_Page {
 					array(
 						'type' => 'sectionend',
 						'id'   => 'legacy_api_options',
+					),
+				)
+			);
+		} elseif ( 'features' === $current_section ) {
+			$settings = apply_filters(
+				'woocommerce_settings_features',
+				array(
+					array(
+						'title' => __( 'Features', 'woocommerce' ),
+						'type'  => 'title',
+						'desc'  => __( 'Start using new features that are being progressively rolled out to improve the store management experience.', 'woocommerce' ),
+						'id'    => 'features_options',
+					),
+					array(
+						'title'   => __( 'Home Screen', 'woocommerce' ),
+						'desc'    => __( 'Displays analytical insights, inbox notifications, and handy shortcuts in a single screen', 'woocommerce' ),
+						'id'      => 'woocommerce_homescreen_enabled',
+						'type'    => 'checkbox',
+					),
+					array(
+						'type' => 'sectionend',
+						'id'   => 'features_options',
 					),
 				)
 			);

@@ -1,22 +1,25 @@
 === Delete Duplicate Posts ===
 Contributors: cleverplugins, lkoudal, freemius
 Tags: delete duplicate posts, delete duplicate,
-Donate link: https://cleverplugins.com
+License: GPLv2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 4.7
-Tested up to: 5.1
-Stable tag: 4.2.1
+Tested up to: 5.5
+Stable tag: 4.4.6
 Requires PHP: 5.6
 
-Get rid of duplicate blogposts on your blog!
+Get rid of duplicate posts and pages on your blog!
 
 == Description ==
-This plugin searches and removes duplicate posts and their meta data. You can change in the settings how many at a time and if the plugin should run automatically every hour.
+This plugin searches and removes duplicate posts and their meta data. You can change in the settings how many at a time and if the plugin should run automatically.
 
 You can delete posts, pages and other Custom Post Types enabled on your website.
 
 The plugin deletes not only the post, but post meta and other references to the post, cleaning up space in your WordPress website.
 
 Read more on the [plugin page on cleverplugins.com](https://cleverplugins.com/delete-duplicate-posts/).
+
+[](http://coderisk.com/wp/plugin/delete-duplicate-posts/RIPS-AZYGC_N_v4)
 
 == Installation ==
 1. Upload the delete-duplicate-posts folder to the /wp-content/plugins/ directory
@@ -30,12 +33,77 @@ Yes! You should always take a backup before deleting posts or pages on your webs
 = What happens if it deletes something I do not want to delete? =
 You should restore the backup you took of your website before you ran this tool.
 
-
 == Screenshots ==
 1. Duplicate posts were found
 2. Details in the log
 
 == Changelog ==
+
+= 4.4.6 =
+* 2020/08/06
+* Code cleanup
+* Tested with WordPress 5.5
+* Updated SDK Freemius to 2.4.0.1
+* 250,931 downloads
+
+= 4.4.5 =
+* 2020/07/06
+* Fix - automatically deactivate free version if pro version is activated - Thank you Jordi.
+* Fix - Missing link to privacy data.
+* Fix - Not correctly identifying original post when comparing with post meta values - Thank you Reinhard.
+* New - more details how long a process took is now stored in the log.
+* 242,749 downloads
+
+= 4.4.4 =
+* 2020/06/08
+* Code cleanup and security hardening.
+* 235,094 downloads
+
+= 4.4.3.1 =
+* 2020/05/08
+* Removes some debug code, whoopsie.
+* 227,615 downloads
+
+= 4.4.3 =
+* 2020/05/07
+* Plugin now looks for duplicates in posts and pages per default, no need to set it after activating plugin.
+* Fix: "Error deleting post" showing even if the post was deleted. Thank you Murray :-)
+* The log is now updated when list of duplicates is updated.
+* 225,725 downloads
+
+= 4.4.2 =
+* 2020/05/04
+* Fixing activation bugs - Thank you @locutus45 and @paul1427
+* Fixing code not working with PHP 5.6
+* Fixed missing translation strings - Thank you Canny for translating to Korean! :-D
+* Added automatic reload when manually deleting duplicates.
+* 222,012 downloads
+
+= 4.4.1 =
+* 2020/05/03
+* Fixing bug in install routines
+* 219,984 downloads
+
+= 4.4 =
+* 2020/05/02
+* Tested up to WP 5.4.1
+* Pro: Choose different post stati to look for; publish, draft, scheduled, pending, private and any other custom post status.
+* Code improvement, works faster.
+* 218,123 downloads
+
+= 4.3 =
+* 2020/04/25
+* Rewrote plugin to better handle big sites with lots of duplicate content.
+* Fixed automatic deletion (cron job) not working properly on some sites.
+* Security fixes and hardening throughout the plugin.
+* Log is now AJAX based to help load on big sites.
+* Duplicate list now loads via AJAX to help with load on big sites.
+* Added inline help - Helpscout
+* Updated Freemius 3rd party SDK to 2.3.2
+* Added option to upgrade to Pro version.
+* Updated language files.
+* Removed option to run every minute - Sorry, but not a good idea for many websites and hosting companies do not like it either.
+* 213,367 downloads
 
 = 4.2.1 = 
 * Direct link to support forum
@@ -142,7 +210,6 @@ You should restore the backup you took of your website before you ran this tool.
 * Ads are no longer optional. Sorry about that :-)
 * Changes to the amount of duplicates you can delete using CRON.
 
-
 = 2.0.4 =
 * Bugfix : A minor speed improvement.
 
@@ -152,12 +219,10 @@ You should restore the backup you took of your website before you ran this tool.
 = 2.0.2 =
 * Bugfix : Now actually deletes duplicate posts when clicking the button manually.. Doh...
 
-
 = 2.0 =
 * Design interface updated
 + New automatic CRON feature as per many user requests
 + Optional: E-mail notifications
-
 
 = 1.3.1 =
 * Fixes problem with dashboard widget. Thanks to Derek for pinpointing the error.
@@ -172,4 +237,4 @@ You should restore the backup you took of your website before you ran this tool.
 * First release
 
 == Upgrade Notice ==
-4.2  Contains security fixes, please update now.
+4.4.6  Recommended update for WP 5.5 compatibility.

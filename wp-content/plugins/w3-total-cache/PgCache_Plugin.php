@@ -36,11 +36,18 @@ class PgCache_Plugin {
 		add_action( 'w3tc_flush_url',
 			array( $this, 'w3tc_flush_url' ),
 			1100, 1 );
+
+		add_filter( 'w3tc_pagecache_set_header',
+			array( $this, 'w3tc_pagecache_set_header' ), 10, 3 );
 		add_filter( 'w3tc_admin_bar_menu',
 			array( $this, 'w3tc_admin_bar_menu' ) );
 
 		add_filter( 'cron_schedules',
 			array( $this, 'cron_schedules' ) );
+
+		add_action( 'w3tc_config_save',
+			array( $this, 'w3tc_config_save' ),
+			10, 1 );
 
 		$o = Dispatcher::component( 'PgCache_ContentGrabber' );
 
@@ -274,6 +281,7 @@ class PgCache_Plugin {
 				'servers' => $c->get_array( 'pgcache.memcached.servers' ),
 				'username' => $c->get_string( 'pgcache.memcached.username' ),
 				'password' => $c->get_string( 'pgcache.memcached.password' ),
+				'binary_protocol' => $c->get_boolean( 'pgcache.memcached.binary_protocol' ),
 				'name' => __( 'Page Cache', 'w3-total-cache' )
 			);
 		} elseif ( $c->get_string( 'pgcache.engine' ) == 'redis' ) {
@@ -362,4 +370,28 @@ class PgCache_Plugin {
 
 		return $v;
 	}
+
+
+
+	/**
+	 * By default headers are not cached by file_generic
+	 */
+	public function w3tc_pagecache_set_header( $header, $header_original,
+			$pagecache_engine ) {
+		if ( $pagecache_engine == 'file_generic' ) {
+			return null;
+		}
+
+		return $header;
+	}
+
+
+
+	public function w3tc_config_save( $config ) {
+		// frontend activity
+		if ( $config->get_boolean( 'pgcache.cache.feed' ) ) {
+			$config->set( 'pgcache.cache.nginx_handle_xml', true );
+		}
+	}
+
 }
