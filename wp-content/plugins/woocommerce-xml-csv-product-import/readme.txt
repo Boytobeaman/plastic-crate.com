@@ -2,7 +2,7 @@
 Contributors: soflyy, wpallimport 
 Requires at least: 4.1
 Tested up to: 5.5
-Stable tag: 1.4.6
+Stable tag: 1.4.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: woocommerce xml import, woocommerce csv import, woocommerce, import, xml, csv, wp all import, csv import, import csv, xml import, import xml, woocommerce csv importer, woocommerce xml importer, csv importer, csv import suite
@@ -82,6 +82,11 @@ The WooCommerce add-on will appear in the Step 4 of WP All Import.
 1. The WooCommerce add-on.
 
 == Changelog ==
+
+= 1.4.7 =
+* bug fix: matching linked products didn't work properly, this functionality moved to the end of import process
+* bug fix: import download limit and download expiry are set to 1, instead of being provided empty values
+* bug fix: featured image not updated when only "Images" is set to be updated in "Choose which data to update"
 
 = 1.4.6 =
 * improvement: compatibility with WordPress 5.5

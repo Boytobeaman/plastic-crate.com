@@ -184,7 +184,6 @@ final class XmlImportWooCommerceService {
                     }
                 }
             }
-//            $variation_attributes = $product->get_variation_attributes();
             foreach ($parentAttributes as $name => $parentAttribute) {
                 // Only in case if attribute marked to import as taxonomy terms.
                 if ($parentAttribute['is_taxonomy']) {
@@ -258,6 +257,11 @@ final class XmlImportWooCommerceService {
                                 }
                             }
                         }
+                    } else {
+                        $default_attributes = $this->getOriginallyParsedData($product->get_id(), '_default_attributes');
+                        if (!empty($default_attributes)) {
+                            $defaultAttributes = maybe_unserialize($default_attributes);
+                        }
                     }
                 }
                 $product->set_default_attributes($defaultAttributes);
@@ -287,6 +291,7 @@ final class XmlImportWooCommerceService {
                     }
                 }
             }
+	        delete_post_meta($firstVariationID, '_variation_updated');
         }
 
         update_post_meta($product->get_id(), '_product_attributes', $parentAttributes);
@@ -546,6 +551,9 @@ final class XmlImportWooCommerceService {
     public function pushMeta($pid, $meta_key, $meta_value, $isNewPost = TRUE) {
         if (!empty($meta_key) && ($isNewPost || $this->isUpdateCustomField($meta_key))) {
             update_post_meta($pid, $meta_key, $meta_value);
+        } elseif (in_array($meta_key, ['_product_image_gallery']) && $this->isUpdateDataAllowed('is_update_images', $isNewPost)) {
+	        // Update gallery custom field if images is set to be updated.
+	        update_post_meta($pid, $meta_key, $meta_value);
         }
     }
 

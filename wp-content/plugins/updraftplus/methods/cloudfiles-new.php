@@ -65,7 +65,7 @@ class UpdraftPlus_BackupModule_cloudfiles_opencloudsdk extends UpdraftPlus_Backu
 	 */
 	public function get_supported_features() {
 		// This options format is handled via only accessing options via $this->get_options()
-		return array('multi_options', 'config_templates', 'multi_storage');
+		return array('multi_options', 'config_templates', 'multi_storage', 'conditional_logic');
 	}
 
 	/**
@@ -149,7 +149,7 @@ class UpdraftPlus_BackupModule_cloudfiles_opencloudsdk extends UpdraftPlus_Backu
 	 * Modifies handerbar template options
 	 *
 	 * @param array $opts handerbar template options
-	 * @return array - Modified handerbar template options
+	 * @return Array - Modified handerbar template options
 	 */
 	public function transform_options_for_template($opts) {
 		$opts['regions'] = array(

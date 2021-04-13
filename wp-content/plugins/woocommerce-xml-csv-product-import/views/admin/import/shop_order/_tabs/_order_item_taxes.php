@@ -47,7 +47,8 @@
 								<td colspan="2">									
 									<label><?php _e('Tax Rate', PMWI_Plugin::TEXT_DOMAIN); ?></label>
 									<span class="wpallimport-clear"></span>
-									<select name="pmwi_order[taxes][<?php echo $i;?>][tax_code]" id="order_tax_code_<?php echo $i;?>" class="rad4 switcher" style="font-size: 14px !important;">																		
+									<select name="pmwi_order[taxes][<?php echo $i;?>][tax_code]" id="order_tax_code_<?php echo $i;?>" class="rad4 switcher" style="font-size: 14px !important;">
+                                        <option value=""><?php _e("Select",PMWI_Plugin::TEXT_DOMAIN);?></option>
 										<?php 
 										$taxes_for_tooltip = array();
 										foreach ($classes_options as $key => $value):?>

@@ -155,15 +155,11 @@ abstract class ImportProduct extends ImportProductBase {
         public function prepareDownloadableProperties(){
             // Downloadable options.
             if ( $this->isDownloadable() ) {
-                $_download_limit = absint( $this->getValue('product_download_limit') );
-                if (!$_download_limit) {
-                    $_download_limit = ''; // 0 or blank = unlimited
-                }
+                $_download_limit = $this->getValue('product_download_limit');
+	            $_download_limit = -1 === (int) $_download_limit || '' === $_download_limit ? -1 : absint( $_download_limit );
                 $this->setProperty('download_limit', $_download_limit);
-                $_download_expiry = absint( $this->getValue('product_download_expiry') );
-                if (!$_download_expiry) {
-                    $_download_expiry = ''; // 0 or blank = unlimited
-                }
+                $_download_expiry = $this->getValue('product_download_expiry');
+	            $_download_expiry = -1 === (int) $_download_expiry || '' === $_download_expiry ? -1 : absint( $_download_expiry );
                 $this->setProperty('download_expiry', $_download_expiry);
                 // File paths will be stored in an array keyed off md5(file path).
                 if ($this->getValue('product_files')) {
@@ -276,12 +272,12 @@ abstract class ImportProduct extends ImportProductBase {
     public function prepareLinkedProducts() {
         // Upsells.
         if ($this->isNewProduct() || $this->getImportService()->isUpdateCustomField('_upsell_ids')) {
-            $linked = $this->getLinkedProducts($this->getPid(), $this->getValue('product_up_sells'), '_upsell_ids');
+            $linked = $this->getLinkedProducts($this->getValue('product_up_sells'), '_upsell_ids');
             $this->productProperties['upsell_ids'] = $linked;
         }
         // Cross sells.
         if ($this->isNewProduct() || $this->getImportService()->isUpdateCustomField('_crosssell_ids')) {
-            $linked = $this->getLinkedProducts($this->getPid(), $this->getValue('product_cross_sells'), '_crosssell_ids');
+            $linked = $this->getLinkedProducts($this->getValue('product_cross_sells'), '_crosssell_ids');
             $this->productProperties['cross_sell_ids'] = $linked;
         }
         // Grouping.
@@ -297,6 +293,10 @@ abstract class ImportProduct extends ImportProductBase {
         }
         $attributes = $this->getAttributesProperties();
         $this->setProperty('attributes', $attributes);
+        $default_attributes = $this->getValue('default_attributes_type');
+        if ($default_attributes && !in_array($default_attributes, ['first', 'instock'])) {
+            $this->setProperty('_default_attributes', $default_attributes);
+        }
     }
 
     /**
@@ -360,7 +360,7 @@ abstract class ImportProduct extends ImportProductBase {
                         if ( isset( $attribute['value']) ) {
                             $values = array_map('stripslashes', array_map( 'strip_tags', explode( $attributes_delimiter, $attribute['value'])));
                             // Remove empty items in the array.
-                            $values = array_filter( $values, array($this, "filtering") );
+                            $values = array_filter( $values, [$this, "filtering"] );
                             if (intval($attribute['is_create_taxonomy_terms'])){
                                 $real_attr_name = $this->getImportService()->getTaxonomiesService()->createTaxonomy($real_attr_name);
                                 $attributeName = wc_attribute_taxonomy_name( $real_attr_name );
@@ -369,17 +369,23 @@ abstract class ImportProduct extends ImportProductBase {
                                 $attr_values = array();
                                 foreach ($values as $key => $val) {
                                     $value = substr($val, 0, $max_attribute_length);
+                                    $term_slug = sanitize_title(str_replace('#', '_', $value));
                                     $term = get_term_by('name', $value, wc_attribute_taxonomy_name( $real_attr_name ), ARRAY_A);
                                     // For compatibility with WPML plugin.
                                     $term = apply_filters('wp_all_import_term_exists', $term, wc_attribute_taxonomy_name( $real_attr_name ), $value, null);
-                                    if ( empty($term) && !is_wp_error($term) ){
-                                        $term = is_exists_term($value, wc_attribute_taxonomy_name( $real_attr_name ));
-                                        if ( empty($term) && !is_wp_error($term) ){
-                                            $term = is_exists_term(htmlspecialchars($value), wc_attribute_taxonomy_name( $real_attr_name ));
-                                            if ( empty($term) && !is_wp_error($term) && intval($attribute['is_create_taxonomy_terms'])){
+                                    if ( empty($term) && !is_wp_error($term) ) {
+                                        $term = is_exists_term($term_slug, wc_attribute_taxonomy_name( $real_attr_name ));
+                                        if ( empty($term) && !is_wp_error($term) ) {
+                                            $term = is_exists_term(htmlspecialchars($term_slug), wc_attribute_taxonomy_name( $real_attr_name ));
+                                            if ( empty($term) && !is_wp_error($term) && intval($attribute['is_create_taxonomy_terms'])) {
+                                                $term_options = [];
+                                                if (strpos($value, '#') !== FALSE) {
+                                                    $term_options['slug'] = $term_slug;
+                                                }
                                                 $term = wp_insert_term(
                                                     $value, // the term
-                                                    wc_attribute_taxonomy_name( $real_attr_name ) // the taxonomy
+                                                    wc_attribute_taxonomy_name( $real_attr_name ), // the taxonomy
+                                                    $term_options
                                                 );
                                             }
                                         }
@@ -391,8 +397,7 @@ abstract class ImportProduct extends ImportProductBase {
                                 $values = $attr_values;
                                 $values = array_map( 'intval', $values );
                                 $values = array_unique( $values );
-                            }
-                            else{
+                            } else {
                                 $values = array();
                             }
                         }
@@ -483,8 +488,7 @@ abstract class ImportProduct extends ImportProductBase {
                 $term = is_exists_term( $shipping_class, 'product_shipping_class');
                 // For compatibility with WPML plugin.
                 $term = apply_filters('wp_all_import_term_exists', $term, 'product_shipping_class', $shipping_class, null);
-            }
-            else {
+            } else {
                 $term = is_exists_term( (int) $shipping_class, 'product_shipping_class');
                 if (empty($term) || is_wp_error($term)) {
                     $term = is_exists_term( $shipping_class, 'product_shipping_class');
@@ -493,8 +497,7 @@ abstract class ImportProduct extends ImportProductBase {
             // The term to check. Accepts term ID, slug, or name.
             if (!empty($term) && !is_wp_error($term)){
                 $shipping_class = (int) $term['term_id'];
-            }
-            else {
+            } else {
                 $term = wp_insert_term($shipping_class, 'product_shipping_class');
                 if (!empty($term) && !is_wp_error($term)) {
                     $shipping_class = (int) $term['term_id'];
@@ -681,6 +684,16 @@ abstract class ImportProduct extends ImportProductBase {
                 break;
             case 'featured':
                 if ($this->getImportService()->isUpdateDataAllowed('is_update_featured_status', $this->isNewProduct())) {
+                    $this->productProperties[$property] = $value;
+                }
+                break;
+            case 'reviews_allowed':
+                if ($this->getImportService()->isUpdateDataAllowed('is_update_comment_status', $this->isNewProduct())) {
+                    $this->productProperties[$property] = $value;
+                }
+                break;
+            case 'shipping_class_id':
+                if ($this->getImportService()->isUpdateTaxonomy('product_shipping_class', $this->isNewProduct())) {
                     $this->productProperties[$property] = $value;
                 }
                 break;

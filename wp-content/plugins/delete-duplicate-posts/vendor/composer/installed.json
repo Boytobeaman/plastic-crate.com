@@ -6,15 +6,15 @@
         "source": {
             "type": "git",
             "url": "https://github.com/lkoudal/persist-admin-notices-dismissal.git",
-            "reference": "0d858995370efc143177068000dc21811f3f6e4b"
+            "reference": "c8cc0cffa751ddcb3bbe6539a987ed04e3bc59d4"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/lkoudal/persist-admin-notices-dismissal/zipball/0d858995370efc143177068000dc21811f3f6e4b",
-            "reference": "0d858995370efc143177068000dc21811f3f6e4b",
+            "url": "https://api.github.com/repos/lkoudal/persist-admin-notices-dismissal/zipball/c8cc0cffa751ddcb3bbe6539a987ed04e3bc59d4",
+            "reference": "c8cc0cffa751ddcb3bbe6539a987ed04e3bc59d4",
             "shasum": ""
         },
-        "time": "2020-05-16T15:43:35+00:00",
+        "time": "2020-12-31T00:00:33+00:00",
         "type": "library",
         "installation-source": "source",
         "autoload": {

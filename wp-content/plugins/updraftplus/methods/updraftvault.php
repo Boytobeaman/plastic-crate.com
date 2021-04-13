@@ -13,8 +13,8 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 	/**
 	 * This function makes testing easier, rather than having to change the URLs in multiple places
 	 *
-	 * @param  boolean|string $which_page specifies which page to get the URL for
-	 * @return string
+	 * @param  Boolean|string $which_page specifies which page to get the URL for
+	 * @return String
 	 */
 	private function get_url($which_page = false) {
 		$base = defined('UPDRAFTPLUS_VAULT_SHOP_BASE') ? UPDRAFTPLUS_VAULT_SHOP_BASE : 'https://updraftplus.com/shop/';
@@ -78,7 +78,7 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 	 *
 	 * @param Boolean $force_refresh - if set, and if relevant, don't use cached credentials, but get them afresh
 	 *
-	 * @return array An array containing the Amazon S3 credentials (accesskey, secretkey, etc.)
+	 * @return Array An array containing the Amazon S3 credentials (accesskey, secretkey, etc.)
 	 *				 along with some configuration values.
 	 */
 	public function get_config($force_refresh = false) {
@@ -142,6 +142,7 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 		}
 		
 		$details_retrieved = false;
+		$cache_in_job = false;
 		if (!is_wp_error($getconfig) && false != $getconfig && isset($getconfig['body'])) {
 
 			$response_code = wp_remote_retrieve_response_code($getconfig);
@@ -158,6 +159,7 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 
 				if (is_array($response) && isset($response['accesskey']) && isset($response['secretkey']) && isset($response['path'])) {
 					$details_retrieved = true;
+					$cache_in_job = true;
 					$opts['last_config']['accesskey'] = $response['accesskey'];
 					$opts['last_config']['secretkey'] = $response['secretkey'];
 					$opts['last_config']['path'] = $response['path'];
@@ -189,8 +191,23 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 					unset($config['quota']);
 					if (!empty($response['message'])) $config['error_message'] = $response['message'];
 					$details_retrieved = true;
+					$cache_in_job = true;
+				} elseif (is_array($response) && isset($response['result']) && 'error' == $response['result'] && 'gettempcreds_exception2' == $response['code']) {
+					$this->log("An error occurred while fetching your Vault credentials. Please try again after a few minutes (".$response['code'].")");
+					$config['error'] = array('message' => 'fetch_credentials_error', 'values' => array($response['code']));
+					$config['accesskey'] = '';
+					$config['secretkey'] = '';
+					$config['path'] = '';
+					$config['sessiontoken'] = '';
+					$config['email'] = $opts['email']; // Pass along the email address used, as we need it to display our error message correctly
+					unset($config['quota']);
+					// We want to hide the AWS error message in this case
+					$config['error_message'] = __("An error occurred while fetching your Vault credentials. Please try again after a few minutes.", 'updraftplus');
+					$details_retrieved = true;
+					$cache_in_job = true;
 				} else {
 					if (is_array($response) && !empty($response['result'])) {
+						$cache_in_job = true;
 						$msg = "response code: ".$response['result'];
 						if (!empty($response['code'])) $msg .= " (".$response['code'].")";
 						if (!empty($response['message'])) $msg .= " (".$response['message'].")";
@@ -226,6 +243,7 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 					if (!empty($last_config['secretkey'])) $config['secretkey'] = $last_config['secretkey'];
 					if (isset($last_config['path'])) $config['path'] = $last_config['path'];
 					if (isset($opts['quota'])) $config['quota'] = $opts['quota'];
+					$cache_in_job = true;
 				} else {
 					if ($updraftplus->backup_time) $this->log("failed to retrieve access details from updraftplus.com: no recently stored configuration was found to use instead");
 				}
@@ -234,7 +252,7 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 
 		$config['server_side_encryption'] = 'AES256';
 		$this->vault_config = $config;
-		$this->jobdata_set('config', $config);
+		if ($cache_in_job) $this->jobdata_set('config', $config);
 		// N.B. This isn't multi-server compatible
 		set_transient('udvault_last_config', $config, 86400*7);
 		return $config;
@@ -427,7 +445,7 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 	 * Modifies handerbar template options
 	 *
 	 * @param array $opts
-	 * @return array - Modified handerbar template options
+	 * @return Array - Modified handerbar template options
 	 */
 	public function transform_options_for_template($opts) {
 		if (!empty($opts['token']) || !empty($opts['email'])) {
@@ -457,7 +475,7 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 	 * Gives settings keys which values should not passed to handlebarsjs context.
 	 * The settings stored in UD in the database sometimes also include internal information that it would be best not to send to the front-end (so that it can't be stolen by a man-in-the-middle attacker)
 	 *
-	 * @return array - Settings array keys which should be filtered
+	 * @return Array - Settings array keys which should be filtered
 	 */
 	public function filter_frontend_settings_keys() {
 		return array(
@@ -468,7 +486,7 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 		);
 	}
 	
-	private function connected_html($vault_settings = false) {
+	private function connected_html($vault_settings = false, $error_message = false) {
 		if (!is_array($vault_settings)) {
 			$vault_settings = $this->get_options();
 		}
@@ -480,7 +498,12 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 
 		$ret .= '<br><strong>'.__('Quota:', 'updraftplus').'</strong> ';
 		if (!isset($vault_settings['quota']) || !is_numeric($vault_settings['quota']) || $vault_settings['quota'] < 0) {
-			$ret .= __('Unknown', 'updraftplus');
+			if (!$error_message) {
+				$ret .= __('Unknown', 'updraftplus');
+			} else {
+				$ret .= $error_message;
+				$ret .= $this->get_quota_recount_links();
+			}
 		} else {
 			$ret .= $this->s3_get_quota_info('text', $vault_settings['quota']);
 		}
@@ -527,9 +550,9 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 	/**
 	 * This function will return the S3 quota Information
 	 *
-	 * @param  string|integer $format n numeric, returns an integer or false for an error (never returns an error)
+	 * @param  String|integer $format n numeric, returns an integer or false for an error (never returns an error)
 	 * @param  integer        $quota  S3 quota information
-	 * @return string|integer
+	 * @return String|integer
 	 */
 	protected function s3_get_quota_info($format = 'numeric', $quota = 0) {
 		$ret = '';
@@ -575,12 +598,21 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 		} else {
 			$ret .= '0';
 		}
-
-		$ret .= ' - <a href="'.esc_attr($this->get_url('get_more_quota')).'">'.__('Get more quota', 'updraftplus').'</a> - <a href="'.UpdraftPlus::get_current_clean_url().'" id="updraftvault_recountquota">'.__('Refresh current status', 'updraftplus').'</a>';
-
+		
+		$ret .= $this->get_quota_recount_links();
+		
 		if ('text' == $format) set_transient('updraftvault_quota_text', $ret, 86400*3);
 
 		return ('text' == $format) ? $ret : $counted;
+	}
+	
+	/**
+	 * Build the links to recount used vault quota and to purchase more quota
+	 *
+	 * @return String 
+	 */
+	private function get_quota_recount_links() {
+		return ' - <a href="'.esc_attr($this->get_url('get_more_quota')).'">'.__('Get more quota', 'updraftplus').'</a> - <a href="'.UpdraftPlus::get_current_clean_url().'" id="updraftvault_recountquota">'.__('Refresh current status', 'updraftplus').'</a>';
 	}
 
 	public function credentials_test($posted_settings) {
@@ -592,7 +624,12 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 		$config = $this->get_config();
 
 		if (empty($config['accesskey']) && !empty($config['error_message'])) {
-			$results = array('html' => htmlspecialchars($config['error_message']), 'connected' => 0);
+			if (!empty($config['error']) && is_array($config['error']) && 'fetch_credentials_error' == $config['error']['message']) {
+				$opts = array('token' => 'unknown', 'email' => $config['email'], 'quota' => -1);
+				$results = array('html' => $this->connected_html($opts, $config['error_message']), 'connected' => 1);
+			} else {
+				$results = array('html' => htmlspecialchars($config['error_message']), 'connected' => 0);
+			}
 		} else {
 			// Now read the opts
 			$opts = $this->get_options();
@@ -609,8 +646,8 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 	/**
 	 * This method also gets called directly, so don't add code that assumes that it's definitely an AJAX situation
 	 *
-	 * @param  boolean $echo_results check to see if the results need to be echoed
-	 * @return array
+	 * @param  Boolean $echo_results check to see if the results need to be echoed
+	 * @return Array
 	 */
 	public function ajax_vault_disconnect($echo_results = true) {
 		$vault_settings = $this->get_options();
@@ -651,9 +688,9 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 	/**
 	 * This is called from the UD admin object
 	 *
-	 * @param  boolean       $echo_results    A Flag to see if results need to be echoed or returned
-	 * @param  boolean|array $use_credentials Check if Vault needs to use credentials
-	 * @return array
+	 * @param  Boolean       $echo_results    A Flag to see if results need to be echoed or returned
+	 * @param  Boolean|array $use_credentials Check if Vault needs to use credentials
+	 * @return Array
 	 */
 	public function ajax_vault_connect($echo_results = true, $use_credentials = false) {
 	
@@ -683,9 +720,9 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 	/**
 	 * Returns either true (in which case the Vault token will be stored), or false|WP_Error
 	 *
-	 * @param  string $email    Vault Email
-	 * @param  string $password Vault Password
-	 * @return boolean|WP_Error
+	 * @param  String $email    Vault Email
+	 * @param  String $password Vault Password
+	 * @return Boolean|WP_Error
 	 */
 	private function vault_connect($email, $password) {
 
@@ -756,6 +793,17 @@ class UpdraftPlus_BackupModule_updraftvault extends UpdraftPlus_BackupModule_s3 
 					}
 				}
 				return new WP_Error('authfailed', __('Your email address and password were not recognised by UpdraftPlus.Com', 'updraftplus'));
+				break;
+			case 'iamfailed':
+				if (!empty($response['authproblem'])) {
+					if ('gettempcreds_exception2' == $response['authproblem'] || 'gettempcreds_exception2' == $response['authproblem']) {
+						$authfail_error = new WP_Error('authfailed', __('An error occurred while fetching your Vault credentials. Please try again after a few minutes.'));
+					} else {
+						$authfail_error = new WP_Error('authfailed', __('An unknown error occurred while connecting to Vault. Please try again.'));
+					}
+					return $authfail_error;
+				}
+				return new WP_Error('unknown_response', __('UpdraftPlus.Com returned a response, but we could not understand it', 'updraftplus'));
 				break;
 			default:
 				return new WP_Error('unknown_response', __('UpdraftPlus.Com returned a response, but we could not understand it', 'updraftplus'));

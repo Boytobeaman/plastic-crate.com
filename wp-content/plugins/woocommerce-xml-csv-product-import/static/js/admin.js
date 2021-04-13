@@ -496,7 +496,7 @@
 			$parent.find('.advanced_attribute_settings').each(function(){
 				$(this).find('.advanced_in_variations, .advanced_is_visible, .advanced_is_taxonomy, .advanced_is_create_terms').each(function(){
 					if (!$(this).find('input:checked').length) {
-						$(this).find('input[type="radio"]:first').attr('checked', 'checked');
+						$(this).find('input[type="radio"]:first').prop('checked', true);
 					}
 				});
 			});
@@ -542,20 +542,22 @@
 
 		$clone.insertBefore($template).css('display', 'none').removeClass('template').fadeIn();
 
-		$clone.on("change", "input.switcher", function (e) {
+		$parent.on("change", "input.switcher", function (e) {
 			if ($(this).is(':radio:checked')) {
 				$(this).parents('form').find('input.switcher:radio[name="' + $(this).attr('name') + '"]').not(this).change();
 			}
 			let $targets = $('.switcher-target-' + $(this).attr('id'));
 			let is_show = $(this).is(':checked'); if ($(this).is('.switcher-reversed')) is_show = ! is_show;
 			if (is_show) {
-				$targets.slideDown();
+				$targets.slideDown('fast', function(){
+					$(this).css({'overflow': 'visible'});
+				});
 			} else {
 				$targets.slideUp().find('.clear-on-switch').add($targets.filter('.clear-on-switch')).val('');
 			}
 		}).change();
 
-		$clone.on("change", "select.switcher", function (e) {
+		$parent.on("change", "select.switcher", function (e) {
 			var $targets = $('.switcher-target-' + $(this).attr('id'));
 			var is_show = $(this).val() == 'xpath'; if ($(this).is('.switcher-reversed')) is_show = ! is_show;
 			if (is_show) {
@@ -597,10 +599,10 @@
 	});	
 
 	$('a.add-new-line').each(function(){
-		var $parent = $(this).parents('table:first');		
+		var $parent = $(this).parents('table:first');
 		if ($(this).parents('table').length < 4 && $parent.children('tbody').children('tr').length == 2) {
-			$(this).click();	
-		} 
+			$(this).click();
+		}
 	});
 
 	$('a.switcher').on('click', function (e) {
@@ -611,14 +613,7 @@
 				if ($targets.find('a.add-new-line').length){
 					var $parent = $targets.find('a.add-new-line').parents('table:first');
 					if ($parent.children('tbody').children('tr').length == 2){
-						var $add_new = $targets.find('a.add-new-line');
-						var $taxes = $add_new.parents('table').first();
-						var $template = $taxes.children('tbody').children('tr.template');
-						var $clone = $template.clone(true);
-						var $number = parseInt($taxes.find('tbody:first').children().not('.template').length) - 1;
-						var $cloneHtml = $clone.html().replace(/ROWNUMBER/g, $number).replace(/CELLNUMBER/g, 'ROWNUMBER').replace('date-picker', 'datepicker');
-						$clone.html($cloneHtml);
-						$clone.insertBefore($template).css('display', 'none').removeClass('template').show();		
+						$targets.find('a.add-new-line').click();
 					}
 				}
 			$targets.slideDown('slow');

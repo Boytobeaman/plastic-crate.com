@@ -1,21 +1,30 @@
 === Delete Duplicate Posts ===
 Contributors: cleverplugins, lkoudal, freemius
+Donate link: https://cleverplugins.com/
 Tags: delete duplicate posts, delete duplicate,
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 4.7
-Tested up to: 5.5
-Stable tag: 4.4.6
+Tested up to: 5.6
+Stable tag: 4.6.1
 Requires PHP: 5.6
 
 Get rid of duplicate posts and pages on your blog!
 
 == Description ==
-This plugin searches and removes duplicate posts and their meta data. You can change in the settings how many at a time and if the plugin should run automatically.
+This plugin searches and removes duplicate posts and their meta data. 
 
 You can delete posts, pages and other Custom Post Types enabled on your website.
 
 The plugin deletes not only the post, but post meta and other references to the post, cleaning up space in your WordPress website.
+
+= Features =
+
+* Select individual posts to delete or select all.
+* Manual or automatic deletion
+* Keep oldest or newest version.
+* Get status email when something is deleted.
+* Integrated log shows all activity.
 
 Read more on the [plugin page on cleverplugins.com](https://cleverplugins.com/delete-duplicate-posts/).
 
@@ -34,10 +43,43 @@ Yes! You should always take a backup before deleting posts or pages on your webs
 You should restore the backup you took of your website before you ran this tool.
 
 == Screenshots ==
-1. Duplicate posts were found
-2. Details in the log
+1. Duplicate posts were found.
+2. Details in the log.
+3. Settings in free version
 
 == Changelog ==
+
+= 4.6.1 =
+* 2020/01/12
+* Hotfix - "The plugin generated 15 characters of unexpected output during activation" - Thanks Fabio.
+
+
+= 4.6 =
+* 2020/01/12
+* Beta feature: Limit amount of duplicates to find. On big sites with many duplicates the plugin can time out. This feature allows you to limit the amount of results. This feature is only available for free while being tested. Thank you Fabio.
+* Minor text or layout fixes.
+* 286,392 downloads
+
+= 4.5 =
+* 2021/01/11
+* New: Manually select which duplicates to delete (or use the automatic)
+* Fix: WordPress 5.6 jQuery compatibility.
+* Fix: Not allowing to disable final post status if only one left. Thank you @nd62.
+* Work on improving PHP 8 compatibility.
+* Updated 3rd party libraries to latest version. Freemius v. 2.4.1
+* 283,070 downloads
+
+= 4.4.8 =
+* 2020/11/30
+* Fix bug with email not sending. Thank you Fatih.
+* 272,622 downloads
+
+= 4.4.7 =
+* 2020/11/09
+* Introducing Multisite compatibility
+* Updated 3rd party Freemius library to v. 2.4.1
+* Tested with WordPress 5.5.3
+* 265,176 downloads
 
 = 4.4.6 =
 * 2020/08/06
@@ -237,4 +279,4 @@ You should restore the backup you took of your website before you ran this tool.
 * First release
 
 == Upgrade Notice ==
-4.4.6  Recommended update for WP 5.5 compatibility.
+4.6  Recommended update - compatibility with WordPress 5.6 and new features + solution for time out problem on big websites.

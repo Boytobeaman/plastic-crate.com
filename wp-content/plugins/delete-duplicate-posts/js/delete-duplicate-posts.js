@@ -1,5 +1,6 @@
 /* globals jQuery:true, ajaxurl:true, cp_ddp:true  */
-function cp_ddp_freemius_opt_in( element ) {
+
+function cp_ddp_freemius_opt_in( element ) { // eslint-disable-line no-unused-vars
 	var nonce  = jQuery( '#cp-ddp-freemius-opt-nonce' ).val(); // Nonce.
 	var choice = jQuery( element ).data( 'opt' ); // Choice.
 
@@ -31,29 +32,43 @@ jQuery(document).ready(function(){
 	ddp_get_duplicates(1,senddata);
 
 	
-
-
 // DELETE DUPES
 jQuery(document).on('click', '#deleteduplicateposts_deleteall', function(e) {
 
 	e.preventDefault();
+	
+
+	jQuery('#log .spinner').addClass('is-active');
+	var checked_posts_to_delete = [];
+	jQuery(".duplicatetable input[name='delpost[]']:checked").each(function (){
+		checked_posts_to_delete.push(parseInt(jQuery(this).val()));
+	});
+
+	if ( checked_posts_to_delete === undefined || checked_posts_to_delete.length === 0 ) {
+		alert(cp_ddp.text_selectsomething);
+		return false;
+	}
 
 	if ( !confirm( cp_ddp.text_areyousure ) ) {
 		return;
 	}
+
+	jQuery('#ddp_container .dupelist .duplicatetable tbody').empty();
+
 
 	jQuery.ajax({
 		type: 'POST',
 		url: ajaxurl,
 		data: {
 			'_ajax_nonce': cp_ddp.deletedupes_nonce,
-			'action': 'ddp_delete_duplicates'
+			'action': 'ddp_delete_duplicates',
+			'checked_posts' : checked_posts_to_delete
 		},
 		dataType: "json",
 		success: function( ) {
 			ddp_get_duplicates(1,senddata);
 			ddp_refresh_log();
-			location.reload(true);
+			// location.reload(true);
 		}
 	}).fail(function (response) {
 		jQuery('#log .spinner').removeClass('is-active');
@@ -61,7 +76,7 @@ jQuery(document).on('click', '#deleteduplicateposts_deleteall', function(e) {
 			window.console.log( response.statusCode+' '+response.statusText );
 			ddp_get_duplicates(1,senddata);
 			ddp_refresh_log();
-			location.reload(true);
+			// location.reload(true);
 		}
 	});
 
@@ -79,6 +94,14 @@ jQuery(document).on('click', '#deleteduplicateposts_deleteall', function(e) {
 
 
 
+	/**
+	 * ddp_refresh_log.
+	 *
+	 * @author	Lars Koudal
+	 * @since	v0.0.1
+	 * @version	v1.0.0	Sunday, January 10th, 2021.
+	 * @return	void
+	 */
 	function ddp_refresh_log() {
 		// REFRESH LOG
 		jQuery('#ddp_log').empty();
@@ -112,9 +135,19 @@ jQuery(document).on('click', '#deleteduplicateposts_deleteall', function(e) {
 
 
 
-// stepid = integer
-// data = array of tests
+/**
+ *
+ * @author	Lars Koudal
+ * @since	v0.0.1
+ * @version	v1.0.0	Sunday, January 10th, 2021.
+ * @global
+ * @param	mixed	stepid - integer, starts at 1
+ * @param	mixed	data  	
+ * @param	mixed	self  	
+ * @return	void
+ */
 function ddp_get_duplicates( stepid, data, self ) {
+
 
 	jQuery( "#ddp_container #ddp_buttons input" ).each(function() {
 		jQuery( this ).prop("disabled", true);
@@ -143,9 +176,11 @@ function ddp_get_duplicates( stepid, data, self ) {
 				jQuery('#ddp_container #dashboard .statusdiv .dupelist .duplicatetable').show();
 
 				jQuery.each( dupes, function( key, value ) {
-					jQuery('#ddp_container #dashboard .statusdiv .dupelist .duplicatetable tbody').append('<tr><td><a href="'+value.permalink+'" target="_blank">'+value.title+'</a> (ID #'+value.ID+' type:'+value.type+' status:'+value.status+')</td><td><a href="'+value.orgpermalink+'" target="_blank">'+value.orgtitle+'</a> (ID #'+value.orgID+')'+value.why+'</td></tr>');
+					jQuery('#ddp_container #dashboard .statusdiv .dupelist .duplicatetable tbody').append('<tr><th scope="row" class="check-column"><label class="screen-reader-text" for="cb-select-'+value.ID+'">Select Post</label><input id="cb-select-'+value.ID+'" type="checkbox" name="delpost[]" value="'+value.ID+'"><div class="locked-indicator"></div></th><td><a href="'+value.permalink+'" target="_blank">'+value.title+'</a> (ID #'+value.ID+' type:'+value.type+' status:'+value.status+')</td><td><a href="'+value.orgpermalink+'" target="_blank">'+value.orgtitle+'</a> (ID #'+value.orgID+')'+value.why+'</td></tr>');
 
 				});
+
+				jQuery('#ddp_container #dashboard .statusdiv .dupelist .duplicatetable tbody').slideDown();
 
 				jQuery( "#ddp_container #ddp_buttons input" ).each(function() {
 					jQuery( this ).prop("disabled", false);

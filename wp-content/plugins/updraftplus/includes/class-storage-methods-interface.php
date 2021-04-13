@@ -52,6 +52,7 @@ class UpdraftPlus_Storage_Methods_Interface {
 			if (!$object->supports_feature('multi_options')) {
 				ob_start();
 				do_action('updraftplus_config_print_before_storage', $method, null);
+				do_action('updraftplus_config_print_add_conditional_logic', $method, $object);
 				$object->config_print();
 				$templates[$method] = ob_get_clean();
 			} else {
@@ -350,7 +351,7 @@ class UpdraftPlus_Storage_Methods_Interface {
 
 		global $updraftplus;
 	
-		@set_time_limit(UPDRAFTPLUS_SET_TIME_LIMIT);// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
+		if (function_exists('set_time_limit')) @set_time_limit(UPDRAFTPLUS_SET_TIME_LIMIT);// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 
 		$service = $service_object->get_id();
 		

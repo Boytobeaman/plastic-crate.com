@@ -121,8 +121,7 @@ class PMWI_Import_Record extends PMWI_Model_Record {
                 if (!in_array($attid, $gallery)) {
                     $gallery[] = $attid;
                 }
-            }
-            else {
+            } else {
                 $gallery = array($attid);
             }
             update_post_meta($p->post_parent, '_product_image_gallery_tmp', implode(',', $gallery));

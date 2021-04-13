@@ -5,11 +5,11 @@ Plugin Name: Delete Duplicate Posts
 Plugin Script: delete-duplicate-posts.php
 Plugin URI: https://cleverplugins.com
 Description: Remove duplicate blogposts on your blog! Searches and removes duplicate posts and their post meta tags. You can delete posts, pages and other Custom Post Types enabled on your website.
-Version: 4.4.6
+Version: 4.6.1
 Author: cleverplugins.com
 Author URI: https://cleverplugins.com
 Min WP Version: 4.7
-Max WP Version: 5.4.2
+Max WP Version: 5.6
 Text Domain: delete-duplicate-posts
 Domain Path: /languages
 */
@@ -33,6 +33,10 @@ if ( function_exists( 'ddp_fs' ) ) {
             global  $ddp_fs ;
             
             if ( !isset( $ddp_fs ) ) {
+                // Activate multisite network integration.
+                if ( !defined( 'WP_FS__PRODUCT_925_MULTISITE' ) ) {
+                    define( 'WP_FS__PRODUCT_925_MULTISITE', true );
+                }
                 // Include Freemius SDK.
                 require_once dirname( __FILE__ ) . '/freemius/start.php';
                 define( 'CP_DDP_FREEMIUS_STATE', 'cp_ddp_freemius_state' );
@@ -53,7 +57,7 @@ if ( function_exists( 'ddp_fs' ) ) {
                     'anonymous_mode' => $is_anonymous,
                     'menu'           => array(
                     'slug'        => 'delete-duplicate-posts.php',
-                    'first-path'  => 'admin.php?page=delete-duplicate-posts.php',
+                    'first-path'  => 'tools.php?page=delete-duplicate-posts',
                     'support'     => false,
                     'affiliation' => false,
                     'parent'      => array(
@@ -74,7 +78,14 @@ if ( function_exists( 'ddp_fs' ) ) {
     }
     
     ddp_fs()->add_action( 'after_uninstall', 'ddp_fs_uninstall_cleanup' );
-    // clean-up when uninstalled
+    /**
+     * Cleans up when uninstalling
+     *
+     * @author	Lars Koudal
+     * @since	v0.0.1
+     * @version	v1.0.0	Tuesday, January 12th, 2021.
+     * @return	void
+     */
     function ddp_fs_uninstall_cleanup()
     {
         global  $wpdb ;
@@ -85,7 +96,6 @@ if ( function_exists( 'ddp_fs' ) ) {
     }
     
     require plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
-    // ... Your plugin's main file logic ...
 }
 
 add_action( 'admin_init', array( 'PAnD', 'init' ) );
@@ -120,6 +130,13 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             add_action( 'admin_init', array( 'PAnD', 'init' ) );
             add_action( 'admin_menu', array( $this, 'admin_menu_link' ) );
             add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+            add_action(
+                'wp_insert_site',
+                array( $this, 'on_create_blog' ),
+                10,
+                6
+            );
+            add_filter( 'wpmu_drop_tables', array( $this, 'on_delete_blog' ) );
             register_activation_hook( __FILE__, array( $this, 'install' ) );
             add_action( 'ddp_cron', array( $this, 'cleandupes' ) );
             add_action( 'cron_schedules', array( $this, 'add_cron_intervals' ) );
@@ -128,6 +145,12 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
         
         /**
          * Ajax callback to handle freemius opt in/out.
+         *
+         * @author	Lars Koudal
+         * @since	v0.0.1
+         * @version	v1.0.0	Tuesday, January 12th, 2021.
+         * @access	public static
+         * @return	void
          */
         public static function cp_ddp_fs_opt_in()
         {
@@ -208,6 +231,15 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             exit;
         }
         
+        /**
+         * ddp_action_admin_notices.
+         *
+         * @author	Lars Koudal
+         * @since	v0.0.1
+         * @version	v1.0.0	Tuesday, January 12th, 2021.
+         * @access	public static
+         * @return	void
+         */
         public static function ddp_action_admin_notices()
         {
             $screen = get_current_screen();
@@ -220,38 +252,38 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                 if ( ddp_fs()->is_anonymous() && ddp_fs()->is_not_paying() && ddp_fs()->has_api_connectivity() ) {
                     if ( !is_multisite() || is_multisite() && is_network_admin() ) {
                         
-                        if ( PAnD::is_admin_notice_active( 'cp-ddp-improve-notice-30' ) ) {
+                        if ( PAnD::is_admin_notice_active( 'cp-ddp-improve-notice-14' ) ) {
                             ?>
-						<div id="cp-ddp-freemius" data-dismissible="cp-ddp-improve-notice-30" class="notice notice-success is-dismissible">
-							<h3><?php 
+													<div id="cp-ddp-freemius" data-dismissible="cp-ddp-improve-notice-14" class="notice notice-success is-dismissible">
+													<h3><?php 
                             esc_html_e( 'Help Delete Duplicate Posts improve!', 'delete-duplicate-posts' );
                             ?></h3>
-
-							<p><?php 
+													
+													<p><?php 
                             echo  esc_html__( 'Gathering non-sensitive diagnostic data about the plugin install helps us improve the plugin.', 'delete-duplicate-posts' ) . ' <a href="' . esc_url( 'https://cleverplugins.com/docs/install/non-sensitive-diagnostic-data/' ) . '" target="_blank" rel="noopener">' . esc_html__( 'Read more about what we collect.', 'delete-duplicate-posts' ) . '</a>' ;
                             ?></p>
-
-							<p>
-								<?php 
+													
+													<p>
+													<?php 
                             // translators:
                             printf( esc_html__( 'If you opt-in, some data about your usage of %1$s will be sent to Freemius.com. If you skip this, that\'s okay! %1$s will still work just fine.', 'delete-duplicate-posts' ), '<b>Delete Duplicate Posts</b>' );
                             ?>
-							</p>
-							<p>
-								<a href="javascript:;" class="button button-primary" onclick="cp_ddp_freemius_opt_in(this)" data-opt="yes"><?php 
+													</p>
+													<p>
+													<a href="javascript:;" class="button button-primary" onclick="cp_ddp_freemius_opt_in(this)" data-opt="yes"><?php 
                             esc_html_e( 'Sure, opt-in', 'delete-duplicate-posts' );
                             ?></a>
-
-								<a href="javascript:;" class="button dismiss-this"><?php 
+													
+													<a href="javascript:;" class="button dismiss-this"><?php 
                             esc_html_e( 'No, thank you', 'delete-duplicate-posts' );
                             ?></a>
-							</p>
-							<input type="hidden" id="cp-ddp-freemius-opt-nonce" value="<?php 
+													</p>
+													<input type="hidden" id="cp-ddp-freemius-opt-nonce" value="<?php 
                             echo  esc_attr( wp_create_nonce( 'cp-ddp-freemius-opt' ) ) ;
                             ?>" />
-
-						</div>
-							<?php 
+													
+													</div>
+													<?php 
                         }
                     
                     }
@@ -265,31 +297,41 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             if ( false !== $totaldeleted && 0 < $totaldeleted ) {
                 $totaldeleted = number_format_i18n( $totaldeleted );
                 ?>
-			<div id="cp-ddp-reviewlink" data-dismissible="ddp-leavereview-14" class="updated notice notice-success is-dismissible">
-				<h3>
-					<?php 
+										<div id="cp-ddp-reviewlink" data-dismissible="ddp-leavereview-14" class="updated notice notice-success is-dismissible">
+										<h3>
+										<?php 
                 // translators: Total number of deleted duplicates
                 printf( esc_html__( '%s duplicates deleted!', 'delete-duplicate-posts' ), esc_html( $totaldeleted ) );
                 ?>
-				</h3>					
-				<p>
-					<?php 
+										</h3>					
+										<p>
+										<?php 
                 // translators: Asking for a review text
                 printf( esc_html__( "Hey, I noticed this plugin has deleted %s duplicate posts for you - that's awesome! Could you please do me a BIG favor and give it a 5-star rating on WordPress? Just to help us spread the word and boost our motivation.", 'delete-duplicate-posts' ), esc_html( $totaldeleted ) );
                 ?>
-				</p>
-
-				<p>	
-					<a href="https://wordpress.org/support/plugin/delete-duplicate-posts/reviews/?filter=5#new-post" class="cp-ddp-dismiss-review-notice cp-ddp-reviewlink button-primary dismiss-this" target="_blank" rel="noopener">Ok, you deserve it</a>
-					<span class="dashicons dashicons-calendar"></span><a href="#" class="cp-ddp-dismiss-review-notice dismiss-this" target="_blank" rel="noopener">Nope, maybe later</a>
-					<span class="dashicons dashicons-smiley"></span><a href="#" class="cp-ddp-dismiss-review-notice dismiss-this" target="_blank" rel="noopener">I already did</a>
-				</p>
-			</div>
-				<?php 
+										</p>
+										
+										<p>	
+										<a href="https://wordpress.org/support/plugin/delete-duplicate-posts/reviews/?filter=5#new-post" class="cp-ddp-dismiss-review-notice cp-ddp-reviewlink button-primary dismiss-this" target="_blank" rel="noopener">Ok, you deserve it</a>
+										<span class="dashicons dashicons-calendar"></span><a href="#" class="cp-ddp-dismiss-review-notice dismiss-this" target="_blank" rel="noopener">Nope, maybe later</a>
+										<span class="dashicons dashicons-smiley"></span><a href="#" class="cp-ddp-dismiss-review-notice dismiss-this" target="_blank" rel="noopener">I already did</a>
+										</p>
+										</div>
+										<?php 
             }
         
         }
         
+        /**
+         * delete_duplicates.
+         *
+         * @author	Lars Koudal
+         * @since	v0.0.1
+         * @version	v1.0.0	Tuesday, January 12th, 2021.
+         * @access	public static
+         * @param	boolean	$return	Default: false
+         * @return	void
+         */
         public static function delete_duplicates( $return = false )
         {
             if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
@@ -297,10 +339,26 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             }
             // @todo
             self::log( __( 'Cleaning duplicates', 'delete-duplicate-posts' ) );
-            self::cleandupes( true );
+            $checked_posts = array();
+            if ( isset( $_POST['checked_posts'] ) && is_array( $_POST['checked_posts'] ) ) {
+                foreach ( $_POST['checked_posts'] as $cp ) {
+                    $checked_posts[] = intval( $cp );
+                }
+            }
+            self::cleandupes( true, $checked_posts );
             wp_send_json_success();
         }
         
+        /**
+         * return_loglines.
+         *
+         * @author	Lars Koudal
+         * @since	v0.0.1
+         * @version	v1.0.0	Tuesday, January 12th, 2021.
+         * @access	public static
+         * @param	boolean	$return	Default: false
+         * @return	void
+         */
         public static function return_loglines( $return = false )
         {
             if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
@@ -322,8 +380,7 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             }
             global  $wpdb ;
             $dupescount = 0;
-            $sql = 'SELECT datime, note FROM ' . $wpdb->prefix . 'ddp_log ORDER BY datime DESC LIMIT 100;';
-            $loglines = $wpdb->get_results( $sql, ARRAY_A );
+            $loglines = $wpdb->get_results( " SELECT datime, note FROM {$wpdb->prefix}ddp_log ORDER BY datime DESC LIMIT 100;" );
             
             if ( $loglines ) {
                 $json_response['results'] = $loglines;
@@ -339,6 +396,16 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             wp_send_json_success( $json_response );
         }
         
+        /**
+         * return_duplicates_ajax.
+         *
+         * @author	Lars Koudal
+         * @since	v0.0.1
+         * @version	v1.0.0	Tuesday, January 12th, 2021.
+         * @access	public static
+         * @param	boolean	$return	Default: false
+         * @return	mixed
+         */
         public static function return_duplicates_ajax( $return = false )
         {
             if ( defined( 'DOING_AJAX' ) && DOING_AJAX ) {
@@ -349,6 +416,13 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
         
         /**
          * Returns duplicates based on current settings - internal, not used via AJAX
+         *
+         * @author	Lars Koudal
+         * @since	v0.0.1
+         * @version	v1.0.0	Tuesday, January 12th, 2021.
+         * @access	public static
+         * @param	boolean	$return	Default: false
+         * @return	void
          */
         public static function return_duplicates( $return = false )
         {
@@ -408,14 +482,23 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                 
                 if ( 'titlecompare' === $comparemethod ) {
                     // @todo - prepare - not urgent, there is no way to exploit this query
-                    $thisquery = "SELECT a.ID, a.post_title, a.post_type, a.post_status, save_this_post_id\n\t\t\t\t\tFROM {$table_name} AS a\n\t\t\t\t\tINNER JOIN (\n\t\t\t\t\tSELECT post_title, " . $minmax . " AS save_this_post_id\n\t\t\t\t\tFROM {$table_name}\n\t\t\t\t\tWHERE post_type IN(" . $ddp_pts . ')
-					AND post_status IN(' . $post_stati . ')
-					GROUP BY post_title
-					HAVING COUNT( * ) > 1
-					) AS b ON b.post_title = a.post_title
-					AND b.save_this_post_id <> a.id
-					AND a.post_type IN(' . $ddp_pts . ')
-					AND a.post_status IN(' . $post_stati . ')';
+                    //				$resultslimit = 100; // @todo
+                    $resultslimit = $options['ddp_resultslimit'];
+                    if ( !$resultslimit ) {
+                        $resultslimit = 0;
+                    }
+                    $resultsoutput = '';
+                    if ( 0 < $resultslimit ) {
+                        $resultsoutput = ' LIMIT ' . intval( $resultslimit );
+                    }
+                    $thisquery = "SELECT a.ID, a.post_title, a.post_type, a.post_status, save_this_post_id\n\t\t\t\t\t\t\t\t\t\t\tFROM {$table_name} AS a\n\t\t\t\t\t\t\t\t\t\t\tINNER JOIN (\n\t\t\t\t\t\t\t\t\t\t\t\tSELECT post_title, " . $minmax . " AS save_this_post_id\n\t\t\t\t\t\t\t\t\t\t\t\tFROM {$table_name}\n\t\t\t\t\t\t\t\t\t\t\t\tWHERE post_type IN(" . $ddp_pts . ')
+												AND post_status IN(' . $post_stati . ')
+												GROUP BY post_title
+												HAVING COUNT( * ) > 1
+												) AS b ON b.post_title = a.post_title
+												AND b.save_this_post_id <> a.id
+												AND a.post_type IN(' . $ddp_pts . ')
+												AND a.post_status IN(' . $post_stati . ')' . $resultsoutput;
                     $dupes = $wpdb->get_results( $thisquery, ARRAY_A );
                     
                     if ( $dupes ) {
@@ -459,7 +542,7 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             if ( !$return_duplicates_time ) {
                 $return_duplicates_time = self::timerstop( 'return_duplicates' );
             }
-            $json_response['msg'] = $json_response['dupescount'] . ' duplicates found. Showing up to ' . $viewlimit . ' Time: ' . $return_duplicates_time . ' sec.';
+            $json_response['msg'] = number_format_i18n( $json_response['dupescount'] ) . ' duplicates found. Time: ' . esc_html( $return_duplicates_time ) . ' sec. Showing up to ' . esc_html( $viewlimit ) . ' results.';
             // @todo i8n
             if ( $return ) {
                 // todo - limit amount of values to return
@@ -467,7 +550,7 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             }
             // Since we are returning as an ajax response, we are going to limit the amount shown.
             if ( $viewlimit < $json_response['dupescount'] ) {
-                $json_response['dupes'] = array_slice( $json_response['dupes'], 0, 10 );
+                $json_response['dupes'] = array_slice( $json_response['dupes'], 0, $viewlimit );
             }
             wp_send_json_success( $json_response );
         }
@@ -488,6 +571,7 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                 'ddp_pts'                  => array( 'post', 'page' ),
                 'ddp_statusmail_recipient' => '',
                 'ddp_statusmail'           => 0,
+                'ddp_resultslimit'         => 0,
                 'ddp_enabled'              => 0,
                 'ddp_pstati'               => array( 'publish' ),
             );
@@ -550,12 +634,13 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
         /**
          * Clean duplicates - not AJAX version
          */
-        public static function cleandupes( $manualrun = false )
+        public static function cleandupes( $manualrun = false, $to_delete = array() )
         {
             self::timerstart( 'ddp_totaltime' );
             // start total timer
             $options = self::get_options();
             $options['ddp_running'] = true;
+            self::save_options( $options );
             
             if ( !$manualrun ) {
                 self::log( __( 'Cron job running.', 'delete-duplicate-posts' ) );
@@ -563,7 +648,22 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                 self::log( __( 'Manually cleaning.', 'delete-duplicate-posts' ) );
             }
             
-            $dupes = self::return_duplicates( true );
+            // what to do with a manual run - no notices
+            
+            if ( count( $to_delete ) > 0 ) {
+                $lookup_arr = array();
+                foreach ( $to_delete as $td ) {
+                    $new_item = array();
+                    $new_item['ID'] = $td;
+                    $new_item['type'] = get_post_type( $td );
+                    $new_item['title'] = get_the_title( $td );
+                    $lookup_arr['dupes'][] = $new_item;
+                }
+                $dupes = $lookup_arr;
+            } else {
+                $dupes = self::return_duplicates( true );
+            }
+            
             $dupescount = count( $dupes );
             $resultnote = '';
             $dispcount = 0;
@@ -605,15 +705,15 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                 
                 if ( $manualrun > 0 ) {
                     ?>
-					<div class="notice notice-success"> 
-						<p>
-							<?php 
+												<div class="notice notice-success"> 
+												<p>
+												<?php 
                     // translators:
                     printf( esc_html__( 'A total of %s duplicate posts were deleted.', 'delete-duplicate-posts' ), intval( $dispcount ) );
                     ?>
-						</p>
-					</div>
-					<?php 
+												</p>
+												</div>
+												<?php 
                 }
                 
                 // manualrun
@@ -621,12 +721,13 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             
             // Mail logic...
             
-            if ( 0 < $dispcount && '1' === $manualrun && self::$options['ddp_statusmail'] ) {
+            if ( 0 < $dispcount && $options['ddp_statusmail'] ) {
                 $blogurl = site_url();
                 $recipient = $options['ddp_statusmail_recipient'];
                 // translators:
-                $messagebody = sprintf( __( 'Hi Admin, I have deleted <strong>%1$d</strong> posts on your blog, %2$s.<br><br><em>You are receiving this e-mail because you have turned on e-mail notifications by the plugin, Delete Duplicate Posts.</em>', 'delete-duplicate-posts' ), $dispcount, $blogurl );
-                $messagebody .= "<br>Made by <a href='https://cleverplugins.com' target='_blank'>cleverplugins.com</a>";
+                $messagebody = sprintf( __( 'Hi Admin, I have deleted <strong>%1$d</strong> posts on your blog, %2$s.', 'delete-duplicate-posts' ), $dispcount, $blogurl );
+                $messagebody .= '<br><br>' . __( 'You are receiving this e-mail because you have turned on e-mail notifications by the plugin, Delete Duplicate Posts.' );
+                $messagebody .= "<br><br>Made by <a href='https://cleverplugins.com' target='_blank' rel='noopener'>cleverplugins.com</a>";
                 $mailstatus = false;
                 
                 if ( is_email( $recipient ) ) {
@@ -642,7 +743,8 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             
             }
             
-            self::$options['ddp_running'] = false;
+            $options['ddp_running'] = false;
+            self::save_options( $options );
         }
         
         public static function add_cron_intervals( $schedules )
@@ -666,6 +768,16 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             return $schedules;
         }
         
+        /**
+         * Log a notification to the database
+         *
+         * @author	Lars Koudal
+         * @since	v0.0.1
+         * @version	v1.0.0	Monday, January 11th, 2021.
+         * @access	public static
+         * @param	mixed	$text	
+         * @return	void
+         */
         public static function log( $text )
         {
             global  $wpdb ;
@@ -689,6 +801,12 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
         
         /**
          * Enqueues scripts and styles
+         *
+         * @author	Lars Koudal
+         * @since	v0.0.1
+         * @version	v1.0.0	Monday, January 11th, 2021.
+         * @access	public static
+         * @return	void
          */
         public static function admin_enqueue_scripts()
         {
@@ -710,10 +828,11 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                     true
                 );
                 $js_vars = array(
-                    'nonce'             => wp_create_nonce( 'cp_ddp_return_duplicates' ),
-                    'loglines_nonce'    => wp_create_nonce( 'cp_ddp_return_loglines' ),
-                    'deletedupes_nonce' => wp_create_nonce( 'cp_ddp_delete_loglines' ),
-                    'text_areyousure'   => __( 'Are you sure you want to delete duplicates? There is no undo feature.', 'delete-duplicate-posts' ),
+                    'nonce'                => wp_create_nonce( 'cp_ddp_return_duplicates' ),
+                    'loglines_nonce'       => wp_create_nonce( 'cp_ddp_return_loglines' ),
+                    'deletedupes_nonce'    => wp_create_nonce( 'cp_ddp_delete_loglines' ),
+                    'text_areyousure'      => __( 'Are you sure you want to delete duplicates? There is no undo feature.', 'delete-duplicate-posts' ),
+                    'text_selectsomething' => __( 'You have to select which duplicates to delete. Tip: You can click the top or bottom checkbox to select all.', 'delete-duplicate-posts' ),
                 );
                 wp_localize_script( 'delete-duplicate-posts', 'cp_ddp', $js_vars );
                 wp_enqueue_script( 'delete-duplicate-posts' );
@@ -722,16 +841,22 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
         }
         
         /**
-         * Install routines - create database and default options
+         * Create plugin tables
+         *
+         * @author	Lars Koudal
+         * @since	v0.0.1
+         * @version	v1.0.0	Monday, January 11th, 2021.
+         * @access	public static
+         * @return	void
          */
-        public static function install()
+        public static function create_table()
         {
             global  $wpdb ;
-            require_once ABSPATH . '/wp-admin/includes/upgrade.php';
             $table_name = $wpdb->prefix . 'ddp_log';
             
             if ( $table_name !== $wpdb->get_var( "show tables like '{$table_name}'" ) ) {
-                $sql = "CREATE TABLE {$table_name} (\n\t\t\t\tid bigint(20) NOT NULL AUTO_INCREMENT,\n\t\t\t\tdatime timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP,\n\t\t\t\tnote tinytext NOT NULL,\n\t\t\t\tPRIMARY KEY (id)\n\t\t\t);";
+                $sql = "CREATE TABLE {$table_name} (id bigint(20) NOT NULL AUTO_INCREMENT,datime timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' ON UPDATE CURRENT_TIMESTAMP, note tinytext NOT NULL, PRIMARY KEY (id));";
+                require_once ABSPATH . 'wp-admin/includes/upgrade.php';
                 dbDelta( $sql );
             }
             
@@ -739,6 +864,56 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             self::save_options( $options );
             wp_clear_scheduled_hook( 'ddp_cron' );
             self::log( __( 'Plugin activated.', 'delete-duplicate-posts' ) );
+        }
+        
+        /**
+         * Install routines - create database and default options
+         */
+        public static function install( $network_wide )
+        {
+            global  $wpdb ;
+            require_once ABSPATH . '/wp-admin/includes/upgrade.php';
+            
+            if ( is_multisite() && $network_wide ) {
+                // Get all blogs in the network and activate plugin on each one
+                $blog_ids = $wpdb->get_col( "SELECT blog_id FROM {$wpdb->blogs}" );
+                foreach ( $blog_ids as $blog_id ) {
+                    switch_to_blog( $blog_id );
+                    self::create_table();
+                    restore_current_blog();
+                }
+            } else {
+                self::create_table();
+            }
+        
+        }
+        
+        // Creating table when a new blog is created
+        // https://sudarmuthu.com/blog/how-to-properly-create-tables-in-wordpress-multisite-plugins/
+        public static function on_create_blog(
+            $blog_id,
+            $user_id,
+            $domain,
+            $path,
+            $site_id,
+            $meta
+        )
+        {
+            
+            if ( is_plugin_active_for_network( 'delete-duplicate-posts/delete-duplicate-posts.php' ) ) {
+                switch_to_blog( $blog_id );
+                self::create_table();
+                restore_current_blog();
+            }
+        
+        }
+        
+        // Deleting the table whenever a blog is deleted
+        public static function on_delete_blog( $tables )
+        {
+            global  $wpdb ;
+            $tables[] = $wpdb->prefix . 'ddp_log';
+            return $tables;
         }
         
         /**
@@ -758,7 +933,7 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                 'Delete Duplicate Posts',
                 'Delete Duplicate Posts',
                 'manage_options',
-                basename( __FILE__ ),
+                'delete-duplicate-posts',
                 array( 'Delete_Duplicate_Posts', 'admin_options_page' )
             );
             add_filter(
@@ -771,7 +946,7 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
         
         public static function filter_plugin_actions( $links, $file )
         {
-            $settings_link = '<a href="tools.php?page=delete-duplicate-posts.php">' . __( 'Settings', 'delete-duplicate-posts' ) . '</a>';
+            $settings_link = '<a href="tools.php?page=delete-duplicate-posts">' . __( 'Settings', 'delete-duplicate-posts' ) . '</a>';
             array_unshift( $links, $settings_link );
             // before other links
             return $links;
@@ -788,14 +963,14 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                     'id'      => 'ddp_help',
                     'title'   => __( 'Usage and FAQ', 'delete-duplicate-posts' ),
                     'content' => '
-						<h4>' . __( 'What does this plugin do?', 'delete-duplicate-posts' ) . '</h4>
-						<p>' . __( 'Helps you clean duplicate posts from your blog. The plugin checks for blogposts on your blog with the same title.', 'delete-duplicate-posts' ) . '</p>
-						<p>' . __( "It can run automatically via WordPress's own internal CRON-system, or you can run it automatically.", 'delete-duplicate-posts' ) . '</p>
-						<p>' . __( 'It also has a nice feature that can send you an e-mail when Delete Duplicate Posts finds and deletes something (if you have turned on the CRON feature).', 'delete-duplicate-posts' ) . '</p>
-						<h4>' . __( 'Help! Something was deleted that was not supposed to be deleted!', 'delete-duplicate-posts' ) . '</h4>
-						<p>' . __( 'I am sorry for that, I can only recommend you restore the database you took just before you ran this plugin.', 'delete-duplicate-posts' ) . '</p>
-						<p>' . __( 'If you run this plugin, manually or automatically, it is at your OWN risk!', 'delete-duplicate-posts' ) . '</p>
-						<p>' . __( 'I have done my best to avoid deleting something that should not be deleted, but if it happens, there is nothing I can do to help you.', 'delete-duplicate-posts' ) . "</p>\n\t\t\t\t\t\t<p><a href='https://cleverplugins.com' target='_blank'>cleverplugins.com</a>.</p>",
+														<h4>' . __( 'What does this plugin do?', 'delete-duplicate-posts' ) . '</h4>
+														<p>' . __( 'Helps you clean duplicate posts from your blog. The plugin checks for blogposts on your blog with the same title.', 'delete-duplicate-posts' ) . '</p>
+														<p>' . __( "It can run automatically via WordPress's own internal CRON-system, or you can run it automatically.", 'delete-duplicate-posts' ) . '</p>
+														<p>' . __( 'It also has a nice feature that can send you an e-mail when Delete Duplicate Posts finds and deletes something (if you have turned on the CRON feature).', 'delete-duplicate-posts' ) . '</p>
+														<h4>' . __( 'Help! Something was deleted that was not supposed to be deleted!', 'delete-duplicate-posts' ) . '</h4>
+														<p>' . __( 'I am sorry for that, I can only recommend you restore the database you took just before you ran this plugin.', 'delete-duplicate-posts' ) . '</p>
+														<p>' . __( 'If you run this plugin, manually or automatically, it is at your OWN risk!', 'delete-duplicate-posts' ) . '</p>
+														<p>' . __( 'I have done my best to avoid deleting something that should not be deleted, but if it happens, there is nothing I can do to help you.', 'delete-duplicate-posts' ) . "</p>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t<p><a href='https://cleverplugins.com' target='_blank'>cleverplugins.com</a>.</p>",
                 ) );
             }
         }
@@ -836,30 +1011,33 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                 
                 
                 if ( isset( $_POST['ddp_enabled'] ) ) {
-                    self::$options['ddp_enabled'] = ( 'on' === $_POST['ddp_enabled'] ? true : false );
+                    $options['ddp_enabled'] = ( 'on' === $_POST['ddp_enabled'] ? true : false );
                 } else {
-                    self::$options['ddp_enabled'] = false;
+                    $options['ddp_enabled'] = false;
                 }
                 
-                self::$options['ddp_statusmail'] = ( isset( $_POST['ddp_statusmail'] ) && 'on' === $_POST['ddp_statusmail'] ? true : false );
+                $options['ddp_statusmail'] = ( isset( $_POST['ddp_statusmail'] ) && 'on' === $_POST['ddp_statusmail'] ? true : false );
                 if ( isset( $_POST['ddp_statusmail_recipient'] ) ) {
-                    self::$options['ddp_statusmail_recipient'] = sanitize_text_field( $_POST['ddp_statusmail_recipient'] );
+                    $options['ddp_statusmail_recipient'] = sanitize_text_field( $_POST['ddp_statusmail_recipient'] );
                 }
                 if ( isset( $_POST['ddp_schedule'] ) ) {
-                    self::$options['ddp_schedule'] = sanitize_text_field( $_POST['ddp_schedule'] );
+                    $options['ddp_schedule'] = sanitize_text_field( $_POST['ddp_schedule'] );
                 }
                 if ( isset( $_POST['ddp_keep'] ) ) {
-                    self::$options['ddp_keep'] = sanitize_text_field( $_POST['ddp_keep'] );
+                    $options['ddp_keep'] = sanitize_text_field( $_POST['ddp_keep'] );
                 }
                 if ( isset( $_POST['ddp_method'] ) ) {
-                    self::$options['ddp_method'] = sanitize_text_field( $_POST['ddp_method'] );
+                    $options['ddp_method'] = sanitize_text_field( $_POST['ddp_method'] );
                 }
-                self::$options['ddp_pts'] = $posttypes;
+                if ( isset( $_POST['ddp_resultslimit'] ) ) {
+                    $options['ddp_resultslimit'] = sanitize_text_field( $_POST['ddp_resultslimit'] );
+                }
+                $options['ddp_pts'] = $posttypes;
                 // Previously sanitized
                 if ( isset( $_POST['ddp_limit'] ) ) {
-                    self::$options['ddp_limit'] = sanitize_text_field( $_POST['ddp_limit'] );
+                    $options['ddp_limit'] = sanitize_text_field( $_POST['ddp_limit'] );
                 }
-                self::save_options( self::$options );
+                self::save_options( $options );
                 
                 if ( isset( self::$options['ddp_enabled'] ) ) {
                     wp_clear_scheduled_hook( 'ddp_cron' );
@@ -883,7 +1061,7 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                 }
                 global  $wpdb ;
                 $table_name_log = $wpdb->prefix . 'ddp_log';
-                $wpdb->query( "TRUNCATE `{$table_name_log}`;" );
+                $wpdb->query( "TRUNCATE {$table_name_log};" );
                 echo  '<div class="updated"><p>' . esc_html( __( 'The log was cleared.', 'delete-duplicate-posts' ) ) . '</p></div>' ;
                 unset( $wpdb );
             }
@@ -895,18 +1073,18 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             $name = $pluginfo['Name'];
             $options = self::get_options();
             ?>
-
-			<div class="wrap">
-
-				<h2>Delete Duplicate Posts <span>v. <?php 
+												
+												<div class="wrap">
+												
+												<h2>Delete Duplicate Posts <span>v. <?php 
             echo  esc_html( self::get_plugin_version() ) ;
             ?></span></h2>	
-
-				<div class="ddp_content_wrapper">
-					<div class="ddp_content_cell">
-						<div id="ddp_container">
-							<div id="dashboard">
-								<?php 
+												
+												<div class="ddp_content_wrapper">
+												<div class="ddp_content_cell">
+												<div id="ddp_container">
+												<div id="dashboard">
+												<?php 
             
             if ( $options['ddp_enabled'] ) {
                 $nextscheduled = wp_next_scheduled( 'ddp_cron' );
@@ -927,58 +1105,70 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             
             $totaldeleted = get_option( 'ddp_deleted_duplicates' );
             ?>
-
-								<div class="statusdiv">
-									<div class="spinner is-active"></div>	
-									<div class="statusmessage"></div>
-									<div class="dupelist">
-										<table class="wp-list-table widefat fixed striped posts duplicatetable" cellspacing="0">
-											<thead>
+												
+												<div class="statusdiv">
+												<div class="spinner is-active"></div>	
+												<div class="statusmessage"></div>
+												<div class="dupelist">
+												<table class="wp-list-table widefat fixed striped posts duplicatetable" cellspacing="0">
+												<thead>
 												<tr>
-													<th><?php 
+												<td id="cb" class="manage-column column-cb check-column"><label class="screen-reader-text" for="cb-select-all-1">Select All</label><input id="cb-select-all-1" type="checkbox"></td>
+												<th><?php 
             esc_html_e( 'Duplicate', 'delete-duplicate-posts' );
             ?></th>
-													<th><?php 
+												<th><?php 
             esc_html_e( 'Original', 'delete-duplicate-posts' );
             ?></th>
 												</tr>
-											</thead>
-											<tbody>
-											</tbody>
-										</table>
-
-									</div>
-									<form>
-										<?php 
+												</thead>
+												<tbody id="listofduplicates">
+												</tbody>
+												
+												<tfoot>
+												<tr>
+												<td id="cb" class="manage-column column-cb check-column"><label class="screen-reader-text" for="cb-select-all-1">Select All</label><input id="cb-select-all-1" type="checkbox"></td>
+												<th><?php 
+            esc_html_e( 'Duplicate', 'delete-duplicate-posts' );
+            ?></th>
+												<th><?php 
+            esc_html_e( 'Original', 'delete-duplicate-posts' );
+            ?></th>
+												</tr>
+												</tfoot>
+												</table>
+												</div>
+												<form>
+												<?php 
             wp_nonce_field( 'ddp-buttons' );
             ?>
-										<table id="ddp_buttons">
-											<tr>
+												<table id="ddp_buttons">
+												<tr>
 												<td><input type="submit" name="deleteduplicateposts_resetview" id="deleteduplicateposts_resetview"class="button button-small button-secondary" value="<?php 
             esc_html_e( 'Refresh list', 'delete-duplicate-posts' );
             ?>" disabled/></td>
 												<td><input type="submit" name="deleteduplicateposts_deleteall" id="deleteduplicateposts_deleteall" class="button button-small button-primary" value="<?php 
             esc_html_e( 'Delete duplicates', 'delete-duplicate-posts' );
             ?>" disabled/></td>
-											</tr>
-										</table>
-									</form>
-								</div>
-
-							</div><!-- #dashboard -->
-
-							<div id="configuration">
-								<h3><?php 
+												</tr>
+												</table>
+												</form>
+												</div>
+												
+												</div><!-- #dashboard -->
+												
+												<div id="configuration">
+												<h3><?php 
             esc_html_e( 'Settings', 'delete-duplicate-posts' );
             ?></h3>
-								<p>
-									<?php 
+												<p>
+												<?php 
             $nextscheduled = wp_next_scheduled( 'ddp_cron' );
             
             if ( $nextscheduled ) {
                 ?>
-										<div class="notice notice-info is-dismissible">
-											<?php 
+													<div class="notice notice-info is-dismissible">
+													<?php 
                 echo  '<p class="cronstatus center">' . esc_html__( 'You have enabled automatic deletion, so I am running on automatic. I will take care of everything...', 'delete-duplicate-posts' ) . '</p>' ;
                 echo  '<p class="center">' ;
                 echo  sprintf(
@@ -989,23 +1179,26 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                 ) ;
                 echo  '</p>' ;
                 ?>
-										</div>
-										<?php 
+													</div>
+													<?php 
             }
             
             ?>
-								</p>
-								<form method="post" id="delete_duplicate_posts_options">
-									<?php 
+												</p>
+												<form method="post" id="delete_duplicate_posts_options">
+												<?php 
             wp_nonce_field( 'ddp-update-options' );
             ?>
-									<table width="100%" cellspacing="2" cellpadding="5" class="form-table">
-
-										<tr valign="top">
-											<th><label for="ddp_enabled"><?php 
+												<table width="100%" cellspacing="2" cellpadding="5" class="form-table">
+												
+												
+												
+												
+												<tr valign="top">
+												<th><label for="ddp_enabled"><?php 
             esc_html_e( 'Which post types?:', 'delete-duplicate-posts' );
             ?></label></th>
-											<td>
+												<td>
 												<?php 
             $builtin = array( 'post', 'page', 'attachment' );
             $args = array(
@@ -1021,7 +1214,7 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             if ( $post_types ) {
                 ?>
 													<ul class="radio">
-														<?php 
+													<?php 
                 $step = 0;
                 if ( !is_array( $checked_post_types ) ) {
                     $checked_post_types = array();
@@ -1029,25 +1222,25 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                 foreach ( $post_types as $pt ) {
                     $checked = array_search( $pt, $checked_post_types, true );
                     ?>
-															<li>
-																<input type="checkbox" name="ddp_pts[]" id="ddp_pt-<?php 
+														<li>
+														<input type="checkbox" name="ddp_pts[]" id="ddp_pt-<?php 
                     echo  esc_attr( $step ) ;
                     ?>" value="<?php 
                     echo  esc_html( $pt ) ;
                     ?>" 
-																<?php 
+														<?php 
                     if ( false !== $checked ) {
                         echo  ' checked' ;
                     }
                     ?>
-																	/>
-																	<label for="ddp_pt-<?php 
+															/>
+															<label for="ddp_pt-<?php 
                     echo  esc_attr( $step ) ;
                     ?>"><?php 
                     echo  esc_html( $pt ) ;
                     ?></label>
-																</li>
-																<?php 
+															</li>
+															<?php 
                     $step++;
                 }
                 ?>
@@ -1059,14 +1252,14 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
 													<p class="description"><?php 
             esc_html_e( 'Choose which post types to scan for duplicates.', 'delete-duplicate-posts' );
             ?></p>
-												</td>
-											</tr>
-
-											<tr>
-												<th><label for="ddp_enabled"><?php 
+													</td>
+													</tr>
+													
+													<tr>
+													<th><label for="ddp_enabled"><?php 
             esc_html_e( 'Post status', 'delete-duplicate-posts' );
             ?></label></th>
-												<td>
+													<td>
 													<?php 
             $stati = array(
                 'publish' => (object) array(
@@ -1079,31 +1272,36 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             if ( $stati ) {
                 ?>
 														<ul class="radio">
-															<?php 
+														<?php 
+                $staticount = count( $stati );
                 foreach ( $stati as $key => $st ) {
                     
                     if ( $st->show_in_admin_status_list ) {
                         $checked = array_search( $key, $checked_post_stati, true );
                         ?>
-																	<li>
-																		<input type="checkbox" name="ddp_pstati[]" id="ddp_pstatus-<?php 
+																<li>
+																<input type="checkbox" name="ddp_pstati[]" id="ddp_pstatus-<?php 
                         echo  esc_attr( $key ) ;
                         ?>" value="<?php 
                         echo  esc_attr( $key ) ;
                         ?>" 
-																		<?php 
+																<?php 
                         if ( false !== $checked ) {
                             echo  ' checked' ;
                         }
                         ?>
-																			/>
-																			<label for="ddp_pstatus-<?php 
+																	<?php 
+                        if ( 1 === $staticount ) {
+                            echo  ' disabled' ;
+                        }
+                        ?>	/>
+																	<label for="ddp_pstatus-<?php 
                         echo  esc_attr( $key ) ;
                         ?>"><?php 
                         echo  esc_html( $key . ' (' . $st->label . ')' ) ;
                         ?></label>
-																		</li>
-																		<?php 
+																	</li>
+																	<?php 
                         $step++;
                     }
                 
@@ -1114,88 +1312,131 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             }
             
             ?>
-													</td>
-
-
-												</tr>
-												<?php 
+														</td>
+														
+														
+														</tr>
+														<?php 
             $comparemethod = 'titlecompare';
             global  $ddp_fs ;
             ?>
-												<tr valign="top">
-													<th><?php 
+														<tr valign="top">
+														<th><?php 
             esc_html_e( 'Comparison Method', 'delete-duplicate-posts' );
             ?></th>
-													<td>
+														<td>
 														<ul class="ddpcomparemethod">
-
-															<li>
-																<label>
-																	<input type="radio" name="ddp_method" value="titlecompare" <?php 
+														
+														<li>
+														<label>
+														<input type="radio" name="ddp_method" value="titlecompare" <?php 
             checked( 'titlecompare', $comparemethod );
             ?> /> <?php 
             esc_html_e( 'Compare by title (default)', 'delete-duplicate-posts' );
             ?>
-																	<span class="optiondesc"><?php 
+														<span class="optiondesc"><?php 
             esc_html_e( 'Looks at the title of the post itself.', 'delete-duplicate-posts' );
             ?></span>
-																</label>
-
-															</li>
-
-															<?php 
+														</label>
+														
+														</li>
+														
+														<?php 
             global  $ddp_fs ;
             ?>
 														</ul>
-													</td>
-												</tr>
-												<tr>
-													<th><label for="ddp_keep"><?php 
+														</td>
+														</tr>
+														<tr>
+														<th><label for="ddp_keep"><?php 
             esc_html_e( 'Delete which posts?:', 'delete-duplicate-posts' );
             ?></label></th><td>
-
+														
 														<select name="ddp_keep" id="ddp_keep">
-															<option value="oldest" 
-															<?php 
+														<option value="oldest" 
+														<?php 
             if ( 'oldest' === $options['ddp_keep'] ) {
                 echo  'selected="selected"' ;
             }
             ?>
-																><?php 
+															><?php 
             esc_html_e( 'Keep oldest', 'delete-duplicate-posts' );
             ?></option>
-																<option value="latest" 
-																<?php 
+															<option value="latest" 
+															<?php 
             if ( 'latest' === $options['ddp_keep'] ) {
                 echo  'selected="selected"' ;
             }
             ?>
-																	><?php 
+																><?php 
             esc_html_e( 'Keep latest', 'delete-duplicate-posts' );
             ?></option>
 																</select>
 																<p class="description"><?php 
             esc_html_e( 'Keep the oldest or the latest version of duplicates? Default is keeping the oldest, and deleting any subsequent duplicate posts', 'delete-duplicate-posts' );
             ?></p>
-															</td>
-														</tr>
+																</td>
+																</tr>
+																
 
 
-														<?php 
+
+																<tr>
+												<th><label for="ddp_resultslimit"><?php 
+            esc_html_e( 'Find how many duplicates:', 'delete-duplicate-posts' );
+            ?></label></th><td>
+												
+												<?php 
+            $dupe_options = array(
+                0     => __( 'No limit', 'delete-duplicate-posts' ),
+                10000 => number_format_i18n( '10000' ),
+                5000  => number_format_i18n( '5000' ),
+                2500  => number_format_i18n( '2500' ),
+                1000  => number_format_i18n( '1000' ),
+                500   => '500',
+                250   => '250',
+                100   => '100',
+                50    => '50',
+            );
+            ?>
+												<select name="ddp_resultslimit" id="ddp_resultslimit">
+												<?php 
+            foreach ( $dupe_options as $key => $label ) {
+                ?>
+													<option value="<?php 
+                echo  $key ;
+                ?>" <?php 
+                selected( $options['ddp_resultslimit'], $key );
+                ?>><?php 
+                echo  $label ;
+                ?></option>
+													<?php 
+            }
+            ?>
+												</select>
+												<p><strong>BETA feature</strong>. Available in free version while in beta. Once out of testing, this feature will be for premium users only.</p>
+
+												<p class="description"><?php 
+            esc_html_e( 'If you have many duplicates, the plugin might time out before finding them all. Try limiting the amount of duplicates here. Default: Unlimited.', 'delete-duplicate-posts' );
+            ?></p>
+												</td>
+												</tr>
+		
+													<?php 
             /*
             
             <tr valign="top">
             <th><label for="ddp_limit"><?php esc_html_e( 'Delete at maximum :', 'delete-duplicate-posts' ); ?></label></th><td><select name="ddp_limit">
-            	<?php
-            	for ( $x = 1; $x <= 10; $x++ ) {
-            		$val = ( $x * 50 );
-            		echo "<option value='" . esc_attr( $val ) . "' ";
-            		if ( $options['ddp_limit'] === $val ) {
-            			echo 'selected';
-            		}
-            		echo '>' . esc_attr( $val ) . '</option>';
+            <?php
+            for ( $x = 1; $x <= 10; $x++ ) {
+            	$val = ( $x * 50 );
+            	echo "<option value='" . esc_attr( $val ) . "' ";
+            	if ( $options['ddp_limit'] === $val ) {
+            		echo 'selected';
             	}
-            	?>
+            	echo '>' . esc_attr( $val ) . '</option>';
+            }
+            ?>
             </select>
             <?php esc_html_e( 'duplicates.', 'delete-duplicate-posts' ); ?>
             <p class="description"><?php esc_html_e( 'Setting a limit is a good idea, especially if your site is on a busy server.', 'delete-duplicate-posts' ); ?></p>
@@ -1203,47 +1444,47 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             </tr>
             */
             ?>
-
-														<tr>
-															<td colspan="2"><hr></td>
-														</tr>													
+													
 
 
-
-														<tr valign="top">
-															<th><?php 
+																<tr>
+																<td colspan="2"><hr></td>
+																</tr>													
+																
+																<tr valign="top">
+																<th><?php 
             esc_html_e( 'Enable automatic deletion?:', 'delete-duplicate-posts' );
             ?>
-
-														</th>
-														<td><label for="ddp_enabled">
-															<input type="checkbox" id="ddp_enabled" name="ddp_enabled" 
-															<?php 
+																
+																</th>
+																<td><label for="ddp_enabled">
+																<input type="checkbox" id="ddp_enabled" name="ddp_enabled" 
+																<?php 
             if ( true === $options['ddp_enabled'] ) {
                 echo  'checked="checked"' ;
             }
             ?>
-																>
-																<p class="description"><?php 
+																	>
+																	<p class="description"><?php 
             esc_html_e( 'Clean duplicates automatically.', 'delete-duplicate-posts' );
             ?></p>
-															</label>
-														</td>
-													</tr>
-
-
-													<tr>
-														<th><label for="ddp_schedule"><?php 
+																	</label>
+																	</td>
+																	</tr>
+																	
+																	
+																	<tr>
+																	<th><label for="ddp_schedule"><?php 
             esc_html_e( 'How often?:', 'delete-duplicate-posts' );
             ?></label></th><td>
-
-															<select name="ddp_schedule" id="ddp_schedule">
-																<?php 
+																	
+																	<select name="ddp_schedule" id="ddp_schedule">
+																	<?php 
             $schedules = wp_get_schedules();
             if ( $schedules ) {
                 foreach ( $schedules as $key => $sch ) {
                     ?>
-																		<option value="<?php 
+																			<option value="<?php 
                     echo  esc_attr( $key ) ;
                     ?>" 
 																			<?php 
@@ -1258,25 +1499,25 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                 }
             }
             ?>
-																</select>
-																<p class="description"><?php 
+																	</select>
+																	<p class="description"><?php 
             esc_html_e( 'How often should the cron job run?', 'delete-duplicate-posts' );
             ?></p>
-															</td>
-														</tr>
-
-
-
-														<tr>
-															<td colspan="2"><hr></td>
-														</tr>		
-
-														<tr>
-															<th><?php 
+																	</td>
+																	</tr>
+																	
+																	
+																	
+																	<tr>
+																	<td colspan="2"><hr></td>
+																	</tr>		
+																	
+																	<tr>
+																	<th><?php 
             esc_html_e( 'Send status mail?:', 'delete-duplicate-posts' );
             ?></th>
-															<td>
-																<label for="ddp_statusmail">
+																	<td>
+																	<label for="ddp_statusmail">
 																	<input type="checkbox" id="ddp_statusmail" name="ddp_statusmail" 
 																	<?php 
             if ( isset( $options['ddp_statusmail'] ) && true === $options['ddp_statusmail'] ) {
@@ -1286,80 +1527,80 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
 																		<p class="description"><?php 
             esc_html_e( 'Sends a status email if duplicates have been found.', 'delete-duplicate-posts' );
             ?></p>
-																	</label>
-																</td>
-															</tr>
-
-															<tr>
-																<th><?php 
+																		</label>
+																		</td>
+																		</tr>
+																		
+																		<tr>
+																		<th><?php 
             esc_html_e( 'Email recipient:', 'delete-duplicate-posts' );
             ?></th>
-																<td>
-																	<label for="ddp_statusmail_recipient">
-
+																		<td>
+																		<label for="ddp_statusmail_recipient">
+																		
 																		<input type="text" class="regular-text" id="ddp_statusmail_recipient" name="ddp_statusmail_recipient" value="<?php 
             echo  esc_html( $options['ddp_statusmail_recipient'] ) ;
             ?>">
 																		<p class="description"><?php 
             esc_html_e( 'Who should get the notification email.', 'delete-duplicate-posts' );
             ?></p>
-																	</label>
-																</td>
-															</tr>
-
-
-
-
-															<th colspan=2><input type="submit" class="button-primary" name="delete_duplicate_posts_save" value="<?php 
+																		</label>
+																		</td>
+																		</tr>
+																		
+																		
+																		
+																		
+																		<th colspan=2><input type="submit" class="button-primary" name="delete_duplicate_posts_save" value="<?php 
             esc_html_e( 'Save Settings', 'delete-duplicate-posts' );
             ?>" /></th>
-														</tr>
-
-													</table>
-
-												</form>
-											</div><!-- #configuration -->
-
-
-											<div id="log">
-
-												<h3><?php 
+																		</tr>
+																		
+																		</table>
+																		
+																		</form>
+																		</div><!-- #configuration -->
+																		
+																		
+																		<div id="log">
+																		
+																		<h3><?php 
             esc_html_e( 'The Log', 'delete-duplicate-posts' );
             ?></h3>
-												<div class="spinner is-active"></div>
-												<ul class="large-text" name="ddp_log" id="ddp_log">
-												</ul>
-
-											</div>
-											<p>
-												<form method="post" id="ddp_clearlog">
-													<?php 
+																		<div class="spinner is-active"></div>
+																		<ul class="large-text" name="ddp_log" id="ddp_log">
+																		</ul>
+																		
+																		</div>
+																		<p>
+																		<form method="post" id="ddp_clearlog">
+																		<?php 
             wp_nonce_field( 'ddp_clearlog_nonce' );
             ?>
-
-													<input class="button-secondary" type="submit" name="ddp_clearlog" value="<?php 
+																		
+																		<input class="button-secondary" type="submit" name="ddp_clearlog" value="<?php 
             esc_html_e( 'Reset log', 'delete-duplicate-posts' );
             ?>" />
-												</form>
-											</p>
-
-										</div><!-- #ddp_container -->
-
-										<?php 
+																		</form>
+																		</p>
+																		
+																		</div><!-- #ddp_container -->
+																		
+																		<?php 
             include_once 'sidebar.php';
             ?>
-
-										<?php 
+																		
+																		<?php 
             if ( function_exists( 'ddp_fs' ) ) {
                 global  $ddp_fs ;
             }
             ?>
-
-								</div>
-							</div>
-
-						</div>
-						<?php 
+																		
+																		</div>
+																		</div>
+																		
+																		</div>
+																		<?php 
         }
     
     }

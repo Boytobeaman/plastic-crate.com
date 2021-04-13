@@ -23,7 +23,7 @@
 				<a href="#help" class="wpallimport-help" title="<?php _e('Parent SKU column in the below example.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative;">?</a>
 			</p>
 			<p class="form-field">
-				<strong><?php _e("Example Data For Use With This Option",PMWI_Plugin::TEXT_DOMAIN);?> </strong> - <a href="http://www.wpallimport.com/wp-content/uploads/2014/10/data-example-1.csv" tatger="_blank"><?php _e("download",PMWI_Plugin::TEXT_DOMAIN);?></a>
+				<strong><?php _e("Example Data For Use With This Option",PMWI_Plugin::TEXT_DOMAIN);?> </strong> - <a href="http://www.wpallimport.com/wp-content/uploads/2014/10/data-example-1.csv" target="_blank"><?php _e("download",PMWI_Plugin::TEXT_DOMAIN);?></a>
 				<span class="wpallimport-clear"></span>
 				<img src="<?php echo PMWI_ROOT_URL; ?>/static/img/data-example-1.png"/>														
 			</p>			
@@ -48,7 +48,7 @@
 				<a href="#help" class="wpallimport-help" title="<?php _e('Leave empty to use SKU settings from general tab.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative;">?</a>
 			</p>
 			<p class="form-field">
-				<strong><?php _e("Example Data For Use With This Option",PMWI_Plugin::TEXT_DOMAIN);?> </strong> - <a href="http://www.wpallimport.com/wp-content/uploads/2014/10/data-example-2.csv" tatger="_blank"><?php _e("download",PMWI_Plugin::TEXT_DOMAIN);?></a>
+				<strong><?php _e("Example Data For Use With This Option",PMWI_Plugin::TEXT_DOMAIN);?> </strong> - <a href="http://www.wpallimport.com/wp-content/uploads/2014/10/data-example-2.csv" target="_blank"><?php _e("download",PMWI_Plugin::TEXT_DOMAIN);?></a>
 				<span class="wpallimport-clear"></span>
 				<img src="<?php echo PMWI_ROOT_URL; ?>/static/img/data-example-2.png"/>		
 			</p>			
@@ -67,7 +67,7 @@
 				<input type="text" class="short" placeholder="" name="single_product_id_first_is_parent_title" value="<?php echo ($post['single_product_id_first_is_parent_title']) ? esc_attr($post['single_product_id_first_is_parent_title']) : ((!empty(PMXI_Plugin::$session->options['title'])) ? esc_attr(PMXI_Plugin::$session->options['title']) : ''); ?>"/>
 			</p>
 			<p class="form-field">
-				<strong><?php _e("Example Data For Use With This Option",PMWI_Plugin::TEXT_DOMAIN);?> </strong> - <a href="http://www.wpallimport.com/wp-content/uploads/2014/10/data-example-3.csv" tatger="_blank"><?php _e("download",PMWI_Plugin::TEXT_DOMAIN);?></a>
+				<strong><?php _e("Example Data For Use With This Option",PMWI_Plugin::TEXT_DOMAIN);?> </strong> - <a href="http://www.wpallimport.com/wp-content/uploads/2014/10/data-example-3.csv" target="_blank"><?php _e("download",PMWI_Plugin::TEXT_DOMAIN);?></a>
 				<span class="wpallimport-clear"></span>
 				<img src="<?php echo PMWI_ROOT_URL; ?>/static/img/data-example-3.png"/>			
 			</p>			
@@ -90,7 +90,7 @@
 				<a href="#help" class="wpallimport-help" title="<?php _e('Leave empty to use SKU settings from general tab.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative;">?</a>
 			</p>
 			<p class="form-field">
-				<strong><?php _e("Example Data For Use With This Option",PMWI_Plugin::TEXT_DOMAIN);?> </strong> - <a href="http://www.wpallimport.com/wp-content/uploads/2014/10/data-example-4.csv" tatger="_blank"><?php _e("download",PMWI_Plugin::TEXT_DOMAIN);?></a>
+				<strong><?php _e("Example Data For Use With This Option",PMWI_Plugin::TEXT_DOMAIN);?> </strong> - <a href="http://www.wpallimport.com/wp-content/uploads/2014/10/data-example-4.csv" target="_blank"><?php _e("download",PMWI_Plugin::TEXT_DOMAIN);?></a>
 				<span class="wpallimport-clear"></span>
 				<img src="<?php echo PMWI_ROOT_URL; ?>/static/img/data-example-4.png"/>			
 			</p>			
@@ -177,14 +177,14 @@
 							<input type="radio" id="is_variable_product_manage_stock_xpath" class="switcher" name="is_variable_product_manage_stock" value="xpath" <?php echo 'xpath' == $post['is_variable_product_manage_stock'] ? 'checked="checked"': '' ?>/>
 							<label for="is_variable_product_manage_stock_xpath"><?php _e('Set with XPath', PMWI_Plugin::TEXT_DOMAIN )?></label>
 							<span class="wpallimport-clear"></span>
-							<div class="switcher-target-is_variable_product_manage_stock_xpath set_with_xpath" style="width:390px;">
+							<div class="switcher-target-is_variable_product_manage_stock_xpath set_with_xpath" style="width:425px;">
 								<span class="wpallimport-slide-content" style="padding-left:0;">
 									<input type="text" class="smaller-text" name="single_variable_product_manage_stock" style="width:345px;" value="<?php echo esc_attr($post['single_variable_product_manage_stock']) ?>"/>
-									<a href="#help" class="wpallimport-help" title="<?php _e('The value of presented XPath should be one of the following: (\'yes\', \'no\').', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:2px;">?</a>
-									<span class="use_parent" style="float:right; top: 2px;">
+									<span class="use_parent" style="top: 2px; left: 10px;">
 										<input type="hidden" name="single_variable_product_manage_stock_use_parent" value="0"/>
 										<input type="checkbox" name="single_variable_product_manage_stock_use_parent" id="single_variable_product_manage_stock_use_parent" style="position:relative; top:1px; margin-right:5px; float: left;" <?php echo ($post['single_variable_product_manage_stock_use_parent']) ? 'checked="checked"' : ''; ?>>
-										<label for="single_variable_product_manage_stock_use_parent" style="top:3px;"><?php _e("XPath Is From Parent",PMWI_Plugin::TEXT_DOMAIN); ?></label>
+										<label for="single_variable_product_manage_stock_use_parent" style="top:3px; width: auto;"><?php _e("XPath Is From Parent",PMWI_Plugin::TEXT_DOMAIN); ?></label>
+                                        <a href="#help" class="wpallimport-help" title="<?php _e('The value of presented XPath should be one of the following: (\'yes\', \'no\').', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:0;">?</a>
 									</span>
 								</span>																							
 							</div>						
@@ -329,15 +329,15 @@
 							<input type="radio" id="is_variable_product_virtual_xpath" class="switcher" name="is_variable_product_virtual" value="xpath" <?php echo 'xpath' == $post['is_variable_product_virtual'] ? 'checked="checked"': '' ?>/>
 							<label for="is_variable_product_virtual_xpath"><?php _e('Set with XPath', PMWI_Plugin::TEXT_DOMAIN )?></label>
 							<span class="wpallimport-clear"></span>
-							<div class="switcher-target-is_variable_product_virtual_xpath set_with_xpath" style="width:390px;">
+							<div class="switcher-target-is_variable_product_virtual_xpath set_with_xpath" style="width:425px;">
 								<span class="wpallimport-slide-content" style="padding-left:0;">
 									<input type="text" class="smaller-text" name="single_variable_product_virtual" style="width:300px;" value="<?php echo esc_attr($post['single_variable_product_virtual']) ?>"/>
-									<a href="#help" class="wpallimport-help" title="<?php _e('The value of presented XPath should be one of the following: (\'yes\', \'no\').', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:2px;">?</a>
-									<span class="use_parent" style="float:right; top: 2px;">
+									<span class="use_parent" style="top: 2px; left: 10px;">
 										<input type="hidden" name="single_variable_product_virtual_use_parent" value="0"/>
 										<input type="checkbox" name="single_variable_product_virtual_use_parent" id="single_variable_product_virtual_use_parent" style="position:relative; top:1px; margin-right:5px; float: left;" <?php echo ($post['single_variable_product_virtual_use_parent']) ? 'checked="checked"' : ''; ?>>
-										<label for="single_variable_product_virtual_use_parent" style="top:3px;"><?php _e("XPath Is From Parent",PMWI_Plugin::TEXT_DOMAIN); ?></label>
-									</span>																							
+										<label for="single_variable_product_virtual_use_parent" style="top:3px; width: auto;"><?php _e("XPath Is From Parent",PMWI_Plugin::TEXT_DOMAIN); ?></label>
+                                        <a href="#help" class="wpallimport-help" title="<?php _e('The value of presented XPath should be one of the following: (\'yes\', \'no\').', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:0; ">?</a>
+									</span>
 								</span>																							
 							</div>
 						</div>						
@@ -403,11 +403,11 @@
 							<div class="switcher-target-multiple_variable_product_shipping_class_no set_with_xpath">						
 								<span class="wpallimport-slide-content" style="padding-left:0;">
 									<input type="text" class="smaller-text" name="single_variable_product_shipping_class" style="width:300px;" value="<?php echo esc_attr($post['single_variable_product_shipping_class']) ?>"/>
-									<a href="#help" class="wpallimport-help" title="<?php _e('The value of presented XPath should be one of the following: (\'taxable\', \'shipping\', \'none\').', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position: relative; top: -10px;">?</a>
 									<span class="use_parent">
 										<input type="hidden" name="single_variable_product_shipping_class_use_parent" value="0"/>
 										<input type="checkbox" name="single_variable_product_shipping_class_use_parent" id="single_variable_product_shipping_class_use_parent" style="position:relative; top:2px; margin-left:5px; margin-right:5px;" <?php echo ($post['single_variable_product_shipping_class_use_parent']) ? 'checked="checked"' : ''; ?>>
-										<label for="single_variable_product_shipping_class_use_parent" style="top:2px; position: relative;"><?php _e("XPath Is From Parent",PMWI_Plugin::TEXT_DOMAIN); ?></label>
+										<label for="single_variable_product_shipping_class_use_parent" style="top:2px; position: relative; width: auto;"><?php _e("XPath Is From Parent",PMWI_Plugin::TEXT_DOMAIN); ?></label>
+                                        <a href="#help" class="wpallimport-help" title="<?php _e('The value of presented XPath should be one of the following: (\'taxable\', \'shipping\', \'none\').', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position: relative; top: 2px; ">?</a>
 									</span>																					
 								</span>																					
 							</div>							
@@ -447,11 +447,11 @@
 							<div class="switcher-target-multiple_variable_product_tax_class_no set_with_xpath">
 								<span class="wpallimport-slide-content" style="padding-left:0;">
 									<input type="text" class="smaller-text" name="single_variable_product_tax_class" style="width:300px;" value="<?php echo esc_attr($post['single_variable_product_tax_class']) ?>"/>
-									<a href="#help" class="wpallimport-help" title="<?php _e('The value of presented XPath should be one of the following: (\'reduced-rate\', \'zero-rate\').', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position: relative; top:-10px;">?</a>
 									<span class="use_parent">
 										<input type="hidden" name="single_variable_product_tax_class_use_parent" value="0"/>
 										<input type="checkbox" name="single_variable_product_tax_class_use_parent" id="single_variable_product_tax_class_use_parent" style="position:relative; top:2px; margin-left:5px; margin-right:5px;" <?php echo ($post['single_variable_product_tax_class_use_parent']) ? 'checked="checked"' : ''; ?>>
-										<label for="single_variable_product_tax_class_use_parent" style="top:1px; position: relative;"><?php _e("XPath Is From Parent",PMWI_Plugin::TEXT_DOMAIN); ?></label>
+										<label for="single_variable_product_tax_class_use_parent" style="top:1px; position: relative; width: auto;"><?php _e("XPath Is From Parent",PMWI_Plugin::TEXT_DOMAIN); ?></label>
+                                        <a href="#help" class="wpallimport-help" title="<?php _e('The value of presented XPath should be one of the following: (\'reduced-rate\', \'zero-rate\').', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position: relative; top:2px;">?</a>
 									</span>
 								</span>															
 							</div>
@@ -473,14 +473,14 @@
 							<input type="radio" id="is_variable_product_downloadable_xpath" class="switcher" name="is_variable_product_downloadable" value="xpath" <?php echo 'xpath' == $post['is_variable_product_downloadable'] ? 'checked="checked"': '' ?>/>
 							<label for="is_variable_product_downloadable_xpath"><?php _e('Set with XPath', PMWI_Plugin::TEXT_DOMAIN )?></label>
 							<span class="wpallimport-clear"></span>
-							<div class="switcher-target-is_variable_product_downloadable_xpath set_with_xpath" style="width:390px;">
+							<div class="switcher-target-is_variable_product_downloadable_xpath set_with_xpath" style="width:425px;">
 								<span class="wpallimport-slide-content" style="padding-left:0;">
 									<input type="text" class="smaller-text" name="single_variable_product_downloadable" style="width:345px;" value="<?php echo esc_attr($post['single_variable_product_downloadable']) ?>"/>
-									<a href="#help" class="wpallimport-help" title="<?php _e('The value of presented XPath should be one of the following: (\'yes\', \'no\').', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:2px;">?</a>
-									<span class="use_parent" style="float:right; top: 2px;">
+									<span class="use_parent" style="left: 10px; top: 2px;">
 										<input type="hidden" name="single_variable_product_downloadable_use_parent" value="0"/>
 										<input type="checkbox" name="single_variable_product_downloadable_use_parent" id="single_variable_product_downloadable_use_parent" style="position:relative; top:1px; margin-right:5px; float: left;" <?php echo ($post['single_variable_product_downloadable_use_parent']) ? 'checked="checked"' : ''; ?>>
-										<label for="single_variable_product_downloadable_use_parent" style="top:3px;"><?php _e("XPath Is From Parent",PMWI_Plugin::TEXT_DOMAIN); ?></label>
+										<label for="single_variable_product_downloadable_use_parent" style="top:3px; width: auto;"><?php _e("XPath Is From Parent",PMWI_Plugin::TEXT_DOMAIN); ?></label>
+                                        <a href="#help" class="wpallimport-help" title="<?php _e('The value of presented XPath should be one of the following: (\'yes\', \'no\').', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:2px;">?</a>
 									</span>
 								</span>															
 							</div>						
@@ -571,21 +571,24 @@
                                                     <div class="drag-attribute">
 													    <input type="text" class="widefat" name="variable_attribute_name[]"  value="<?php echo esc_attr($name) ?>" style="width:95% !important;"/>
                                                     </div>
-												</td>
-												<td style="width: 50%;">
-													<input type="text" class="widefat" name="variable_attribute_value[]" value="<?php echo esc_attr($post['variable_attribute_value'][$i]); ?>" style="width: 100% !important;"/>
-													
-													<span class="wpallimport-clear"></span>
-													<p class="form-field wpallimport-radio-field" style="padding: 0 !important; position: relative; left: -100%; width: 200%;">
+                                                    <span class="wpallimport-clear"></span>
+                                                    <p class="form-field wpallimport-radio-field">
 														<span class='in_variations' style="margin-left:0px;">
 															<input type="checkbox" name="variable_in_variations[]" id="variable_in_variations_<?php echo $i; ?>" <?php echo ($post['variable_in_variations'][$i]) ? 'checked="checked"' : ''; ?> style="float:left;" value="1"/>
 															<label for="variable_in_variations_<?php echo $i; ?>"><?php _e('In Variations',PMWI_Plugin::TEXT_DOMAIN);?></label>
 														</span>
 
-														<span class='is_visible'>
+                                                        <span class='is_visible'>
 															<input type="checkbox" name="variable_is_visible[]" id="variable_is_visible_<?php echo $i; ?>" <?php echo ($post['variable_is_visible'][$i]) ? 'checked="checked"' : ''; ?> style="float: left;" value="1"/>
 															<label for="variable_is_visible_<?php echo $i; ?>"><?php _e('Is Visible',PMWI_Plugin::TEXT_DOMAIN);?></label>
 														</span>
+                                                    </p>
+												</td>
+												<td style="width: 50%;">
+													<input type="text" class="widefat" name="variable_attribute_value[]" value="<?php echo esc_attr($post['variable_attribute_value'][$i]); ?>" style="width: 100% !important;"/>
+
+													<span class="wpallimport-clear"></span>
+													<p class="form-field wpallimport-radio-field">
 
 														<span class='is_taxonomy'>
 															<input type="checkbox" name="variable_is_taxonomy[]" id="variable_is_taxonomy_<?php echo $i; ?>" <?php echo ($post['variable_is_taxonomy'][$i]) ? 'checked="checked"' : ''; ?> style="float: left;" value="1"/>
@@ -596,7 +599,7 @@
 															<input type="checkbox" name="variable_create_taxonomy_in_not_exists[]" id="variable_create_taxonomy_in_not_exists_<?php echo $i;?>" <?php echo ($post['variable_create_taxonomy_in_not_exists'][$i]) ? 'checked="checked"' : ''; ?> style="float:left;" value="1"/>
 															<label for="variable_create_taxonomy_in_not_exists_<?php echo $i; ?>"><?php _e('Auto-Create Terms',PMWI_Plugin::TEXT_DOMAIN);?></label>
 														</span>
-													</p>																								
+													</p>
 												</td>
 												<td class="action remove"><a href="#remove" style="top: 9px;"></a></td>
 											</tr>
@@ -607,20 +610,23 @@
                                             <div class="drag-attribute">
 											    <input type="text" name="variable_attribute_name[]" value="" style="width:95% !important;"/>
                                             </div>
-										</td>
-										<td style="width: 50%;">
-											<input type="text" class="widefat" name="variable_attribute_value[]" value="" style="width: 100% !important;"/>													
-											
-											<span class="wpallimport-clear"></span>
-											<p class="form-field wpallimport-radio-field" style="padding: 0 !important; position: relative; left: -100%; width: 200%;">
+                                            <span class="wpallimport-clear"></span>
+                                            <p class="form-field wpallimport-radio-field">
 												<span class='in_variations' style="margin-left:0px;">
 													<input type="checkbox" name="variable_in_variations[]" id="variable_in_variations_0" checked="checked" style="float: left;" value="1"/>
 													<label for="variable_in_variations_0"><?php _e('In Variations',PMWI_Plugin::TEXT_DOMAIN);?></label>
 												</span>
-												<span class='is_visible'>
+                                                <span class='is_visible'>
 													<input type="checkbox" name="variable_is_visible[]" id="variable_is_visible_0" checked="checked" style="float:left;" value="1"/>
 													<label for="variable_is_visible_0"><?php _e('Is Visible',PMWI_Plugin::TEXT_DOMAIN);?></label>
 												</span>
+                                            </p>
+										</td>
+										<td style="width: 50%;">
+											<input type="text" class="widefat" name="variable_attribute_value[]" value="" style="width: 100% !important;"/>
+
+											<span class="wpallimport-clear"></span>
+											<p class="form-field wpallimport-radio-field">
 												<span class='is_taxonomy'>
 													<input type="checkbox" name="variable_is_taxonomy[]" id="variable_is_taxonomy_0" checked="checked" style="float:left;" value="1"/>
 													<label for="variable_is_taxonomy_0"><?php _e('Taxonomy',PMWI_Plugin::TEXT_DOMAIN);?></label>
@@ -628,7 +634,7 @@
 												<span class='is_create_taxonomy'>
 													<input type="checkbox" name="variable_create_taxonomy_in_not_exists[]" id="variable_create_taxonomy_in_not_exists_0" checked="checked" style="float:left;" value="1"/>
 													<label for="variable_create_taxonomy_in_not_exists_0"><?php _e('Auto-Create Terms',PMWI_Plugin::TEXT_DOMAIN);?></label>
-												</span>																
+												</span>
 											</p>
 										</td>
 										<td class="action remove"><a href="#remove" style="top: 9px;"></a></td>
@@ -639,20 +645,22 @@
                                             <div class="drag-attribute">
 											    <input type="text" name="variable_attribute_name[]" value="" style="width:95% !important;"/>
                                             </div>
-										</td>
-										<td style="width: 50%;">
-											<input type="text" class="widefat" name="variable_attribute_value[]" value="" style="width: 100% !important;"/>													
-											
-											<span class="wpallimport-clear"></span>
-											<p class="form-field wpallimport-radio-field" style="padding: 0 !important; position: relative; left: -100%; width: 200%;">
+                                            <p class="form-field wpallimport-radio-field">
 												<span class='in_variations' style="margin-left:0px;">
 													<input type="checkbox" name="variable_in_variations[]" checked="checked" style="float: left;" value="1"/>
 													<label for=""><?php _e('In Variations',PMWI_Plugin::TEXT_DOMAIN);?></label>
 												</span>
-												<span class='is_visible'>
+                                                <span class='is_visible'>
 													<input type="checkbox" name="variable_is_visible[]" checked="checked" style="float: left;" value="1"/>
 													<label for=""><?php _e('Is Visible',PMWI_Plugin::TEXT_DOMAIN);?></label>
 												</span>
+                                            </p>
+										</td>
+										<td style="width: 50%;">
+											<input type="text" class="widefat" name="variable_attribute_value[]" value="" style="width: 100% !important;"/>
+
+											<span class="wpallimport-clear"></span>
+											<p class="form-field wpallimport-radio-field">
 												<span class='is_taxonomy'>
 													<input type="checkbox" name="variable_is_taxonomy[]" checked="checked" style="float: left;" value="1"/>
 													<label for=""><?php _e('Taxonomy',PMWI_Plugin::TEXT_DOMAIN);?></label>
@@ -660,7 +668,7 @@
 												<span class='is_create_taxonomy'>
 													<input type="checkbox" name="variable_create_taxonomy_in_not_exists[]" checked="checked" style="float: left;" value="1"/>
 													<label for=""><?php _e('Auto-Create Terms',PMWI_Plugin::TEXT_DOMAIN);?></label>
-												</span>	
+												</span>
 											</p>
 										</td>
 										<td class="action remove"><a href="#remove" style="top: 9px;"></a></td>
@@ -826,18 +834,29 @@
 
 		<p class="form-field wpallimport-radio-field">
 			<input type="radio" id="set_default_yes" class="switcher" name="is_default_attributes" value="1" <?php echo $post['is_default_attributes'] ? 'checked="checked"': '' ?>/>
-			<label for="set_default_yes" style="width: 400px;"><?php _e("Set the default selection in the attributes dropdowns.", PMWI_Plugin::TEXT_DOMAIN); ?></label>
+			<label for="set_default_yes" style="width: 305px;"><?php _e("Set the default selection in the attributes dropdowns.", PMWI_Plugin::TEXT_DOMAIN); ?></label>
 			<a href="#help" class="wpallimport-help" title="<?php _e('The attributes for the first variation will be automatically selected on the frontend.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:2px;">?</a>
 		</p>
 		<div class="switcher-target-set_default_yes set_with_xpath" style="padding-left:17px;">
 			<p class="form-field wpallimport-radio-field">
-				<input type="radio" id="set_default_first" name="default_attributes_type" value="first" <?php echo ($post['default_attributes_type'] == 'first') ? 'checked="checked"': '' ?>/>
+				<input type="radio" id="set_default_first" class="switcher" name="default_attributes_type" value="first" <?php echo ($post['default_attributes_type'] == 'first') ? 'checked="checked"': '' ?>/>
 				<label for="set_default_first" style="width: 90%;"><?php _e("Set first variation as the default selection.", PMWI_Plugin::TEXT_DOMAIN); ?></label>
 			</p>
 			<p class="form-field wpallimport-radio-field">
-				<input type="radio" id="set_default_instock" name="default_attributes_type" value="instock" <?php echo ($post['default_attributes_type'] == 'instock') ? 'checked="checked"': '' ?>/>
+				<input type="radio" id="set_default_instock" class="switcher" name="default_attributes_type" value="instock" <?php echo ($post['default_attributes_type'] == 'instock') ? 'checked="checked"': '' ?>/>
 				<label for="set_default_instock" style="width: 90%;"><?php _e("Set first in stock variation as the default selection.", PMWI_Plugin::TEXT_DOMAIN); ?></label>
-			</p>	
+			</p>
+            <div class="form-field wpallimport-radio-field">
+                <input type="radio" id="set_default_xpath" class="switcher" name="default_attributes_type" value="xpath" <?php echo 'xpath' == $post['default_attributes_type'] ? 'checked="checked"': '' ?>/>
+                <label for="set_default_xpath"><?php _e('Set with XPath', PMWI_Plugin::TEXT_DOMAIN )?></label>
+                <span class="wpallimport-clear"></span>
+                <div class="switcher-target-set_default_xpath set_with_xpath">
+                    <span class="wpallimport-slide-content" style="padding-left:0;">
+                        <input type="text" class="smaller-text" name="default_attributes_xpath" style="width:300px;" value="<?php echo esc_attr($post['default_attributes_xpath']) ?>"/>
+                        <a href="#help" class="wpallimport-help" title="<?php _e('The value of presented XPath should be one serialized data: a:2:{s:7:”pa_size”;s:3:”6-5″;s:8:”pa_color”;s:3:”red”;}.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:2px;">?</a>
+                    </span>
+                </div>
+            </div>
 		</div>
 		<p class="form-field wpallimport-radio-field">
 			<input type="radio" id="set_default_no" class="switcher" name="is_default_attributes" value="0" <?php echo ! $post['is_default_attributes'] ? 'checked="checked"': '' ?>/>

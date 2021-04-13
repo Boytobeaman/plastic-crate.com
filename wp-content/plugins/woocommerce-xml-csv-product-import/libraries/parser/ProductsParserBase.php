@@ -32,12 +32,10 @@ abstract class ProductsParserBase extends Parser {
                 $this->data[$option] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options[$s_option], $file)
                     ->parse();
                 $this->tmp_files[] = $file;
-            }
-            else {
+            } else {
                 $this->getCount() and $this->data[$option] = array_fill(0, $this->getCount(), $this->getImport()->options[$m_option]);
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->log('<b>ERROR:</b> ' . $e->getMessage());
         }
     }
@@ -62,12 +60,10 @@ abstract class ProductsParserBase extends Parser {
                 $this->data['single_' . preg_replace("%id$%", "ID", $option)] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['single_' . $option], $file)
                     ->parse();
                 $this->tmp_files[] = $file;
-            }
-            else {
+            } else {
                 $this->getCount() and $this->data['single_' . preg_replace("%id$%", "ID", $option)] = array_fill(0, $this->getCount(), "");
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->log('<b>ERROR:</b> ' . $e->getMessage());
         }
     }
@@ -99,12 +95,10 @@ abstract class ProductsParserBase extends Parser {
                     default:
                         break;
                 }
-            }
-            else {
+            } else {
                 $this->getCount() and $this->data[$option] = array_fill(0, $this->getCount(), "");
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->log('<b>ERROR:</b> ' . $e->getMessage());
         }
     }
@@ -120,12 +114,10 @@ abstract class ProductsParserBase extends Parser {
                 $this->data['product_' . $option] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['single_' . $option], $file)
                     ->parse();
                 $this->tmp_files[] = $file;
-            }
-            else {
+            } else {
                 $this->getCount() and $this->data['product_' . $option] = array_fill(0, $this->getCount(), "");
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->log('<b>ERROR:</b> ' . $e->getMessage());
         }
     }
@@ -142,12 +134,10 @@ abstract class ProductsParserBase extends Parser {
                 $this->data['product_' . $option_name] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['single_product_' . $option], $file)
                     ->parse();
                 $this->tmp_files[] = $file;
-            }
-            else {
+            } else {
                 $this->getCount() and $this->data['product_' . $option_name] = array_fill(0, $this->getCount(), $this->getImport()->options['multiple_product_' . $option]);
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->log('<b>ERROR:</b> ' . $e->getMessage());
         }
     }
@@ -204,12 +194,10 @@ abstract class ProductsParserBase extends Parser {
                 $this->data['v_stock'] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['variation_stock'], $file)
                     ->parse();
                 $this->tmp_files[] = $file;
-            }
-            else {
+            } else {
                 $this->getCount() and $this->data['v_stock'] = array_fill(0, $this->getCount(), '');
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->log('<b>ERROR:</b> ' . $e->getMessage());
         }
     }
@@ -225,12 +213,10 @@ abstract class ProductsParserBase extends Parser {
                         $this->data['product_grouping_parent'] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['single_grouping_product'], $file)
                             ->parse();
                         $this->tmp_files[] = $file;
-                    }
-                    else {
+                    } else {
                         $this->getCount() and $this->data['product_grouping_parent'] = array_fill(0, $this->getCount(), $this->getImport()->options['multiple_grouping_product']);
                     }
-                }
-                else {
+                } else {
                     if ("" != $this->getImport()->options['custom_grouping_indicator_name'] and "" != $this->getImport()->options['custom_grouping_indicator_value']) {
                         $this->data['custom_grouping_indicator_name'] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['custom_grouping_indicator_name'], $file)
                             ->parse();
@@ -238,18 +224,15 @@ abstract class ProductsParserBase extends Parser {
                         $this->data['custom_grouping_indicator_value'] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['custom_grouping_indicator_value'], $file)
                             ->parse();
                         $this->tmp_files[] = $file;
-                    }
-                    else {
+                    } else {
                         $this->getCount() and $this->data['custom_grouping_indicator_name'] = array_fill(0, $this->getCount(), "");
                         $this->getCount() and $this->data['custom_grouping_indicator_value'] = array_fill(0, $this->getCount(), "");
                     }
                 }
-            }
-            else {
+            } else {
                 $this->getCount() and $this->data['product_grouping_parent'] = array_fill(0, $this->getCount(), $this->getImport()->options['multiple_grouping_product']);
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->log('<b>ERROR:</b> ' . $e->getMessage());
         }
     }
@@ -265,8 +248,7 @@ abstract class ProductsParserBase extends Parser {
                         ->parse();
                     $this->tmp_files[] = $file;
                 }
-            }
-            else {
+            } else {
                 if ("" != $this->getImport()->options['existing_parent_product_cf_name'] and "" != $this->getImport()->options['existing_parent_product_cf_value']) {
                     $this->data['existing_parent_product_cf_name'] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['existing_parent_product_cf_name'], $file)
                         ->parse();
@@ -276,8 +258,7 @@ abstract class ProductsParserBase extends Parser {
                     $this->tmp_files[] = $file;
                 }
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->log('<b>ERROR:</b> ' . $e->getMessage());
         }
     }
@@ -292,24 +273,20 @@ abstract class ProductsParserBase extends Parser {
                 $this->data['product_stock_status'] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['single_product_stock_status'], $file)
                     ->parse();
                 $this->tmp_files[] = $file;
-            }
-            elseif ($this->getImport()->options['product_stock_status'] == 'auto') {
+            } elseif ($this->getImport()->options['product_stock_status'] == 'auto') {
                 $this->getCount() and $this->data['product_stock_status'] = array_fill(0, $this->getCount(), $this->getImport()->options['product_stock_status']);
                 $nostock = absint(max(get_option('woocommerce_notify_no_stock_amount'), 0));
                 foreach ($this->data['product_stock_qty'] as $key => $value) {
                     if ($this->data['product_manage_stock'][$key] == 'yes') {
                         $this->data['product_stock_status'][$key] = (((int) $value === 0 or (int) $value <= $nostock) and $value != "") ? 'outofstock' : 'instock';
-                    }
-                    else {
+                    } else {
                         $this->data['product_stock_status'][$key] = 'instock';
                     }
                 }
-            }
-            else {
+            } else {
                 $this->getCount() and $this->data['product_stock_status'] = array_fill(0, $this->getCount(), $this->getImport()->options['product_stock_status']);
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->log('<b>ERROR:</b> ' . $e->getMessage());
         }
     }
@@ -322,24 +299,20 @@ abstract class ProductsParserBase extends Parser {
             if ($this->getImport()->options['variation_stock_status'] == 'xpath' and "" != $this->getImport()->options['single_variation_stock_status']) {
                 $this->data['v_stock_status'] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['single_variation_stock_status'], $file)->parse();
                 $this->tmp_files[] = $file;
-            }
-            elseif ($this->getImport()->options['variation_stock_status'] == 'auto') {
+            } elseif ($this->getImport()->options['variation_stock_status'] == 'auto') {
                 $this->getCount() and $this->data['v_stock_status'] = array_fill(0, $this->getCount(), $this->getImport()->options['variation_stock_status']);
                 $nostock = absint(max(get_option('woocommerce_notify_no_stock_amount'), 0));
                 foreach ($this->data['v_stock'] as $key => $value) {
                     if ($this->data['v_product_manage_stock'][$key] == 'yes') {
                         $this->data['v_stock_status'][$key] = (((int) $value === 0 or (int) $value <= $nostock) and $value != "") ? 'outofstock' : 'instock';
-                    }
-                    else {
+                    } else {
                         $this->data['v_stock_status'][$key] = 'instock';
                     }
                 }
-            }
-            else {
+            } else {
                 $this->getCount() and $this->data['v_stock_status'] = array_fill(0, $this->getCount(), $this->getImport()->options['variation_stock_status']);
             }
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             $this->log('<b>ERROR:</b> ' . $e->getMessage());
         }
     }
@@ -385,8 +358,7 @@ abstract class ProductsParserBase extends Parser {
                         $attribute_options['is_create_terms'][$j] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['create_taxonomy_in_not_exists'][$j], $file)
                             ->parse();
                         $this->tmp_files[] = $file;
-                    }
-                    else {
+                    } else {
                         $options = array(
                             'in_variations',
                             'is_visible',
@@ -399,8 +371,7 @@ abstract class ProductsParserBase extends Parser {
                                 $attribute_options[$option][$j] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['advanced_' . $option . '_xpath'][$j], $file)
                                     ->parse();
                                 $this->tmp_files[] = $file;
-                            }
-                            else {
+                            } else {
                                 $attribute_options[$option][$j] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['advanced_' . $option][$j], $file)
                                     ->parse();
                                 $this->tmp_files[] = $file;
@@ -409,15 +380,13 @@ abstract class ProductsParserBase extends Parser {
                             foreach ($attribute_options[$option][$j] as $key => $value) {
                                 if (!in_array($value, array('yes', 'no'))) {
                                     $attribute_options[$option][$j][$key] = 1;
-                                }
-                                else {
+                                } else {
                                     $attribute_options[$option][$j][$key] = ($value == 'yes') ? 1 : 0;
                                 }
                             }
                         }
                     }
-                }
-                catch(\Exception $e) {
+                } catch(\Exception $e) {
                     $this->log($e->getMessage());
                 }
             }

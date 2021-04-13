@@ -6,19 +6,9 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>" />
 		<?php wp_head(); ?>
-		<!-- Global site tag (gtag.js) - Google Analytics -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=UA-76091789-3"></script>
-		<script>
-		  window.dataLayer = window.dataLayer || [];
-		  function gtag(){dataLayer.push(arguments);}
-		  gtag('js', new Date());
-
-		  gtag('config', 'UA-76091789-3');
-		</script>
-                <script data-ad-client="ca-pub-2556371792604486" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 	</head>
 	<body id="blog" <?php body_class(); ?>>
-
+            <?php wp_body_open(); ?>
 		<?php get_template_part( 'template-part', 'topnav' ); ?>
 
 		<?php get_template_part( 'template-part', 'head' ); ?>
