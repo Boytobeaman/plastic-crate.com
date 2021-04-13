@@ -242,3 +242,27 @@ if ( ! function_exists( 'woocommerce_template_loop_product_thumbnail_custom' ) )
 		echo '<div class="product-img-wrap br-2-white">'. woocommerce_get_product_thumbnail() .'</div>';
 	}
 }
+
+
+
+add_action( 'wp_footer', 'add_contact_modal',99 );
+
+function add_contact_modal() {
+	?>
+	<div id="contactUs" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Request a Free Quote</h4>
+				</div>
+				<div class="modal-body">
+			<?php echo do_shortcode( '[contact-form-7 id="244" title="Contact form 1"]' ); ?>
+				</div>
+			</div>
+		</div>
+	</div>
+<?php
+};

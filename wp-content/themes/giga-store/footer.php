@@ -9,21 +9,11 @@
 <?php } ?>
 <footer id="colophon" class="rsrc-footer" role="contentinfo">
 	<div class="container">  
-		<div class="row rsrc-author-credits">
-			<?php if ( get_theme_mod( 'giga_store_socials', 0 ) == 1 ) : ?>
-				<div class="footer-socials text-center">
-					<?php
-					if ( get_theme_mod( 'giga_store_socials', 0 ) == 1 ) {
-						giga_store_social_links();
-					}
-					?>                 
-				</div>
-			<?php endif; ?>
-			<p class="text-center">
-				<?php printf( __( 'Proudly powered by %s', 'giga-store' ), '<a href="' . esc_url( __( 'https://wordpress.org/', 'giga-store' ) ) . '">WordPress</a>' ); ?>
-				<span class="sep"> | </span>
-				<?php printf( __( 'Theme: %1$s by %2$s', 'giga-store' ), '<a href="' . esc_url('http://themes4wp.com/theme/giga-store') . '" title="' . esc_attr__( 'Free WooCommerce WordPress Theme', 'giga-store' ) . '">Giga Store</a>', 'Themes4WP' ); ?>
-			</p> 
+	<div class="row friend-links">
+			<a href="https://www.storage-totes.com/product-category/collapsible-storage-bins/" target="_blank">collapsible storage bins</a>
+			<a href="https://www.plastic-crate.co.uk/product-category/euro-crates-boxes-for-sale/" target="_blank">euro containers</a>
+			<a href="https://www.vegcrates.com/space-age-totes-with-lids-for-sale/" target="_blank">space age totes</a>
+			<a href="https://www.ausplastic.com/product-category/collapsible-storage-box/" target="_blank">collapsible storage box</a>
 		</div>
 	</div>       
 </footer> 
