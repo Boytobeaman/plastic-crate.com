@@ -1,12 +1,12 @@
 === Delete Duplicate Posts ===
 Contributors: cleverplugins, lkoudal, freemius
 Donate link: https://cleverplugins.com/
-Tags: delete duplicate posts, delete duplicate,
+Tags: delete duplicate posts, delete, duplicate
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Requires at least: 4.7
-Tested up to: 5.6
-Stable tag: 4.6.1
+Tested up to: 5.7
+Stable tag: 4.6.2
 Requires PHP: 5.6
 
 Get rid of duplicate posts and pages on your blog!
@@ -48,6 +48,13 @@ You should restore the backup you took of your website before you ran this tool.
 3. Settings in free version
 
 == Changelog ==
+
+= 4.6.2 =
+* 2021/04/14
+* Updated 3rd party libraries for PHP 8
+* Tested up to WP 5.7
+* Minor bugfixes
+* 303,187 downloads
 
 = 4.6.1 =
 * 2020/01/12
@@ -277,6 +284,3 @@ You should restore the backup you took of your website before you ran this tool.
 
 = 1.0 =
 * First release
-
-== Upgrade Notice ==
-4.6  Recommended update - compatibility with WordPress 5.6 and new features + solution for time out problem on big websites.

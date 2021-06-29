@@ -1,7 +1,7 @@
 <div class="panel woocommerce_options_panel" id="general_product_data">
     <?php if (class_exists('PMWI_Plugin') && PMWI_EDITION == 'free'): ?>
     <div class="woo-add-on-free-edition-notice upgrade_template">
-        <a href="https://www.wpallimport.com/checkout/?edd_action=purchase_collection&taxonomy=download_category&terms=14&utm_source=import-wooco-products-addon-free&utm_medium=upgrade-notice&utm_campaign=import-variable-wooco-products" target="_blank" class="upgrade_woo_link"><?php _e('Upgrade to the Pro edition of WP All Import and the WooCommerce Add-On to Import to Variable, Affiliate, and Grouped Products', PMWI_Plugin::TEXT_DOMAIN);?></a>
+        <a href="https://www.wpallimport.com/checkout/?edd_action=add_to_cart&download_id=2707227&edd_options%5Bprice_id%5D=1" target="_blank" class="upgrade_woo_link"><?php _e('Upgrade to the Pro edition of WP All Import and the WooCommerce Add-On to Import to Variable, Affiliate, and Grouped Products', PMWI_Plugin::TEXT_DOMAIN);?></a>
         <p><?php _e('If you already own it, remove the free edition and install the Pro edition.', 'wp_all_import_plugin'); ?></p>
     </div>
     <?php endif; ?>
@@ -50,7 +50,7 @@
 
 		<!-- AUTOFIX PRICES -->				
 
-		<p class="form-field pmwi_trigger_adjust_prices" style="color:#5EAAAC;"> <strong><span><?php if (!empty($post['single_product_regular_price_adjust']) or !empty($post['single_product_sale_price_adjust'])):?>-<?php else: ?>+<?php endif; ?></span><?php _e(' Adjust Prices', PMWI_Plugin::TEXT_DOMAIN); ?></strong><a href="#help" class="wpallimport-help" title="<?php _e('Mark prices up and down, convert prices to currencies.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top: -1px; left:4px;;">?</a></p>
+		<p class="form-field pmwi_trigger_adjust_prices" style="color:#5EAAAC;"> <strong><span></span><?php _e(' Adjust Prices', PMWI_Plugin::TEXT_DOMAIN); ?></strong><a href="#help" class="wpallimport-help" title="<?php _e('Mark prices up and down, convert prices to currencies.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top: -1px; left:4px;;">?</a></p>
 		<div class="pmwi_adjust_prices" <?php if (!empty($post['single_product_regular_price_adjust']) or !empty($post['single_product_sale_price_adjust'])):?>style="display:block;"<?php endif; ?>>
 			<p class="form-field">
 				<label><?php printf(__("Regular Price (%s)", PMWI_Plugin::TEXT_DOMAIN), get_woocommerce_currency_symbol()); ?></label>
@@ -82,21 +82,21 @@
 		<p class="form-field wpallimport-radio-field">
 			<input type="hidden" name="disable_prepare_price" value="0" />
 			<input type="checkbox" id="disable_prepare_price" name="disable_prepare_price" value="1" <?php echo $post['disable_prepare_price'] ? 'checked="checked"' : '' ?> />
-			<label for="disable_prepare_price" style="width:220px;"><?php _e('Remove currency symbols from price', PMWI_Plugin::TEXT_DOMAIN) ?></label>
+			<label for="disable_prepare_price" style="width:auto;"><?php _e('Remove currency symbols from price', PMWI_Plugin::TEXT_DOMAIN) ?></label>
 			<a href="#help" class="wpallimport-help" title="<?php _e('Attempt to remove currency symbols from prices.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:1px;">?</a>
 		</p>	
 
 		<p class="form-field wpallimport-radio-field">
 			<input type="hidden" name="convert_decimal_separator" value="0" />
 			<input type="checkbox" id="convert_decimal_separator" name="convert_decimal_separator" value="1" <?php echo $post['convert_decimal_separator'] ? 'checked="checked"' : '' ?> />
-			<label for="convert_decimal_separator" style="width:220px;"><?php _e('Convert decimal separator to a period', PMWI_Plugin::TEXT_DOMAIN) ?></label>
+			<label for="convert_decimal_separator" style="width:auto;"><?php _e('Convert decimal separator to a period', PMWI_Plugin::TEXT_DOMAIN) ?></label>
 			<a href="#help" class="wpallimport-help" title="<?php _e('Prices must be imported using a period as the decimal separator. If you\'d like to change the decimal separator you can do so by editing your WooCommerce settings.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:1px;">?</a>
 		</p>
 
 		<p class="form-field wpallimport-radio-field">
 			<input type="hidden" name="prepare_price_to_woo_format" value="0" />
 			<input type="checkbox" id="prepare_price_to_woo_format" name="prepare_price_to_woo_format" value="1" <?php echo $post['prepare_price_to_woo_format'] ? 'checked="checked"' : '' ?> />
-			<label for="prepare_price_to_woo_format" style="width:420px;"><?php _e('Attempt to convert incorrectly formatted prices to WooCommerce format', PMWI_Plugin::TEXT_DOMAIN) ?></label>
+			<label for="prepare_price_to_woo_format" style="width:auto;"><?php _e('Attempt to convert incorrectly formatted prices to WooCommerce format', PMWI_Plugin::TEXT_DOMAIN) ?></label>
 			<a href="#help" class="wpallimport-help" title="<?php _e('WP All Import will attempt to correct the formatting of prices presented incorrectly, but this doesn\'t always work. Try unchecking this option if your prices are not appearing correctly, or enter your prices in your import file using the same format you would when entering them in WooCommerce.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:1px;">?</a>
 		</p>	
 

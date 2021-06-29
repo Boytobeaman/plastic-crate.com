@@ -1,8 +1,8 @@
 === Import Products from any XML or CSV to WooCommerce ===
 Contributors: soflyy, wpallimport 
 Requires at least: 4.1
-Tested up to: 5.5
-Stable tag: 1.4.7
+Tested up to: 5.7
+Stable tag: 1.4.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: woocommerce xml import, woocommerce csv import, woocommerce, import, xml, csv, wp all import, csv import, import csv, xml import, import xml, woocommerce csv importer, woocommerce xml importer, csv importer, csv import suite
@@ -82,6 +82,9 @@ The WooCommerce add-on will appear in the Step 4 of WP All Import.
 1. The WooCommerce add-on.
 
 == Changelog ==
+
+= 1.4.8 =
+* bug fix: downloadable permissions wan not imported correctly
 
 = 1.4.7 =
 * bug fix: matching linked products didn't work properly, this functionality moved to the end of import process
@@ -250,4 +253,4 @@ The WooCommerce add-on will appear in the Step 4 of WP All Import.
 
 Support for the free version of WP All Import is handled through the WordPress.org community forums.
 
-Support is not guaranteed and is based on ability. For premium support over email, [purchase WP All Import and the WooCommerce add-on.](https://www.wpallimport.com/checkout/?edd_action=purchase_collection&taxonomy=download_category&terms=14&utm_source=import-wooco-products-addon-free&utm_medium=readme&utm_campaign=premium-support)
+Support is not guaranteed and is based on ability. For premium support over email, [purchase WP All Import and the WooCommerce add-on.](https://www.wpallimport.com/checkout/?edd_action=add_to_cart&download_id=2707227&edd_options%5Bprice_id%5D=1)

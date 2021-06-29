@@ -23,6 +23,15 @@ class TestTab extends PageAbstract {
 	protected $slug = 'test';
 
 	/**
+	 * Tab priority.
+	 *
+	 * @since 2.8.0
+	 *
+	 * @var int
+	 */
+	protected $priority = 10;
+
+	/**
 	 * Mailer debug error data.
 	 *
 	 * @since 1.3.0
@@ -60,7 +69,7 @@ class TestTab extends PageAbstract {
 	public function display() {
 		?>
 
-		<form id="email-test-form" method="POST" action="<?php echo esc_url( add_query_arg( 'tab', 'test', wp_mail_smtp()->get_admin()->get_admin_page_url() ) ); ?>">
+		<form id="email-test-form" method="POST" action="<?php echo esc_url( $this->get_link() ); ?>">
 			<?php $this->wp_nonce_field(); ?>
 
 			<!-- Test Email Section Title -->
@@ -126,12 +135,13 @@ class TestTab extends PageAbstract {
 				</button>
 				<?php echo $help_text; ?>
 			</p>
+			<?php $this->post_form_hidden_field(); ?>
 		</form>
 
 		<?php if ( ! empty( $mailer ) && $mailer->is_mailer_complete() && isset( $_GET['auto-start'] ) ) : // phpcs:ignore ?>
 			<script>
 				( function ( $ ) {
-					var $button = $( '.wp-mail-smtp-tab-test #email-test-form .wp-mail-smtp-btn' );
+					var $button = $( '.wp-mail-smtp-tab-tools-test #email-test-form .wp-mail-smtp-btn' );
 
 					$button.attr( 'disabled', true );
 					$button.find( 'span' ).hide();
@@ -318,7 +328,7 @@ class TestTab extends PageAbstract {
 										<img src="<?php echo esc_url( wp_mail_smtp()->plugin_url . '/assets/images/email/signature.png' ); ?>" width="180" alt="Signature" style="outline: none; text-decoration: none; max-width: 100%; clear: both; -ms-interpolation-mode: bicubic; width: 180px; display: block; margin: 0 0 0 0; Margin: 0 0 0 0;">
 									</p>
 									<p style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; color: #444; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; font-weight: normal; padding: 0; text-align: left; font-size: 14px; mso-line-height-rule: exactly; line-height: 140%; margin: 0 0 15px 0; Margin: 0 0 15px 0;">
-										Jared Atchison<br>Lead Developer, WP Mail SMTP
+										Jared Atchison<br>Co-Founder, WP Mail SMTP
 									</p>
 								</div>
 							</td>
@@ -1316,58 +1326,17 @@ Lead Developer, WP Mail SMTP';
 	 */
 	protected function display_domain_check_details() {
 
-		if ( empty( $this->domain_checker ) ) {
+		if ( empty( $this->domain_checker ) || $this->domain_checker->no_issues() ) {
 			return;
 		}
-
-		if ( $this->domain_checker->no_issues() ) {
-			return;
-		}
-
-		$results      = $this->domain_checker->get_results();
-		$allowed_html = [
-			'b' => [],
-			'i' => [],
-			'a' => [
-				'href'   => [],
-				'target' => [],
-				'rel'    => [],
-			],
-		];
-
-		$is_supported_mailer = $this->domain_checker->is_supported_mailer();
 		?>
 
-		<?php if ( $is_supported_mailer ) : ?>
+		<?php if ( $this->domain_checker->is_supported_mailer() ) : ?>
 			<div class="notice-warning notice-inline">
 				<p><?php esc_html_e( 'The test email might have sent, but its deliverability should be improved.', 'wp-mail-smtp' ); ?></p>
 			</div>
 		<?php endif; ?>
-
-		<div id="wp-mail-smtp-domain-check-details">
-			<h2><?php esc_html_e( 'Domain Check Results', 'wp-mail-smtp' ); ?></h2>
-
-			<?php if ( empty( $results['success'] ) ) : ?>
-				<div class="notice-inline <?php echo $is_supported_mailer ? 'notice-error' : 'notice-warning'; ?>">
-					<p><?php echo wp_kses( $results['message'], $allowed_html ); ?></p>
-				</div>
-			<?php endif; ?>
-
-			<?php if ( ! empty( $results['checks'] ) ) : ?>
-				<div class="wp-mail-smtp-domain-check-details-check-list">
-					<?php foreach ( $results['checks'] as $check ) : ?>
-						<div class="wp-mail-smtp-domain-check-details-check-list-item">
-							<img src="<?php echo esc_url( wp_mail_smtp()->assets_url . '/images/icons/' . esc_attr( $check['state'] ) . '.svg' ); ?>" class="wp-mail-smtp-domain-check-details-check-list-item-icon" alt="<?php printf( esc_attr__( '%s icon', 'wp-mail-smtp' ), esc_attr( $check['state'] ) ); ?>">
-							<div class="wp-mail-smtp-domain-check-details-check-list-item-content">
-								<h3><?php echo esc_html( $check['type'] ); ?></h3>
-								<p><?php echo wp_kses( $check['message'], $allowed_html ); ?></p>
-							</div>
-						</div>
-					<?php endforeach; ?>
-				</div>
-			<?php endif; ?>
-		</div>
-
 		<?php
+		 echo $this->domain_checker->get_results_html(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 }

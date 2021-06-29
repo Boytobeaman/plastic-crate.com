@@ -89,6 +89,13 @@ class SiteOrigin_Widget_Slider_Widget extends SiteOrigin_Widget_Base_Slider {
 						'library' => 'image',
 						'label' => __('Foreground image', 'so-widgets-bundle'),
 						'fallback' => true,
+						'state_emitter' => array(
+							'callback' => 'conditional',
+							'args' => array(
+								'show_height[show]: val',
+								'show_height[hide]: ! val'
+							),
+						),
 					),
 
 					'url' => array(
@@ -107,7 +114,28 @@ class SiteOrigin_Widget_Slider_Widget extends SiteOrigin_Widget_Base_Slider {
 				'type' => 'section',
 				'label' => __('Controls', 'so-widgets-bundle'),
 				'fields' => $this->control_form_fields()
-			)
+			),
+
+			'design' => array(
+				'type' => 'section',
+				'label' => __('Design', 'so-widgets-bundle'),
+				'state_handler' => array(
+					'show_height[show]' => array( 'show' ),
+					'show_height[hide]' => array( 'hide' ),
+				),
+				'fields' => array(
+					'height' => array(
+						'type' => 'measurement',
+						'label' => __( 'Height', 'so-widgets-bundle' ),
+					),
+
+					'height_responsive' => array(
+						'type' => 'measurement',
+						'label' => __( 'Responsive Height', 'so-widgets-bundle' ),
+					),
+				),
+			),
+
 		);
 	}
 
@@ -150,9 +178,17 @@ class SiteOrigin_Widget_Slider_Widget extends SiteOrigin_Widget_Base_Slider {
 		);
 
 		if( !empty($foreground_src) ) {
+			// If a custom height is set, build the foreground style attribute.
+			if ( ! empty( $frame['custom_height'] ) ) {
+				$foreground_style_attr = 'height: ' . intval( $frame['custom_height'] ) . 'px; width: auto;';
+
+				if ( ! empty( $foreground_src[2] ) ) {
+					$foreground_style_attr .= 'max-height: ' . intval( $foreground_src[2] ) .'px';
+				}
+			}
 			?>
 			<div class="sow-slider-image-container">
-				<div class="sow-slider-image-wrapper" style="<?php if(!empty($foreground_src[1])) echo 'max-width: ' . intval($foreground_src[1]) . 'px' ?>">
+				<div class="sow-slider-image-wrapper" style="<?php if( ! empty( $foreground_src[1] ) ) echo 'max-width: ' . (int) $foreground_src[1] . 'px'; ?>">
 					<?php if ( ! empty( $frame['url'] ) ) : ?>
 						<a href="<?php echo sow_esc_url( $frame['url'] ) ?>"
 						<?php foreach( $frame['link_attributes'] as $att => $val ) : ?>
@@ -161,17 +197,20 @@ class SiteOrigin_Widget_Slider_Widget extends SiteOrigin_Widget_Base_Slider {
 							<?php endif; ?>
 						<?php endforeach; ?>>
 					<?php endif; ?>
-					<?php
-					echo siteorigin_widgets_get_attachment_image(
-						$frame['foreground_image'],
-						'full',
-						!empty( $frame['foreground_image_fallback'] ) ? $frame['foreground_image_fallback'] : '',
-						array(
-							'class' => 'sow-slider-foreground-image',
-							'loading' => 'eager',
-						)
-					);
-					?>
+					<div class="sow-slider-image-foreground-wrapper">
+						<?php
+						echo siteorigin_widgets_get_attachment_image(
+							$frame['foreground_image'],
+							'full',
+							! empty( $frame['foreground_image_fallback'] ) ? $frame['foreground_image_fallback'] : '',
+							array(
+								'class' => 'sow-slider-foreground-image',
+								'loading' => 'eager',
+								'style' => ! empty( $foreground_style_attr ) ? $foreground_style_attr : '',
+							)
+						);
+						?>
+					</div>
 					<?php if ( ! empty( $frame['url'] ) ) : ?>
 						</a>
 					<?php endif; ?>
@@ -221,6 +260,8 @@ class SiteOrigin_Widget_Slider_Widget extends SiteOrigin_Widget_Base_Slider {
 					$link_atts['rel'] = 'noopener noreferrer';
 				}
 				$frame['link_attributes'] = $link_atts;
+
+				$frame['custom_height'] = ! empty( $instance['design']['height'] ) ? $instance['design']['height'] : 0;
 			}
 		}
 		return array(
@@ -241,6 +282,14 @@ class SiteOrigin_Widget_Slider_Widget extends SiteOrigin_Widget_Base_Slider {
 
 		if( !empty($instance['controls']['nav_color_hex']) ) $less['nav_color_hex'] = $instance['controls']['nav_color_hex'];
 		if( !empty($instance['controls']['nav_size']) ) $less['nav_size'] = $instance['controls']['nav_size'];
+
+		$less['slide_height'] = ! empty( $instance['design']['height'] ) ? $instance['design']['height'] : false;
+		$less['slide_height_responsive'] = ! empty( $instance['design']['height_responsive'] ) ? $instance['design']['height_responsive'] : false;
+
+		$global_settings = $this->get_global_settings();
+		if ( ! empty( $global_settings['responsive_breakpoint'] ) ) {
+			$less['responsive_breakpoint'] = $global_settings['responsive_breakpoint'];
+		}
 
 		return $less;
 	}

@@ -155,8 +155,7 @@ class ProductsImporter extends Importer {
                 if (!empty($tmp_gallery)) {
                     $gallery = array_unique(array_merge($gallery, $tmp_gallery));
                 }
-            }
-            elseif (!empty($tmp_gallery)) {
+            } elseif (!empty($tmp_gallery)) {
                 $gallery = array_unique($tmp_gallery);
             }
             //  Do not add featured image to the gallery.
@@ -168,7 +167,6 @@ class ProductsImporter extends Importer {
                     }
                 }
             }
-
             $this->getImportService()->pushMeta( $post_to_update_id, '_product_image_gallery', implode(",", $gallery), $this->isNewProduct );
         }
     }

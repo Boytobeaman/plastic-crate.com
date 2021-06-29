@@ -141,7 +141,17 @@ class PMWI_Import_Record extends PMWI_Model_Record {
                 $variationID = $pid;
             }
             if ($gallery = get_post_meta($product->get_id(), '_product_image_gallery', TRUE)) {
-                update_post_meta($variationID, '_wc_additional_variation_images', $gallery);
+                $key = null;
+                if ( class_exists( 'Woo_Variation_Gallery' ) ) {
+                    $key = 'woo_variation_gallery_images';
+                    $gallery = explode( ',', trim( $gallery, ',' ) );
+                } elseif ( class_exists( 'WC_Additional_Variation_Images' ) ) {
+                    $key = '_wc_additional_variation_images';
+                }
+
+                if ( ! empty( $key ) ) {
+                    update_post_meta($variationID, $key, $gallery);
+                }
             }
         }
     }

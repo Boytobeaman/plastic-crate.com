@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @param $post_to_update_id
  * @param $import_id
@@ -58,6 +57,7 @@ function pmwi_pmxi_do_not_update_existing($post_to_update_id, $import_id, $itera
             }
 
 			if ( ! $postRecord->isEmpty() ) $postRecord->set(array('iteration' => $iteration))->update();
+
 		}
-	}	
+	}
 }

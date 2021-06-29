@@ -78,9 +78,7 @@ abstract class ProductsParserBase extends Parser {
             if ("" != $this->getImport()->options['single_' . $option]) {
                 $this->data[$option] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['single_' . $option], $file)
                     ->parse();
-
                 $this->tmp_files[] = $file;
-
                 switch ($option) {
                     case 'product_regular_price':
                     case 'product_sale_price':
@@ -207,7 +205,7 @@ abstract class ProductsParserBase extends Parser {
      */
     public function parseGroupingProducts() {
         try {
-            if ($this->getImport()->options['is_multiple_grouping_product'] != 'yes') {
+            if ($this->getImport()->options['is_multiple_grouping_product'] == 'no') {
                 if ($this->getImport()->options['grouping_indicator'] == 'xpath') {
                     if ("" != $this->getImport()->options['single_grouping_product']) {
                         $this->data['product_grouping_parent'] = XmlImportParser::factory($this->getXml(), $this->getCompleteXPath(), $this->getImport()->options['single_grouping_product'], $file)
@@ -376,7 +374,6 @@ abstract class ProductsParserBase extends Parser {
                                     ->parse();
                                 $this->tmp_files[] = $file;
                             }
-
                             foreach ($attribute_options[$option][$j] as $key => $value) {
                                 if (!in_array($value, array('yes', 'no'))) {
                                     $attribute_options[$option][$j][$key] = 1;

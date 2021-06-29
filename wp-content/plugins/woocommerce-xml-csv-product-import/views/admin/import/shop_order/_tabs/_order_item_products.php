@@ -28,17 +28,17 @@
                                 <input type="text" class="short rad4" name="pmwi_order[products][0][qty]" value="<?php echo esc_attr($product['qty']) ?>" style="width:95%;"/>
                             </div>
                             <div class="wpallimport-clear"></div>
-                            <div style="float:left; width:50%;">
+                            <div style="float:left; width:50%;margin-top:10px;">
                                 <label><?php _e('Product SKU', PMWI_Plugin::TEXT_DOMAIN); ?></label>
                                 <input type="text" class="short rad4" name="pmwi_order[products][0][sku]" value="<?php echo esc_attr($product['sku']) ?>" style="width:95%;"/>
                             </div>
-                            <div style="float:right; width:50%;">
+                            <div style="float:right; width:50%;margin-top:10px;">
                                 <label><?php _e('Price', PMWI_Plugin::TEXT_DOMAIN); ?></label>
                                 <input type="text" class="short rad4" name="pmwi_order[products][0][price_per_unit]" value="<?php echo esc_attr($product['price_per_unit']) ?>" style="width:95%;"/>
                             </div>
                             <span class="wpallimport-clear"></span>
 
-                            <table class="form-field">
+                            <table class="form-field add-product-meta">
                                 <?php foreach ($product['meta_name'] as $j => $meta_name): if (empty($meta_name)) continue; ?>
                                     <tr class="form-field">
                                     <td style="padding-right:10px;">
@@ -49,7 +49,7 @@
                                         <label><?php _e('Meta Value', PMWI_Plugin::TEXT_DOMAIN); ?></label>
                                         <input type="text" class="short rad4" name="pmwi_order[products][0][meta_value][]" value="<?php echo esc_attr($product['meta_value'][$j]); ?>" style="width:100%;"/>
                                     </td>
-                                    <td class="action remove"><a href="#remove" style="top: 33px;"></a></td>
+                                    <td class="action remove"><a href="#remove" style="top: 34px; right: 10px;"></a></td>
                                 </tr>
                                 <?php endforeach; ?>
                                 <tr class="form-field template">
@@ -61,7 +61,7 @@
                                         <label><?php _e('Meta Value', PMWI_Plugin::TEXT_DOMAIN); ?></label>
                                         <input type="text" class="short rad4" name="pmwi_order[products][0][meta_value][]" value="" style="width:100%;"/>
                                     </td>
-                                    <td class="action remove"><a href="#remove" style="top: 33px;"></a></td>
+                                    <td class="action remove"><a href="#remove" style="top: 34px; right: 10px;"></a></td>
                                 </tr>
                                 <tr>
                                     <td colspan="3">
@@ -127,7 +127,7 @@
                                                     <div class="form-field wpallimport-radio-field">
                                                         <input type="radio" id="products_tax_calculate_logic_lookup_0_<?php echo $j; ?>" name="pmwi_order[products][0][tax_rates][<?php echo $j; ?>][calculate_logic]" value="loocup" <?php echo 'loocup' == $tax_rate['calculate_logic'] ? 'checked="checked"' : '' ?> class="switcher"/>
                                                         <label for="products_tax_calculate_logic_lookup_0_<?php echo $j; ?>" style="width:auto;"><?php _e('Look up tax rate code', PMWI_Plugin::TEXT_DOMAIN) ?></label>
-                                                        <a href="#help" class="wpallimport-help" title="<?php _e('If rate code is not found, this tax amount will not be imported.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:0px;">?</a>
+                                                        <a href="#help" class="wpallimport-help" title="<?php _e('If rate code is not found, this tax amount will not be imported.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:4px;">?</a>
                                                     </div>
                                                     <hr style="margin-left: 20px;">
                                                 </td>
@@ -171,11 +171,11 @@
                                                 <div class="form-field wpallimport-radio-field">
                                                     <input type="radio" id="products_tax_calculate_logic_lookup_0_ROWNUMBER" name="pmwi_order[products][0][tax_rates][ROWNUMBER][calculate_logic]" value="loocup" class="switcher"/>
                                                     <label for="products_tax_calculate_logic_lookup_0_ROWNUMBER" style="width:auto;"><?php _e('Look up tax rate code', PMWI_Plugin::TEXT_DOMAIN) ?></label>
-                                                    <a href="#help" class="wpallimport-help" title="<?php _e('If rate code is not found, this tax amount will not be imported.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:0px;">?</a>
+                                                    <a href="#help" class="wpallimport-help" title="<?php _e('If rate code is not found, this tax amount will not be imported.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:4px;">?</a>
                                                 </div>
                                                 <hr style="margin-left: 20px;">
                                             </td>
-                                            <td class="action remove"><a href="#remove" style="top: 33px;"></a></td>
+                                            <td class="action remove"><a href="#remove" style="top: 44px; right: 10px;"></a></td>
                                         </tr>
                                         <tr>
                                             <td colspan="2">
@@ -189,7 +189,7 @@
                             </div>
                             <!-- <hr> -->
                         </td>
-                        <td class="action remove"><a href="#remove" style="top: 33px;"></a></td>
+                        <td class="action remove"><a href="#remove" style="top: 34px; right: 25px;"></a></td>
                     </tr>
 				</table>
 			</span>						
@@ -236,7 +236,7 @@
 
 								<span class="wpallimport-clear"></span>
 
-								<table class="form-field">
+								<table class="form-field add-product-meta">
 									<?php foreach ($product['meta_name'] as $j => $meta_name): if (empty($meta_name)) continue; ?>
                                         <tr class="form-field">
 										<td style="padding-right:10px;">
@@ -247,7 +247,7 @@
 											<label><?php _e('Meta Value', PMWI_Plugin::TEXT_DOMAIN); ?></label>
 											<input type="text" class="short rad4" name="pmwi_order[manual_products][0][meta_value][]" value="<?php echo esc_attr($product['meta_value'][$j]); ?>" style="width:100%;"/>
 										</td>
-										<td class="action remove"><a href="#remove" style="top: 33px;"></a></td>
+										<td class="action remove"><a href="#remove" style="top: 34px; right: 10px;"></a></td>
 									</tr>
 									<?php endforeach; ?>
 									<tr class="form-field template">
@@ -259,11 +259,11 @@
 											<label><?php _e('Meta Value', PMWI_Plugin::TEXT_DOMAIN); ?></label>
 											<input type="text" class="short rad4" name="pmwi_order[manual_products][0][meta_value][]" value="" style="width:100%;"/>
 										</td>
-										<td class="action remove"><a href="#remove" style="top: 33px;"></a></td>
+										<td class="action remove"><a href="#remove" style="top: 34px; right: 10px;"></a></td>
 									</tr>
 									<tr>
 										<td colspan="3">
-											<a class="add-new-line" title="Add Product Meta" href="javascript:void(0);" style="display:block;margin:5px 0;width:140px;top:0;padding-top:4px;"><?php empty($product['meta_name']) ? _e("Add Product Meta", PMWI_Plugin::TEXT_DOMAIN): _e("Add More Product Meta", PMWI_Plugin::TEXT_DOMAIN); ?></a>
+											<a class="add-new-line" title="Add Product Meta" href="javascript:void(0);" style="display:block;margin: 10px 0 20px 0;width:140px;top:0;padding-top:4px;"><?php empty($product['meta_name']) ? _e("Add Product Meta", PMWI_Plugin::TEXT_DOMAIN): _e("Add More Product Meta", PMWI_Plugin::TEXT_DOMAIN); ?></a>
 										</td>
 									</tr>
 								</table>
@@ -332,11 +332,11 @@
 														<div class="form-field wpallimport-radio-field">
 															<input type="radio" id="manual_products_tax_calculate_logic_lookup_0_<?php echo $j; ?>" name="pmwi_order[manual_products][0][tax_rates][<?php echo $j; ?>][calculate_logic]" value="loocup" <?php echo 'loocup' == $tax_rate['calculate_logic'] ? 'checked="checked"' : '' ?> class="switcher"/>
 															<label for="manual_products_tax_calculate_logic_lookup_0_<?php echo $j; ?>" style="width:auto;"><?php _e('Look up tax rate code', PMWI_Plugin::TEXT_DOMAIN) ?></label>
-															<a href="#help" class="wpallimport-help" title="<?php _e('If rate code is not found, this tax amount will not be imported.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:0px;">?</a>
+															<a href="#help" class="wpallimport-help" title="<?php _e('If rate code is not found, this tax amount will not be imported.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:4px;">?</a>
 														</div>
 														<hr style="margin-left: 20px;">
 													</td>
-													<td class="action remove"><a href="#remove" style="top: 33px;"></a></td>
+													<td class="action remove"><a href="#remove" style="top: 44px; right: 10px;"></a></td>
 												</tr>
 
 											<?php endforeach; ?>
@@ -377,11 +377,11 @@
 													<div class="form-field wpallimport-radio-field">
 														<input type="radio" id="manual_products_tax_calculate_logic_lookup_0_ROWNUMBER" name="pmwi_order[manual_products][0][tax_rates][ROWNUMBER][calculate_logic]" value="loocup" class="switcher"/>
 														<label for="manual_products_tax_calculate_logic_lookup_0_ROWNUMBER" style="width:auto;"><?php _e('Look up tax rate code', PMWI_Plugin::TEXT_DOMAIN) ?></label>
-														<a href="#help" class="wpallimport-help" title="<?php _e('If rate code is not found, this tax amount will not be imported.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:0px;">?</a>
+														<a href="#help" class="wpallimport-help" title="<?php _e('If rate code is not found, this tax amount will not be imported.', PMWI_Plugin::TEXT_DOMAIN) ?>" style="position:relative; top:4px;">?</a>
 													</div>
 													<hr style="margin-left: 20px;">
 												</td>
-												<td class="action remove"><a href="#remove" style="top: 33px;"></a></td>
+												<td class="action remove"><a href="#remove" style="top: 44px; right: 10px;"></a></td>
 											</tr>
 											<tr>
 												<td colspan="2">
@@ -395,7 +395,7 @@
 								</div>
                                 <!-- <hr> -->
 							</td>
-							<td class="action remove"><a href="#remove" style="top: 33px;"></a></td>
+							<td class="action remove"><a href="#remove" style="top: 34px; right: 10px;"></a></td>
 						</tr>
 					</table>
 				</span>						
@@ -436,7 +436,7 @@
 					<div class="form-field input" style="margin-bottom: 20px;">
 						<label class="order-separator-label" style="line-height: 30px;"><?php _e('Multiple products separated by', PMWI_Plugin::TEXT_DOMAIN); ?></label>
 						<input type="text" class="short rad4 order-separator-input" name="pmwi_order[products_repeater_mode_separator]" value="<?php echo esc_attr($post['pmwi_order']['products_repeater_mode_separator']) ?>" style="width:10%; text-align: center;"/>
-						<a href="#help" class="wpallimport-help" style="top:10px;left:8px;" title="For example, two products would be imported like this SKU1|SKU2, and their quantities like this 15|20">?</a>
+						<a href="#help" class="wpallimport-help" style="top:12px;left:8px;" title="For example, two products would be imported like this SKU1|SKU2, and their quantities like this 15|20">?</a>
 					</div>
 					<?php endif; ?>		
 				</div>

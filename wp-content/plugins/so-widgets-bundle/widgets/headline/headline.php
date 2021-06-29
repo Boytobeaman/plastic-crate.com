@@ -54,7 +54,7 @@ class SiteOrigin_Widget_Headline_Widget extends SiteOrigin_Widget {
 					'tag' => array(
 						'type' => 'select',
 						'label' => __( 'HTML Tag', 'so-widgets-bundle' ),
-						'default' => 'h1',
+						'default' => 'h2',
 						'options' => array(
 							'h1' => __( 'H1', 'so-widgets-bundle' ),
 							'h2' => __( 'H2', 'so-widgets-bundle' ),
@@ -287,7 +287,8 @@ class SiteOrigin_Widget_Headline_Widget extends SiteOrigin_Widget {
 			$font = siteorigin_widget_get_font( $instance['headline']['font'] );
 			$less_vars['headline_font'] = $font['family'];
 			if ( ! empty( $font['weight'] ) ) {
-				$less_vars['headline_font_weight'] = $font['weight'];
+				$less_vars['headline_font_style'] = $font['style'];
+				$less_vars['headline_font_weight'] = $font['weight_raw'];
 			}
 		}
 
@@ -305,13 +306,14 @@ class SiteOrigin_Widget_Headline_Widget extends SiteOrigin_Widget {
 			$font = siteorigin_widget_get_font( $instance['sub_headline']['font'] );
 			$less_vars['sub_headline_font'] = $font['family'];
 			if ( ! empty( $font['weight'] ) ) {
-				$less_vars['sub_headline_font_weight'] = $font['weight'];
+				$less_vars['sub_headline_font_style'] = $font['style'];
+				$less_vars['sub_headline_font_weight'] = $font['weight_raw'];
 			}
 		}
 
 		$less_vars['divider_style'] = isset( $instance['divider']['style'] ) ? $instance['divider']['style'] : false;
 		$less_vars['divider_width'] = isset( $instance['divider']['width'] ) ? $instance['divider']['width'] : false;
-		$less_vars['divider_thickness'] = isset( $instance['divider']['thickness'] ) ? intval( $instance['divider']['thickness'] ) . 'px' : false;
+		$less_vars['divider_thickness'] = isset( $instance['divider']['thickness'] ) ? (int) $instance['divider']['thickness'] . 'px' : false;
 		$less_vars['divider_align'] = isset( $instance['divider']['align'] ) ? $instance['divider']['align'] : false;
 		$less_vars['divider_color'] = isset( $instance['divider']['color'] ) ? $instance['divider']['color'] : false;
 		$less_vars['divider_margin'] = isset( $instance['divider']['margin'] ) ? $instance['divider']['margin'] : false;
@@ -385,7 +387,7 @@ class SiteOrigin_Widget_Headline_Widget extends SiteOrigin_Widget {
 		// Change the old divider side margin into overall width
 		if( isset( $instance['divider']['side_margin'] ) && ! isset( $instance['divider']['width'] ) ) {
 			global $content_width;
-			$value = floatval( $instance['divider']['side_margin'] );
+			$value = (float) $instance['divider']['side_margin'];
 
 			switch( $instance['divider']['side_margin_unit'] ) {
 				case 'px' :

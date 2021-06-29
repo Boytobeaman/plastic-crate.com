@@ -5,11 +5,11 @@ Plugin Name: Delete Duplicate Posts
 Plugin Script: delete-duplicate-posts.php
 Plugin URI: https://cleverplugins.com
 Description: Remove duplicate blogposts on your blog! Searches and removes duplicate posts and their post meta tags. You can delete posts, pages and other Custom Post Types enabled on your website.
-Version: 4.6.1
+Version: 4.6.2
 Author: cleverplugins.com
 Author URI: https://cleverplugins.com
 Min WP Version: 4.7
-Max WP Version: 5.6
+Max WP Version: 5.7
 Text Domain: delete-duplicate-posts
 Domain Path: /languages
 */
@@ -445,8 +445,14 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             // @ check compare method - maybe change lookup routine?
             global  $wpdb ;
             $table_name = $wpdb->prefix . 'posts';
-            $viewlimit = 25;
-            // How many dupes to return @todo - make it editable?
+            $resultslimit = $options['ddp_resultslimit'];
+            
+            if ( 101 < $resultslimit ) {
+                $viewlimit = $resultslimit;
+            } else {
+                $viewlimit = 50;
+            }
+            
             $ddp_pts_arr = $options['ddp_pts'];
             
             if ( isset( $ddp_pts_arr ) && is_array( $ddp_pts_arr ) ) {
@@ -483,12 +489,9 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                 if ( 'titlecompare' === $comparemethod ) {
                     // @todo - prepare - not urgent, there is no way to exploit this query
                     //				$resultslimit = 100; // @todo
-                    $resultslimit = $options['ddp_resultslimit'];
-                    if ( !$resultslimit ) {
-                        $resultslimit = 0;
-                    }
+                    //	if ( !$resultslimit ) $resultslimit = 0;
                     $resultsoutput = '';
-                    if ( 0 < $resultslimit ) {
+                    if ( 0 > $resultslimit ) {
                         $resultsoutput = ' LIMIT ' . intval( $resultslimit );
                     }
                     $thisquery = "SELECT a.ID, a.post_title, a.post_type, a.post_status, save_this_post_id\n\t\t\t\t\t\t\t\t\t\t\tFROM {$table_name} AS a\n\t\t\t\t\t\t\t\t\t\t\tINNER JOIN (\n\t\t\t\t\t\t\t\t\t\t\t\tSELECT post_title, " . $minmax . " AS save_this_post_id\n\t\t\t\t\t\t\t\t\t\t\t\tFROM {$table_name}\n\t\t\t\t\t\t\t\t\t\t\t\tWHERE post_type IN(" . $ddp_pts . ')
@@ -509,10 +512,10 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                             $dupedetails = array(
                                 'ID'           => $dupe['ID'],
                                 'permalink'    => get_permalink( $dupe['ID'] ),
-                                'title'        => get_the_title( $dupe['ID'] ),
+                                'title'        => $dupe['post_title'],
                                 'type'         => $dupe['post_type'],
                                 'orgID'        => $dupe['save_this_post_id'],
-                                'orgtitle'     => get_the_title( $dupe['save_this_post_id'] ),
+                                'orgtitle'     => $dupe['post_title'],
                                 'orgpermalink' => get_permalink( $dupe['save_this_post_id'] ),
                                 'status'       => $dupe['post_status'],
                                 'why'          => '',
@@ -544,13 +547,12 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             }
             $json_response['msg'] = number_format_i18n( $json_response['dupescount'] ) . ' duplicates found. Time: ' . esc_html( $return_duplicates_time ) . ' sec. Showing up to ' . esc_html( $viewlimit ) . ' results.';
             // @todo i8n
-            if ( $return ) {
-                // todo - limit amount of values to return
-                return $json_response;
-            }
             // Since we are returning as an ajax response, we are going to limit the amount shown.
             if ( $viewlimit < $json_response['dupescount'] ) {
                 $json_response['dupes'] = array_slice( $json_response['dupes'], 0, $viewlimit );
+            }
+            if ( $return ) {
+                return $json_response;
             }
             wp_send_json_success( $json_response );
         }
@@ -1046,8 +1048,10 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                     if ( !$interval ) {
                         $interval = 'hourly';
                     }
-                    wp_schedule_event( time(), $interval, 'ddp_cron' );
                     $nextscheduled = wp_next_scheduled( 'ddp_cron' );
+                    if ( !$nextscheduled ) {
+                        wp_schedule_event( time(), $interval, 'ddp_cron' );
+                    }
                 }
                 
                 echo  '<div class="notice notice-success is-dismissible"><p>' . esc_html( __( 'Settings saved.', 'delete-duplicate-posts' ) ) . '</p></div>' ;
@@ -1087,25 +1091,35 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
 												<?php 
             
             if ( $options['ddp_enabled'] ) {
+                $interval = $options['ddp_schedule'];
+                if ( !$interval ) {
+                    $interval = 'hourly';
+                }
+                // if ( $interval !== $last_interval ) {
+                // 	wp_unschedule_hook('ddp_cron');
+                // 	wp_schedule_event( time(), $interval, 'ddp_cron');
+                // 	$options['last_interval'] = $interval;
+                // 	self::save_options( $options );
+                // }
+                // else {
+                // 	error_log('all good, no change in schedule');
+                // }
                 $nextscheduled = wp_next_scheduled( 'ddp_cron' );
                 
-                if ( '' !== $nextscheduled ) {
+                if ( !$nextscheduled ) {
                     // plugin active, but the cron needs to be activated also..
-                    $interval = $options['ddp_schedule'];
-                    if ( !$interval ) {
-                        $interval = 'hourly';
-                    }
+                    $options['last_interval'] = $interval;
+                    self::save_options( $options );
                     wp_schedule_event( time(), $interval, 'ddp_cron' );
-                    $nextscheduled = wp_next_scheduled( 'ddp_cron' );
+                    //}
                 }
             
             } else {
-                wp_clear_scheduled_hook( 'ddp_cron' );
+                wp_unschedule_hook( 'ddp_cron' );
             }
             
             $totaldeleted = get_option( 'ddp_deleted_duplicates' );
             ?>
-												
 												<div class="statusdiv">
 												<div class="spinner is-active"></div>	
 												<div class="statusmessage"></div>
@@ -1168,6 +1182,7 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             if ( $nextscheduled ) {
                 ?>
 													<div class="notice notice-info is-dismissible">
+													<h3><span class="dashicons dashicons-saved"></span> Automatically Deleting Duplicates</h3>
 													<?php 
                 echo  '<p class="cronstatus center">' . esc_html__( 'You have enabled automatic deletion, so I am running on automatic. I will take care of everything...', 'delete-duplicate-posts' ) . '</p>' ;
                 echo  '<p class="center">' ;
@@ -1397,6 +1412,7 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
                 250   => '250',
                 100   => '100',
                 50    => '50',
+                10    => '10',
             );
             ?>
 												<select name="ddp_resultslimit" id="ddp_resultslimit">
@@ -1414,7 +1430,6 @@ if ( !class_exists( 'Delete_Duplicate_Posts' ) ) {
             }
             ?>
 												</select>
-												<p><strong>BETA feature</strong>. Available in free version while in beta. Once out of testing, this feature will be for premium users only.</p>
 
 												<p class="description"><?php 
             esc_html_e( 'If you have many duplicates, the plugin might time out before finding them all. Try limiting the amount of duplicates here. Default: Unlimited.', 'delete-duplicate-posts' );

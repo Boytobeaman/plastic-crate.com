@@ -1,7 +1,7 @@
 <div class="panel woocommerce_options_panel" id="linked_product_data" style="display:none;">
     <?php if (class_exists('PMWI_Plugin') && PMWI_EDITION == 'free'): ?>
     <div class="woo-add-on-free-edition-notice upgrade_template">
-        <a href="https://www.wpallimport.com/checkout/?edd_action=purchase_collection&taxonomy=download_category&terms=14&utm_source=import-wooco-products-addon-free&utm_medium=upgrade-notice&utm_campaign=import-variable-wooco-products" target="_blank" class="upgrade_woo_link"><?php _e('Upgrade to the Pro edition of WP All Import and the WooCommerce Add-On to Import to Variable, Affiliate, and Grouped Products', PMWI_Plugin::TEXT_DOMAIN);?></a>
+        <a href="https://www.wpallimport.com/checkout/?edd_action=add_to_cart&download_id=2707227&edd_options%5Bprice_id%5D=1" target="_blank" class="upgrade_woo_link"><?php _e('Upgrade to the Pro edition of WP All Import and the WooCommerce Add-On to Import to Variable, Affiliate, and Grouped Products', PMWI_Plugin::TEXT_DOMAIN);?></a>
         <p><?php _e('If you already own it, remove the free edition and install the Pro edition.', 'wp_all_import_plugin'); ?></p>
     </div>
     <?php endif; ?>
@@ -66,7 +66,7 @@
 		
 		<p class="form-field wpallimport-radio-field">
 			<input type="radio" id="multiple_grouping_product_no" class="switcher" name="is_multiple_grouping_product" value="no" <?php echo 'no' == $post['is_multiple_grouping_product'] ? 'checked="checked"': '' ?>/>
-			<label for="multiple_grouping_product_no" style="width: 200px;"><?php _e('Manual Grouped Product Matching', PMWI_Plugin::TEXT_DOMAIN )?></label>
+			<label for="multiple_grouping_product_no" style="width:auto;"><?php _e('Manual Grouped Product Matching', PMWI_Plugin::TEXT_DOMAIN )?></label>
 			<a href="#help" class="wpallimport-help" style="top:2px;" title="<?php _e('Product will be assigned as the child of an already created product matching the specified criteria.', PMWI_Plugin::TEXT_DOMAIN); ?>">?</a>
 		</p>
 		

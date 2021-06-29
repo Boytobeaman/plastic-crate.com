@@ -481,17 +481,13 @@
 	});
 
 	$('.pmwi_trigger_adjust_prices').click(function(){
-		if ($(this).find('span').html() == '-') {
-            $(this).find('span').html('+');
-		} else {
-            $(this).find('span').html('-');
-		}
+		$(this).find('span').toggleClass('expanded');
 		$('.pmwi_adjust_prices').slideToggle();
 	});
 
 	$('.advanced_attributes').on('click', function(){
 		var $parent = $(this).parent('div.wpallimport-radio-field:first');
-		if ($(this).find('span').html() == "+") {
+		if (!$(this).hasClass('expanded')) {
 			$parent.find('.default_attribute_settings').hide();
 			$parent.find('.advanced_attribute_settings').each(function(){
 				$(this).find('.advanced_in_variations, .advanced_is_visible, .advanced_is_taxonomy, .advanced_is_create_terms').each(function(){
@@ -502,12 +498,12 @@
 			});
 			$parent.find('.advanced_attribute_settings').fadeIn();
 			$parent.find('input[name^=is_advanced]').val('1');
-			$(this).find('span').html("-");			
+			$(this).addClass('expanded');
 		} else {
 			$parent.find('.advanced_attribute_settings').hide();
 			$parent.find('.default_attribute_settings').fadeIn();
 			$parent.find('input[name^=is_advanced]').val('0');
-			$(this).find('span').html("+");
+			$(this).removeClass('expanded');
 		}
 	});
 
@@ -609,7 +605,7 @@
 		var $targets = $('.switcher-target-' + $(this).attr('id'));
 		var is_show = $(this).find('span').html() == '+'; if ($(this).is('.switcher-reversed')) is_show = ! is_show;
 		if (is_show) {
-			$(this).find('span').html('-');
+			$(this).find('span').html('-').addClass('expanded');
 				if ($targets.find('a.add-new-line').length){
 					var $parent = $targets.find('a.add-new-line').parents('table:first');
 					if ($parent.children('tbody').children('tr').length == 2){
@@ -618,7 +614,7 @@
 				}
 			$targets.slideDown('slow');
 		} else {
-			$(this).find('span').html('+');
+			$(this).find('span').html('+').removeClass('expanded');
 			$targets.slideUp().find('.clear-on-switch').add($targets.filter('.clear-on-switch')).val('');
 		}
 	}).click();	

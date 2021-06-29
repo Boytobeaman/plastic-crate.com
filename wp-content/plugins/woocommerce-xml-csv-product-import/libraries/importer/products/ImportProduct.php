@@ -185,7 +185,7 @@ abstract class ImportProduct extends ImportProductBase {
                                 $order = new \WC_Order($orderID);
                                 foreach ($_file_paths as $download_id => $download_data) {
                                     // Grant permission if it doesn't already exist.
-                                    if ( ! $wpdb->get_var( $wpdb->prepare( "SELECT 1=1 FROM {$wpdb->prefix}woocommerce_downloadable_product_permissions WHERE order_id = %d AND product_id = %d AND download_id = %s", $order->id, $this->getPid(), $download_id ) ) ) {
+                                    if ( ! $wpdb->get_var( $wpdb->prepare( "SELECT 1=1 FROM {$wpdb->prefix}woocommerce_downloadable_product_permissions WHERE order_id = %d AND product_id = %d AND download_id = %s", $order->get_id(), $this->getPid(), $download_id ) ) ) {
                                         wc_downloadable_file_permission( $download_id, $this->getPid(), $order );
                                     }
                                 }

@@ -1,21 +1,25 @@
 <div class="panel woocommerce_options_panel" id="shipping_product_data" style="display:none;">
     <?php if (class_exists('PMWI_Plugin') && PMWI_EDITION == 'free'): ?>
     <div class="woo-add-on-free-edition-notice upgrade_template">
-        <a href="https://www.wpallimport.com/checkout/?edd_action=purchase_collection&taxonomy=download_category&terms=14&utm_source=import-wooco-products-addon-free&utm_medium=upgrade-notice&utm_campaign=import-variable-wooco-products" target="_blank" class="upgrade_woo_link"><?php _e('Upgrade to the Pro edition of WP All Import and the WooCommerce Add-On to Import to Variable, Affiliate, and Grouped Products', PMWI_Plugin::TEXT_DOMAIN);?></a>
+        <a href="https://www.wpallimport.com/checkout/?edd_action=add_to_cart&download_id=2707227&edd_options%5Bprice_id%5D=1" target="_blank" class="upgrade_woo_link"><?php _e('Upgrade to the Pro edition of WP All Import and the WooCommerce Add-On to Import to Variable, Affiliate, and Grouped Products', PMWI_Plugin::TEXT_DOMAIN);?></a>
         <p><?php _e('If you already own it, remove the free edition and install the Pro edition.', 'wp_all_import_plugin'); ?></p>
     </div>
     <?php endif; ?>
 	<div class="options_group">
-		<p class="form-field">
+		<div class="form-field weight-field">
 			<label><?php printf(__("Weight (%s)", PMWI_Plugin::TEXT_DOMAIN), get_option('woocommerce_weight_unit')); ?></label>
-			<input type="text" class="short" placeholder="0.00" name="single_product_weight" style="" value="<?php echo esc_attr($post['single_product_weight']) ?>"/>
-		</p>
-		<p class="form-field">
+			<div>
+				<input type="text" class="short" placeholder="0.00" name="single_product_weight" style="" value="<?php echo esc_attr($post['single_product_weight']) ?>"/>
+			</div>
+		</div>
+		<div class="form-field dimensions-field">
 			<label><?php printf(__("Dimensions (%s)", PMWI_Plugin::TEXT_DOMAIN), get_option( 'woocommerce_dimension_unit' )); ?></label>
-			<input type="text" class="short" placeholder="<?php _e('Length',PMWI_Plugin::TEXT_DOMAIN);?>" name="single_product_length" style="margin-right:5px;" value="<?php echo esc_attr($post['single_product_length']) ?>"/>
-			<input type="text" class="short" placeholder="<?php _e('Width',PMWI_Plugin::TEXT_DOMAIN);?>" name="single_product_width" style="margin-right:5px;" value="<?php echo esc_attr($post['single_product_width']) ?>"/>
-			<input type="text" class="short" placeholder="<?php _e('Height',PMWI_Plugin::TEXT_DOMAIN);?>" name="single_product_height" style="" value="<?php echo esc_attr($post['single_product_height']) ?>"/>
-		</p>
+			<div>
+				<input type="text" class="short" placeholder="<?php _e('Length',PMWI_Plugin::TEXT_DOMAIN);?>" name="single_product_length" style="margin-right:5px;" value="<?php echo esc_attr($post['single_product_length']) ?>"/>
+				<input type="text" class="short" placeholder="<?php _e('Width',PMWI_Plugin::TEXT_DOMAIN);?>" name="single_product_width" style="margin-right:5px;" value="<?php echo esc_attr($post['single_product_width']) ?>"/>
+				<input type="text" class="short" placeholder="<?php _e('Height',PMWI_Plugin::TEXT_DOMAIN);?>" name="single_product_height" style="" value="<?php echo esc_attr($post['single_product_height']) ?>"/>
+			</div>
+		</div>
 	</div> <!-- End options group -->
 
 	<div class="options_group">

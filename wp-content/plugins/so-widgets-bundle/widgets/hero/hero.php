@@ -298,6 +298,7 @@ class SiteOrigin_Widget_Hero_Widget extends SiteOrigin_Widget_Base_Slider {
 	function filter_button_widget_form( $form_fields ) {
 		
 		unset( $form_fields['design']['fields']['align'] );
+		unset( $form_fields['design']['fields']['mobile_align'] );
 		
 		return $form_fields;
 	}
@@ -327,7 +328,7 @@ class SiteOrigin_Widget_Hero_Widget extends SiteOrigin_Widget_Base_Slider {
 			'new_window' => !empty( $frame['background']['new_window'] ),
 			'videos' => $frame['background']['videos'],
 			'video-sizing' => 'background',
-			'opacity' => intval($frame['background']['opacity'])/100,
+			'opacity' => (int) $frame['background']['opacity'] / 100,
 		);
 	}
 
@@ -413,9 +414,9 @@ class SiteOrigin_Widget_Hero_Widget extends SiteOrigin_Widget_Base_Slider {
 
 		$less['vertically_align'] = empty( $instance['design']['vertically_align'] ) ? 'false' : 'true';
 
-		$less['heading_shadow'] = intval( $instance['design']['heading_shadow'] );
+		$less['heading_shadow'] = (int) $instance['design']['heading_shadow'];
 		$less['heading_color'] = $instance['design']['heading_color'];
-		$less['text_shadow'] = isset( $instance['design']['text_shadow'] ) ? floatval( $instance['design']['text_shadow'] ) : 0.25;
+		$less['text_shadow'] = isset( $instance['design']['text_shadow'] ) ? (float) $instance['design']['text_shadow'] : 0.25;
 		$less['text_color'] = $instance['design']['text_color'];
 
 
@@ -426,14 +427,16 @@ class SiteOrigin_Widget_Hero_Widget extends SiteOrigin_Widget_Base_Slider {
 		$heading_font = siteorigin_widget_get_font( $instance['design']['heading_font'] );
 		$less['heading_font'] = $heading_font['family'];
 		if ( ! empty( $heading_font['weight'] ) ) {
-			$less['heading_font_weight'] = $heading_font['weight'];
+			$less['heading_font_weight'] = $heading_font['weight_raw'];
+			$less['heading_font_style'] = $heading_font['style'];
 		}
 		
 		if ( ! empty( $instance['design']['text_font'] ) ) {
 			$text_font = siteorigin_widget_get_font( $instance['design']['text_font'] );
 			$less['text_font'] = $text_font['family'];
 			if ( ! empty( $text_font['weight'] ) ) {
-				$less['text_font_weight'] = $text_font['weight'];
+				$less['text_font_weight'] = $text_font['weight_raw'];
+				$less['text_font_style'] = $text_font['style'];
 			}
 		}
 
