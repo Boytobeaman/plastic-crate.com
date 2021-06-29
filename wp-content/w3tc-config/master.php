@@ -1,5 +1,5 @@
 <?php exit; ?>{
-    "version": "0.15.2",
+    "version": "2.1.2",
     "cluster.messagebus.debug": false,
     "cluster.messagebus.enabled": false,
     "cluster.messagebus.sns.region": "",
@@ -60,6 +60,7 @@
         "\\bsql_calc_found_rows\\b",
         "\\bfound_rows\\(\\)"
     ],
+    "docroot_fix.enable": false,
     "lazyload.enabled": false,
     "lazyload.process_img": true,
     "lazyload.process_background": true,
