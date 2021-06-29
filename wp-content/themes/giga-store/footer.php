@@ -11,10 +11,11 @@
 	<div class="container">  
 	<div class="row friend-links">
 			<a href="https://www.storage-totes.com/product-category/collapsible-storage-bins/" target="_blank">collapsible storage bins</a>
-			<a href="https://www.plastic-crate.co.uk/product-category/euro-crates-boxes-for-sale/" target="_blank">euro containers</a>
 			<a href="https://www.vegcrates.com/space-age-totes-with-lids-for-sale/" target="_blank">space age totes</a>
-			<a href="https://www.ausplastic.com/product-category/collapsible-storage-box/" target="_blank">collapsible storage box</a>
 		</div>
+		<div class="site-description">
+			Professional Packaging Manufacturer, Plastic moving boxes wholesale, ISO Certified Supplier 
+		</div>  
 	</div>       
 </footer> 
 <p id="back-top">
